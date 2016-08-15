@@ -17,17 +17,22 @@ import by.training.filmstore.service.FilmDirectorService;
 import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
 
-public class UpdateFilmShowPageCommand implements Command {
-
+public class AdminCreateFilmShowPageCommand implements Command {
+	
+	private final static String FILM_CREATION_FAILED = "filmCreationFailed";
+	
+	private final static String FILM = "film";
+	//create and update page have similar content with session attribute "film"
 	private final static String LIST_ACTORS = "listActors";
 	private final static String LIST_FILM_DIR = "listFilmDir";
-
+	private final static String LIST_COUNTRIES = "listCountries";
+	private final static String LIST_GENRES = "listGenres";
+	private final static String LIST_QUALITY = "listQuality";
 	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		
 		HttpSession sessionCheckRole = request.getSession(false);
-		if((sessionCheckRole == null) || (sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_GUEST"))){
+		if((sessionCheckRole == null) || (!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_ADMIN"))){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 		}
 		
@@ -43,16 +48,24 @@ public class UpdateFilmShowPageCommand implements Command {
 		List<FilmDirector> listFilmDir = null;
 		
 		try {
+			checkRequest(request);
 		    listActors = actorService.findAllActors();
 		    listFilmDir = filmDirService.findAllFilmDirectors();
+		    sessionCheckRole.setAttribute(FILM, null);
 		    request.setAttribute(LIST_ACTORS, listActors);
 		    request.setAttribute(LIST_FILM_DIR, listFilmDir);
-			request.getRequestDispatcher(CommandParamName.PATH_UPDATE_FILM_PAGE).forward(request, response);
+		    request.setAttribute(LIST_COUNTRIES, CommandParamName.listCountries);
+		    request.setAttribute(LIST_GENRES,CommandParamName.listGenres);
+		    request.setAttribute(LIST_QUALITY, CommandParamName.listQuality);
+			request.getRequestDispatcher(CommandParamName.PATH_CREATE_FILM_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} 
 		
-
 	}
-
+	
+	private void checkRequest(HttpServletRequest request){
+		String creationFailed = request.getParameter(FILM_CREATION_FAILED);
+		request.setAttribute(FILM_CREATION_FAILED, creationFailed);
+	}
 }

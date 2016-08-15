@@ -40,10 +40,10 @@
 			</ul></li>
 		<li class="dropdown"><a href="#">${film}<span></span></a>
 			<ul class="dropdown-menu">
-				<li><a href="Controller?command=create_film_show_page">${create}</a></li>
-				<li><a href="Controller?command=update_film_show_page">${update}</a></li>
+				<li><a href="Controller?command=a_create_film_show_page">${create}</a></li>
+				<li><a href="Controller?command=a_update_film_show_page">${update}</a></li>
 				<li><a href="#">${delete}</a></li>
-				<li><a href="Controller?command=admin_films_show_page">${listFilms}</a></li>
+				<li><a href="Controller?command=a_show_list_film">${listFilms}</a></li>
 			</ul></li>
 		<li class="dropdown"><a href="/payment/">${actor}</a>
 			<ul class="dropdown-menu">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" xmlns="http://logging.apache.org/log4j/2.0/config">
     <Appenders>
-        <File name="File" fileName="logs/filmstore_log.log">
+        <File name="File" fileName="D:/filmstore_log.log">
 		      <PatternLayout>
 		        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
 		      </PatternLayout>

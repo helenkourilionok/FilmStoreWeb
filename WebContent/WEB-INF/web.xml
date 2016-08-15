@@ -16,17 +16,23 @@
     <error-code>404</error-code>
     <location>/error-page.jsp</location>
   </error-page>
-  <context-param>
-  	<param-name>imageUploadPath</param-name>
-  	<param-value>D://MyFolder//my//FilmStoreWebProject//WebContent//images/</param-value>
-  </context-param>
   <listener>
     <listener-class>by.training.filmstore.controller.FilmStoreContextListener</listener-class>
   </listener>
   <listener>
   	<listener-class>by.training.filmstore.controller.FilmStoreSessionListener</listener-class>
   </listener>
-  <filter>
+  <servlet>
+    <description></description>
+    <display-name>Controller</display-name>
+    <servlet-name>Controller</servlet-name>
+    <servlet-class>by.training.filmstore.controller.Controller</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Controller</servlet-name>
+    <url-pattern>/Controller</url-pattern>
+  </servlet-mapping>
+    <filter>
     <filter-name>encodingFilter</filter-name>
     <filter-class>by.training.filmstore.controller.EncodingFilter</filter-class>
     <init-param>
@@ -38,14 +44,4 @@
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <servlet>
-    <description></description>
-    <display-name>Controller</display-name>
-    <servlet-name>Controller</servlet-name>
-    <servlet-class>by.training.filmstore.controller.Controller</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Controller</servlet-name>
-    <url-pattern>/Controller</url-pattern>
-  </servlet-mapping>
 </web-app>

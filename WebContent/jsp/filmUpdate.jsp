@@ -46,8 +46,10 @@
 		});
 	});
 	function showFileName(str) {
-		document.getElementById("uploadFile").value = str.replace(
-				/C:\\fakepath\\/, "");
+		var e = document.getElementById('imageForFilm');
+	    e.style.display = 'none';
+		document.getElementById("uploadFile").value = 
+			str.replace(/C:\\fakepath\\/, "");
 	}
 </script>
 <!--[if lt IE 9]>
@@ -58,48 +60,31 @@
 <fmt:setBundle basename="localization.locale" var="locale" />
 <fmt:message bundle="${locale}" key="locale.filmedit.updateFilm"
 	var="updateFilm" />
-<fmt:message bundle="${locale}" key="locale.filmedit.findFilm"
-	var="findFilm" />
-<fmt:message bundle="${locale}" key="locale.filmedit.search"
-	var="search" />
 <fmt:message bundle="${locale}" key="locale.filmedit.filmCreationFailed"
 	var="filmCreationFailedMes" />
+<fmt:message bundle="${locale}" key="locale.filmedit.updatingFilmFailed"
+	var="updatingFilmFailedMes" />
+<fmt:message bundle="${locale}" key="locale.filmedie.incorrectParams"
+	var="incorrectParamsMes" />
 </head>
 <body>
 	<div class="wrapper container">
-		<c:import url="header.jsp" />
-		<c:import url="adminmenu.jsp" />
-		<c:import url="carousel.jsp" />
+		<c:import url="notContent/header.jsp" />
+		<c:import url="notContent/adminmenu.jsp" />
+		<c:import url="notContent/carousel.jsp" />
 		<div class="wrapper row">
-			<c:import url="aside.jsp" />
+			<c:import url="notContent/aside.jsp" />
 			<section class="col-md-9">
 				<h1>${updateFilm}</h1>
-				<article class="row">
-					<div class="col-md-8" style="float: left">
-						<form name="search" action="Controller" method="get"
-							class="form-inline form-search pull-right" style="width: 265px">
-							<input type="hidden" name="command" value="find_film_by_name"/>
-							<div class="row-offset">
-								<label for="name">${filmName}:</label> 
-								<input type="text"
-									class="form-control" id="name" name="name"
-									placeholder="${enterFilmName}" />
-							</div>
-							<div class="row-offset">
-								<label for="yearOfRelease">${yearOfRelease}:</label> 
-								<input type="text"
-									class="form-control" id="yearOfRelSearch" name="yearOfRelSearch"
-									placeholder="${enterYearOfRel}" />
-							</div>
-							<div class="row-offset">
-								<button type="submit" class="btn btn-primary">${findFilm}</button>
-							</div>
-						</form>
-					</div>
-				</article>
+				<c:if test="${updatingFilmFailed=='true'}">	
+					<h3>${updatingFilmFailedMes}</h3>
+				</c:if>
+				<c:if test="${incorrectParams=='true'}">	
+					<h3>${incorrectParamsMes}</h3>
+				</c:if>
 				<article class="row">
 					<div class="col-md-8">
-						<form action="Controller?command=update_film" method="post"
+						<form action="Controller?command=a_update_film&id=${sessionScope.film.id}" method="post"
 							enctype="multipart/form-data">
 							<c:import url="filmFields.jsp" />
 							<div class="row-offset">
@@ -111,6 +96,6 @@
 			</section>
 		</div>
 	</div>
-	<c:import url="footer.jsp" />
+	<c:import url="notContent/footer.jsp" />
 </body>
 </html>

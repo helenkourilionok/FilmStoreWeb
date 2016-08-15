@@ -5,8 +5,8 @@ import java.util.List;
 import by.training.filmstore.entity.Film;
 import by.training.filmstore.service.exception.FilmStoreServiceFilmNotFoundException;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
-import by.training.filmstore.service.exception.FilmStoreServiceIncorrectParamException;
-import by.training.filmstore.service.exception.FilmStoreServiceInvalidOperException;
+import by.training.filmstore.service.exception.FilmStoreServiceIncorrectFilmParamException;
+import by.training.filmstore.service.exception.FilmStoreServiceInvalidFilmOperException;
 import by.training.filmstore.service.exception.FilmStoreServiceListFilmNotFoundException;
 
 public interface FilmService {
@@ -15,18 +15,28 @@ public interface FilmService {
 			String filmDirId,String description,
 			String price,String countFilms,String image) 
 							throws FilmStoreServiceException,
-							FilmStoreServiceIncorrectParamException,
-							FilmStoreServiceInvalidOperException;
-	void createFilmActor(Film entity,List<Short> idActors) throws FilmStoreServiceException,
-								FilmStoreServiceIncorrectParamException,
-								FilmStoreServiceInvalidOperException;
-
+							FilmStoreServiceIncorrectFilmParamException,
+							FilmStoreServiceInvalidFilmOperException;
+	void createFilmActor(short filmId,List<Short> idActors) throws FilmStoreServiceException,
+								FilmStoreServiceIncorrectFilmParamException,
+								FilmStoreServiceInvalidFilmOperException;
+	void update(String filmId,String name,	String genre,String country,
+			String yearOfRelease,String quality,
+			String filmDirId,String description,
+			String price,String countFilms,String image) 
+					throws FilmStoreServiceIncorrectFilmParamException,
+					FilmStoreServiceInvalidFilmOperException,
+							FilmStoreServiceException;
+	void updateFilmActor(String filmId,List<Short> idActors) throws FilmStoreServiceException,
+													FilmStoreServiceIncorrectFilmParamException,
+													FilmStoreServiceInvalidFilmOperException;
+	void delete(short id) throws FilmStoreServiceException;
 	Film find(String id, boolean lazyInit) throws FilmStoreServiceException, 
-									FilmStoreServiceIncorrectParamException,
+									FilmStoreServiceIncorrectFilmParamException,
 									FilmStoreServiceFilmNotFoundException;
 
 	List<Film> findAllFilms(boolean lazyInit,int offset,int recordsPerPage,List<Integer> countAllRecords) 
 											throws FilmStoreServiceException,
-											FilmStoreServiceIncorrectParamException,
+											FilmStoreServiceIncorrectFilmParamException,
 											FilmStoreServiceListFilmNotFoundException;
 }

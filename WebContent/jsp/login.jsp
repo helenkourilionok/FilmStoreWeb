@@ -52,11 +52,11 @@
 	</head>
 	<body>
 		<div class="wrapper container">
-            <c:import url="header.jsp"/>
-            <c:import url="adminmenu.jsp" />
-			<c:import url="carousel.jsp"/>
+            <c:import url="notContent/header.jsp"/>
+            <c:import url="notContent/adminmenu.jsp" />
+			<c:import url="notContent/carousel.jsp"/>
 			<div class="wrapper row">
-				<c:import url="aside.jsp"/>
+				<c:import url="notContent/aside.jsp"/>
 				<section class="col-md-9">
 					<div class="col-md-6 col-md-offset-3">				
 						<h2>${login}</h2>
@@ -75,11 +75,10 @@
 						      </c:if>
 						      <br/>
 						    </div>
-						    <div class="form-group">
-						    	<label><input type="checkbox" name="remember_me" value="true" /> ${remember}</label>
+						    <div class="form-group" style="margin-bottom:40px">
 						    	<button type="submit" class="btn btn-primary">${login}</button>
 						    </div>
-						    <div>
+						    <div style="margin-bottom:10px">
 						    	<a href="#">${forgotPass}</a>
 						    </div>
 						</form>
@@ -87,6 +86,6 @@
 				</section>
 			</div>
 			</div>
-		<c:import url="footer.jsp"/>
+		<c:import url="notContent/footer.jsp"/>
 	</body>
 </html>

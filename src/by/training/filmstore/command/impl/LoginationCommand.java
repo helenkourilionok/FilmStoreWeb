@@ -3,7 +3,6 @@ package by.training.filmstore.command.impl;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -12,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CookieUtil;
 import by.training.filmstore.entity.User;
 import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.UserService;
@@ -25,7 +25,6 @@ public class LoginationCommand implements Command {
 	private final static String PASSWORD = "password";
 	private final static String ERROR_ATTRIBUTE = "incorrectEmailOrPassword";
 	private final static String DEFAULT_LANGUAGE = "ru";
-	private final static String REMEMBER_ME = "remember_me";
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -34,15 +33,11 @@ public class LoginationCommand implements Command {
 
 		String email = request.getParameter(EMAIL);
 		String password = request.getParameter(PASSWORD);
-		String rememberMe = request.getParameter(REMEMBER_ME);
 
 		try {
 
 			userAuth(email, password, session);
-
-			saveEmailPassInCookie(response, rememberMe, email, password);
-
-			String language = getValueFromCookies(request, CommandParamName.LANGUAGE);
+			String language = CookieUtil.getValueFromCookies(request, CommandParamName.LANGUAGE);
 			language = language == null ? DEFAULT_LANGUAGE : language;
 			session.setAttribute(CommandParamName.LOCALE, language);
 
@@ -80,30 +75,5 @@ public class LoginationCommand implements Command {
 		httpSession.setAttribute(CommandParamName.USER_EMAIL, user.getEmail());
 		httpSession.setAttribute(CommandParamName.USER_ROLE, user.getRole().name());
 
-	}
-
-	private void saveEmailPassInCookie(HttpServletResponse httpServletResponse, String remember_me, String email,
-			String password) {
-		String remember = "true";
-		String nameEmailCookie = "email";
-		String namePassCookie = "password";
-		if (remember.equals(remember)) {
-			httpServletResponse.addCookie(new Cookie(nameEmailCookie, email));
-			httpServletResponse.addCookie(new Cookie(namePassCookie, password));
-		}
-	}
-
-	private String getValueFromCookies(HttpServletRequest httpServletRequest, String cookieName) {
-		Cookie[] listCookies = httpServletRequest.getCookies();
-		String value = null;
-		if (listCookies == null) {
-			return value;
-		}
-		for (Cookie cookie : listCookies) {
-			if (cookie.getName().equals(cookieName)) {
-				value = cookie.getValue();
-			}
-		}
-		return value;
 	}
 }

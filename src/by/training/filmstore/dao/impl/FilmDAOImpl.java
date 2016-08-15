@@ -33,6 +33,8 @@ public class FilmDAOImpl implements FilmDAO {
 			+ "film.fm_quality = ?,film.fm_film_director = ?,"
 			+ "film.fm_description = ?,film.fm_price = ?,film.fm_count_film = ?,film.fm_image = ? "
 			+ "where film.fm_uid = ?";
+	private static final String SQL_UPDATE_FILM_ACTOR = 
+			"update film_actor  SET film_actor.act_id = ? where film_actor.fm_id = ? and film_actor.act_id = ?";
 	private static final String SQL_DELETE = "DELETE FROM film WHERE film.fm_uid = ?";
 	private static final String SQL_DELETE_FILM_ACTOR = "DELETE FROM film_actor WHERE film_actor.fm_id = ?";
 	
@@ -84,24 +86,25 @@ public class FilmDAOImpl implements FilmDAO {
 	}
 
 	@Override
-	public boolean createFilmActor(Film entity,List<Short> idActors) throws FilmStoreDAOException {
+	public boolean createFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
 		boolean success = false;
+		boolean createOper = true;
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_INSERT_FILM_ACTOR);
 
-			fillBatchForExecute(entity,idActors, prepStatement);
+			fillBatchForExecute(filmId,idActors, prepStatement,createOper);
 
 			int[] results = prepStatement.executeBatch();
 
 			success = isBatchExecuteSuccessful(results);
 
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Can't fill film_actor table", e);
+			logger.error("Error creating of PreparedStatement.Can't write in film_actor table", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
@@ -114,6 +117,38 @@ public class FilmDAOImpl implements FilmDAO {
 		return success;
 	}
 
+	@Override
+	public boolean updateFilmActor(short filmId, List<Short> idActors) throws FilmStoreDAOException {
+		Connection connection = null;
+		PreparedStatement prepStatement = null;
+		PoolConnection poolConnection = null;
+		boolean success = false;
+		boolean createOper = false;
+		try {
+			poolConnection = PoolConnection.getInstance();
+			connection = poolConnection.takeConnection();
+			prepStatement = connection.prepareStatement(SQL_UPDATE_FILM_ACTOR);
+
+			fillBatchForExecute(filmId,idActors, prepStatement,createOper);
+
+			int[] results = prepStatement.executeBatch();
+
+			success = isBatchExecuteSuccessful(results);
+
+		} catch (SQLException | PoolConnectionException e) {
+			logger.error("Error creating of PreparedStatement.Can't update film_actor table", e);
+			throw new FilmStoreDAOException(e);
+		} finally {
+			try {
+				poolConnection.putbackConnection(connection);
+				prepStatement.close();
+			} catch (SQLException e) {
+				logger.error("Error closing of PreparedStatement or Connection", e);
+			}
+		}
+		return success;
+	}
+	
 	@Override
 	public boolean deleteFilmActor(Short filmId) throws FilmStoreDAOException {
 		Connection connection = null;
@@ -391,10 +426,15 @@ public class FilmDAOImpl implements FilmDAO {
 		}
 	}
 
-	private void fillBatchForExecute(Film entity,List<Short> idActors, PreparedStatement prepStatement) throws SQLException {
+	private void fillBatchForExecute(short filmId,List<Short> idActors, PreparedStatement prepStatement,boolean createOper) throws SQLException {
+		int index1 = createOper?1:2;
+		int index2 = createOper?2:1;
 		for (Short id : idActors) {
-			prepStatement.setShort(1, entity.getId());
-			prepStatement.setShort(2, id);
+			prepStatement.setShort(index1,filmId);
+			prepStatement.setShort(index2, id);
+			if(!createOper){
+				prepStatement.setShort(3, id);
+			}
 			prepStatement.addBatch();
 		}
 	}

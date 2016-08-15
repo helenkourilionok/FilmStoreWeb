@@ -23,7 +23,6 @@ public class EncodingFilter implements Filter{
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		
 		String requestEncoding = request.getCharacterEncoding();
 		if(encoding!=null && !encoding.equalsIgnoreCase(requestEncoding)){
 			request.setCharacterEncoding(encoding);

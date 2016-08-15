@@ -11,8 +11,8 @@ import by.training.filmstore.entity.Comment;
 import by.training.filmstore.entity.CommentPK;
 import by.training.filmstore.service.CommentService;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
-import by.training.filmstore.service.exception.FilmStoreServiceIncorrectParamException;
-import by.training.filmstore.service.exception.FilmStoreServiceInvalidOperException;
+import by.training.filmstore.service.exception.FilmStoreServiceIncorrectCommentParamException;
+import by.training.filmstore.service.exception.FilmStoreServiceInvalidCommentOperException;
 import by.training.filmstore.service.exception.FilmStoreServiceListCommentNotFoundException;
 
 public class CommentServiceImpl implements CommentService {
@@ -20,14 +20,14 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public List<Comment> findCommentByIdFilm(String filmId)
 			throws FilmStoreServiceException, 
-			FilmStoreServiceIncorrectParamException,
+			FilmStoreServiceIncorrectCommentParamException,
 			FilmStoreServiceListCommentNotFoundException{
 		if(!ValidationParamUtil.notEmpty(filmId)){
-			throw new FilmStoreServiceIncorrectParamException("Incorrect film id!Comments weren't found!");
+			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect film id!Comments weren't found!");
 		}
-		short numFilmId = Short.parseShort(filmId);
-		if(!ValidationParamUtil.validateNumber((int)numFilmId)){
-			throw new FilmStoreServiceIncorrectParamException("Incorrect film id!Comments weren't found!");
+		short numFilmId = (short)ValidationParamUtil.validateNumber(filmId);
+		if(numFilmId == -1){
+			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect film id!Comments weren't found!");
 		}
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
@@ -49,22 +49,23 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public void create(String userEmail, String filmId, String content)
 			throws FilmStoreServiceException, 
-			FilmStoreServiceIncorrectParamException, 
-			FilmStoreServiceInvalidOperException {
+			FilmStoreServiceInvalidCommentOperException, 
+			FilmStoreServiceIncorrectCommentParamException {
 		
 		int permissibleEmailLength = 40;
 		if(!ValidationParamUtil.validateEmail(userEmail, permissibleEmailLength)){
-			throw new FilmStoreServiceIncorrectParamException("Incorrect user email!");
+			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect user email!");
 		}
 		if(!ValidationParamUtil.notEmpty(filmId)){
-			throw new FilmStoreServiceIncorrectParamException("Incorrect film id!");
+			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect film id!");
 		}
-		short numFilmId = Short.parseShort(filmId);
-		if(!ValidationParamUtil.validateNumber((int)numFilmId)){
-			throw new FilmStoreServiceIncorrectParamException("Incorrect film id!");
+		short numFilmId = (short)ValidationParamUtil.validateNumber(filmId);
+		if(numFilmId == -1){
+			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect film id!");
 		}
+		System.out.println("Content"+content);
 		if(!Validation.validateCharacterField(content)){
-			throw new FilmStoreServiceIncorrectParamException("Incorrect content!");
+			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect content!");
 		}
 		
 		boolean succes = false;
@@ -79,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
 		try {
 			succes = commentDAO.create(entity);
 			if(!succes){
-				throw new FilmStoreServiceInvalidOperException("Can't create comment!");
+				throw new FilmStoreServiceInvalidCommentOperException("Can't create comment!");
 			}
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
@@ -95,7 +96,7 @@ public class CommentServiceImpl implements CommentService {
 			if(!ValidationParamUtil.notEmpty(value)){
 				return false;
 			}
-			return ValidationParamUtil.checkField(LETTERS_PATTERN_EN, value) || 
+			return ValidationParamUtil.checkField(LETTERS_PATTERN_EN, value) | 
 					ValidationParamUtil.checkField(LETTERS_PATTERN_RU, value);
 			
 		}

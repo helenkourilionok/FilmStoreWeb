@@ -12,7 +12,7 @@ import by.training.filmstore.entity.User;
 import by.training.filmstore.service.UserService;
 import by.training.filmstore.service.exception.FilmStoreServiceAuthException;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
-import by.training.filmstore.service.exception.FilmStoreServiceIncorrectParamException;
+import by.training.filmstore.service.exception.FilmStoreServiceIncorrectUserParamException;
 
 public class UserServiceImpl implements UserService {
 
@@ -44,31 +44,31 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User create(String email, String password, String copyPass, String lastName, String firstName,
 			String patronimic, String mobilePhone, String balance)
-			throws FilmStoreServiceException, FilmStoreServiceIncorrectParamException {
+			throws FilmStoreServiceException, FilmStoreServiceIncorrectUserParamException {
 		int permissibleEmailLength = 40;
 		byte discount = 0;
 		if (!ValidationParamUtil.validateEmail(email, permissibleEmailLength)) {
-			throw new FilmStoreServiceIncorrectParamException("Incorrect email!");
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect email!");
 		}
 		if (!Validation.validatePassword(password, copyPass)) {
-			throw new FilmStoreServiceIncorrectParamException("Incorrect password!");
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect password!");
 		}
 		if (!Validation.validateCharacterField(lastName, false)) {
-			throw new FilmStoreServiceIncorrectParamException("Incorrect last name!");
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect last name!");
 		}
 		if (!Validation.validateCharacterField(firstName, true)) {
-			throw new FilmStoreServiceIncorrectParamException("Incorrect first name!");
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect first name!");
 		}
 		if (!Validation.validateCharacterField(patronimic, false)) {
-			throw new FilmStoreServiceIncorrectParamException("Incorrect patronimic!");
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect patronimic!");
 		}
 		String phone = Validation.validatePhone(mobilePhone);
 		if (phone == null) {
-			throw new FilmStoreServiceIncorrectParamException("Incorrect phone!");
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect phone!");
 		}
 		BigDecimal balanceBD = Validation.validateBalance(balance);
 		if (balanceBD == null) {
-			throw new FilmStoreServiceIncorrectParamException("Incorrect balance!");
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect balance!");
 		}
 		User user = new User(email, password, Role.ROLE_USER, lastName, firstName, patronimic, phone, balanceBD,
 				discount);

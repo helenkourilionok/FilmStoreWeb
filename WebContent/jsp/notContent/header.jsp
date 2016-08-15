@@ -30,7 +30,7 @@
 <header class="row">
 	<div class="col-md-12">
 		<a href="#"><img src="images/logo.png" alt="FilmStore logo"></a>
-		<a href="#" class="basket">${basket}<span class="badge">10</span></a>
+		<a href="#" class="basket">${basket}<span class="badge">${sessionScope.countFilmInBasket}</span></a>
 		<ul class="language">
 			<li><a href="Controller?command=change_language&language=ru"
 				id="ru"><img src="images/russia.png" alt="Russian" /></a></li>

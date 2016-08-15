@@ -48,11 +48,11 @@
 </head>
 <body>
 	<div class="wrapper container">
-		<c:import url="jsp/header.jsp" />
-		<c:import url="jsp/adminmenu.jsp" />
-		<c:import url="jsp/carousel.jsp" />
+		<c:import url="jsp/notContent/header.jsp" />
+		<c:import url="jsp/notContent/adminmenu.jsp" />
+		<c:import url="jsp/notContent/carousel.jsp" />
 		<div class="wrapper row">
-			<c:import url="jsp/aside.jsp" />
+			<c:import url="jsp/notContent/aside.jsp" />
 			<section class="col-md-9">
 				<div class="pagenot">
 					<h2>404</h2>
@@ -68,6 +68,6 @@
 			</section>
 		</div>
 	</div>
-	<c:import url="jsp/footer.jsp" />
+	<c:import url="jsp/notContent/footer.jsp" />
 </body>
 </html>

@@ -63,20 +63,20 @@
 </head>
 <body>
 	<div class="wrapper container">
-		<c:import url="header.jsp" />
-		<c:import url="adminmenu.jsp" />
-		<c:import url="carousel.jsp" />
+		<c:import url="notContent/header.jsp" />
+		<c:import url="notContent/adminmenu.jsp" />
+		<c:import url="notContent/carousel.jsp" />
 		<div class="wrapper row">
-			<c:import url="aside.jsp" />
+			<c:import url="notContent/aside.jsp" />
 			<section class="col-md-9">
 				<h1>${createFilm}</h1>
 				<c:if test="${filmCreationFailed == 'true'}">
-					<h3>${filmCreationFailedMes}</h3>
+					<h3 style="color:red">${filmCreationFailedMes}</h3>
 				</c:if>
 				<article class="row">
 					<div class="col-md-8">
-						<form action="Controller?command=create_film" method="post" enctype="multipart/form-data">
-							<c:import url="filmFields.jsp" />
+						<form action="Controller?command=a_create_film" method="post" enctype="multipart/form-data">
+					 	<c:import url="filmFields.jsp" />						
 							<div class="row-offset">
 								<button type="submit" class="btn btn-primary">${createFilm}</button>
 							</div>
@@ -86,6 +86,6 @@
 			</section>
 		</div>
 	</div>
-	<c:import url="footer.jsp" />
+	<c:import url="notContent/footer.jsp" />
 </body>
 </html>

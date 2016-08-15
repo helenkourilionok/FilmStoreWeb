@@ -12,8 +12,6 @@ import by.training.filmstore.command.Command;
 
 public class ChangeLanguageCommand implements Command {
 	
-	private final static int cookieExpire = 24*60*60;
-	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -23,7 +21,7 @@ public class ChangeLanguageCommand implements Command {
 		String prev_query = (String) request.getSession(false).getAttribute(CommandParamName.PREV_QUERY);
 		
 		Cookie locale = new Cookie(CommandParamName.LOCALE, request.getParameter(CommandParamName.LANGUAGE));
-		locale.setMaxAge(cookieExpire);
+		locale.setMaxAge(CommandParamName.MAX_AGE_COOKIE);
 		response.addCookie(locale);
 		
 		if (prev_query != null) {

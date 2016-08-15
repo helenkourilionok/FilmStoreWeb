@@ -39,18 +39,6 @@
 			animation : 'slide'
 		});
 	});
-	function look(type, type1) {
-		param = document.getElementById(type);
-		if (param.style.display == "none")
-			param.style.display = "block";
-		else
-			param.style.display = "none"
-		param1 = document.getElementById(type1);
-		if (param1.style.display == "none")
-			param1.style.display = "block";
-		else
-			param1.style.display = "none"
-	}
 </script>
 <!--[if lt IE 9]>
 			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -103,32 +91,30 @@
 </head>
 <body>
 	<div class="wrapper container">
-		<c:import url="header.jsp" />
-		<c:import url="adminmenu.jsp" />
-		<c:import url="carousel.jsp" />
+		<c:import url="notContent/header.jsp" />
+		<c:import url="notContent/adminmenu.jsp" />
+		<c:import url="notContent/carousel.jsp" />>
 		<div class="wrapper row">
-			<c:import url="aside.jsp" />
+			<c:import url="notContent/aside.jsp" />
 			<section class="col-md-9">
 				<c:choose>
 					<c:when test="${requestScope.filmNotFound == null}">
-						<h1>${requestScope.film.name}</h1>
+						<h1>${sessionScope.filmInfo.name}</h1>
 						<article class="row">
 							<!-- Film image -->
 							<div class="col-md-4 row-offset">
 								<div class="mosaic-block" style="height: 290px">
 									<div>
-										<img src="${requestScope.film.image}"
-											alt="${requestScope.film.name}" width="200" height="250" />
+										<img src="${sessionScope.filmInfo.image}"
+											alt="${sessionScope.filmInfo.name}" width="200" height="250" />
 									</div>
-									<div style="margin: 10px 30px">
-										<button type="submit" class="btn btn-primary" id="basket"
-											onClick="look('order','basket'); return false;">
-											${putInBasket}</button>
-									</div>
-									<div style="margin: 10px 30px">
-										<button type="submit" class="btn btn-primary" id="order"
-											style="display: none">${makeOrder}</button>
-									</div>
+									<form method="post">
+										<div style="margin: 10px 30px">
+											<button type="submit" class="btn btn-primary"
+											formaction="Controller?command=make_order" 
+											id="order">${makeOrder}</button>
+										</div>
+									</form>
 								</div>
 							</div>
 							<!-- Film image -->
@@ -136,26 +122,26 @@
 							<div class="col-md-8 row-offset">
 								<div class="pull-right text-right">
 									<ul class="list-unstyled text-right">
-										<li><b>${countFilms}:</b><span>${requestScope.film.countFilms}</span></li>
+										<li><b>${countFilms}:</b><span>${sessionScope.filmInfo.countFilms}</span></li>
 										<li><b>${quality}:</b>
-											${requestScope.film.quality.getNameQuality()}</li>
-										<li><b>${price}:</b> <span>${requestScope.film.price}</span></li>
+											${sessionScope.filmInfo.quality.getNameQuality()}</li>
+										<li><b>${price}:</b> <span>${sessionScope.filmInfo.price}</span></li>
 									</ul>
 								</div>
 								<ul class="list-unstyled">
-									<li><b>${genre}:</b>&nbsp;<span>${requestScope.film.genre}</span>.</li>
-									<li><b>${yearOfRelease}</b>&nbsp;<time>${requestScope.film.yearOfRelease}</time>.
+									<li><b>${genre}:</b>&nbsp;<span>${sessionScope.filmInfo.genre}</span>.</li>
+									<li><b>${yearOfRelease}</b>&nbsp;<time>${sessionScope.filmInfo.yearOfRelease}</time>.
 									</li>
-									<li><b>${country}:</b>&nbsp;<span>${requestScope.film.country}</span>.</li>
-									<li><b>${filmDirector}:</b>&nbsp;<span>${requestScope.film.filmDirector.fio}</span>.</li>
+									<li><b>${country}:</b>&nbsp;<span>${sessionScope.filmInfo.country}</span>.</li>
+									<li><b>${filmDirector}:</b>&nbsp;<span>${sessionScope.filmInfo.filmDirector.fio}</span>.</li>
 									<li class="row-offset">
-										<p>${film.description}</p>
+										<p>${sessionScope.filmInfo.description}</p>
 									</li>
 									<li><b>${actors}:</b>&nbsp; <span> <c:forEach
-												var="actor" items="${requestScope.film.actors}"
+												var="actor" items="${sessionScope.filmInfo.actors}"
 												varStatus="loop">
 												<c:choose>
-													<c:when test="${loop.index != film.actors.size()-1}">
+													<c:when test="${loop.index != filmInfo.actors.size()-1}">
 									        ${actor.fio},
 									    </c:when>
 													<c:otherwise>
@@ -163,7 +149,7 @@
 									    </c:otherwise>
 												</c:choose>
 											</c:forEach>
-									</span> <a href="/filmAllInf">...&nbsp;»</a></li>
+									</span></li>
 								</ul>
 							</div>
 							<!-- Film description -->
@@ -172,14 +158,14 @@
 							<!-- List comments -->
 							<div class="col-md-12">
 								<c:choose>
-									<c:when test="${listComNotFound == null}">
+									<c:when test="${requestScope.listComNotFound == null}">
 										<h3>${comments}</h3>
 									</c:when>
 									<c:otherwise>
 										<h3>${noComments}</h3>
 									</c:otherwise>
 								</c:choose>
-								<c:forEach var="comment" items="${requestScope.listComment}">
+								<c:forEach var="comment" items="${sessionScope.listComment}">
 									<article class="commennts clearfix">
 										<div class="comment-avatar">
 											<img src="images/avatar.png" alt="avatar">
@@ -207,11 +193,11 @@
 									<c:if test="${requestScope.creationFailed == 'true'}">
 										<span style="color: red">${commentCreationFailed}</span>
 									</c:if>
-									<form action="Controller" method="get">
+									<form action="Controller" method="post">
 										<input type="hidden" name="command" value="make_comment" /> 
 										<input type="hidden" name="userEmail"
 											   value="${sessionScope.userEmail}" /> 
-										<input type="hidden" name="filmId" value="${requestScope.film.id}" />
+										<input type="hidden" name="filmId" value="${sessionScope.film.id}" />
 										<p>
 											<textarea name="content" placeholder="${yourComment}"
 												cols="38" rows="8" maxlength="300"></textarea>
@@ -242,6 +228,6 @@
 			</section>
 		</div>
 	</div>
-	<c:import url="footer.jsp" />
+	<c:import url="notContent/footer.jsp" />
 </body>
 </html>

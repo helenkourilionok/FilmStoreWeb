@@ -20,11 +20,14 @@ public final class ValidationParamUtil {
 	}
 
 	
-	public static boolean validateNumber(Integer number){
-		if(number == null || number<=0){
-			return false;
+	public static int validateNumber(String number){
+		int result = -1;
+		try{
+			result =  Integer.parseInt(number);
+		}catch(NumberFormatException e){
+			return result;
 		}
-		return true;
+		return result;
 	}
 	
 	public static boolean checkLength(String value, int length) {

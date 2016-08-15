@@ -76,11 +76,11 @@
 </head>
 <body>
 	<div class="wrapper container">
-		<c:import url="header.jsp" />
-		<c:import url="adminmenu.jsp" />
-		<c:import url="carousel.jsp" />
+		<c:import url="notContent/header.jsp" />
+		<c:import url="notContent/adminmenu.jsp" />
+		<c:import url="notContent/carousel.jsp" />
 		<div class="wrapper row">
-			<c:import url="aside.jsp" />
+			<c:import url="notContent/aside.jsp" />
 			<section class="col-md-9">
 				<div class="row">
 					<div class="col-md-6 col-md-offset-3">
@@ -159,6 +159,6 @@
 			</section>
 		</div>
 	</div>	
-	<c:import url="footer.jsp" />
+	<c:import url="notContent/footer.jsp" />
 </body>
 </html>

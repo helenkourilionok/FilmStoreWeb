@@ -69,11 +69,11 @@
 </head>
 <body>
 	<div class="wrapper container">
-		<c:import url="jsp/notContent/header.jsp" />
-		<c:import url="jsp/notContent/adminmenu.jsp" />
-		<c:import url="jsp/notContent/carousel.jsp" />
+		<c:import url="notContent/header.jsp" />
+		<c:import url="notContent/adminmenu.jsp" />
+		<c:import url="notContent/carousel.jsp" />
 		<div class="wrapper row">
-			<c:import url="jsp/notContent/aside.jsp" />
+			<c:import url="notContent/aside.jsp" />
 			<!-- content -->
 			<section class="col-md-9">
 				<h1>${allFilms}</h1>
@@ -81,97 +81,57 @@
 					<h2>${noneFilmWasFound}</h2>
 				</c:if>
 				<!--Bar-->
-				<c:forEach var="film" items="${requestScope.listFilm}">
-					<article class="row">
-						<div class="col-md-4 row-offset">
-							<div class="mosaic-block bar">
-									<div class="mosaic-overlay">
-										<form method="post">
-											<button title="${makeComment}" type="submit"
-												class="btn btn-default btn-default-custom"
-												formaction="Controller?command=put_in_basket&id=${film.id}">
-												<span class="glyphicon glyphicon-shopping-cart"></span>
-											</button>
-											<button title="${makeComment}" type="submit"
-												class="btn btn-default btn-default-custom"
-												formaction="Controller?command=show_comment_page&id=${film.id}">
-												<span class="glyphicon glyphicon-star"></span>
-											</button>
-											<button title="${makeComment}" type="submit"
-												class="btn btn-default btn-default-custom"
-												formaction="Controller?command=show_comment_page&id=${film.id}">
-												<span class="glyphicon glyphicon-film"></span>
-											</button>
-										</form>
-									</div>
-								<div class="mosaic-backdrop">
-								<img src="${film.image}"
-											alt="${film.name}" width="200" height="250" />
-								</div>
-							</div>
-						</div>
-						<div class="col-md-8 row-offset">
-							<div class="pull-right text-right">
-								<ul class="list-unstyled text-right">
-									<li><b>${countFilms}:</b><span>${film.countFilms}</span></li>
-									<li><b>${quality}:</b> ${film.quality.getNameQuality()}</li>
-									<li><b>${price}:</b> <span>${film.price}</span></li>
-								</ul>
-							</div>
-							<b><a title="${film.name}"
-								href="Controller?command=show_comment_page&id=${film.id}">${film.name}</a></b>
-							<ul class="list-unstyled">
-								<li><b>${genre}:</b>&nbsp;<span>${film.genre}</span>.</li>
-								<li><b>${yearOfRelease}</b>&nbsp;<time>${film.yearOfRelease}</time>.
-								</li>
-								<li><b>${country}:</b>&nbsp;<span>${film.country}</span>.</li>
-								<li><b>${filmDirector}:</b>&nbsp;<span>${film.filmDirector.fio}</span>.</li>
-								<li class="row-offset">
-									<p>${film.description}</p>
-								</li>
-								<li><b>${actors}:</b>&nbsp; <span> <c:forEach
-											var="actor" items="${film.actors}" varStatus="loop">
-											<c:choose>
-												<c:when test="${loop.index != film.actors.size()-1}">
-									        		${actor.fio},
-									    		</c:when>
-												<c:otherwise>
-										    		${actor.fio}
-									    		</c:otherwise>
-											</c:choose>
-										</c:forEach>
-								</span> <a href="Controller?command=show_comment_page&id=${film.id}">...&nbsp;»</a></li>
-							</ul>
-						</div>
-					</article>
-				</c:forEach>
+				<div class="col-md-12">
+				<table class="table table-bordered">
+					<thead>
+					      <tr>
+					       <th>Film name</th>
+					       <th>Price</th>
+					       <th>Quality</th>
+					       <th>Action</th>
+					     </tr>
+					</thead>
+					<tbody>
+						<c:forEach var="film" items="${requestScope.listFilm}">
+							      <tr>
+							        <td>${film.name}(${film.yearOfRelease})</td>
+							        <td>${film.price}</td>
+							        <td>${film.quality.getNameQuality()}</td>
+							        <td>  <a href="Controller?command=a_update_film_show_page&id=${film.id}">Update</a>
+							        	  <a href="Controller?command=a_delete_film&id=${film.id}">Delete</a>
+							        </td>
+							      </tr>
+						</c:forEach>
+						</tbody>
+					  </table>
+				</div>
 			</section>
 			<div class="row col-md-6 col-md-offset-5">
 				<ul class="pagination">
 					<c:if test="${pageInfo.currentPage != 1}">
-				    	<li><a href="Controller?command=show_list_film&page=${pageInfo.currentPage - 1}&start=${pageInfo.currentPage - 1}">Previous</a></li>
+				    	<li><a href="Controller?command=a_show_list_film&page=${pageInfo.currentPage - 1}&start=${pageInfo.currentPage - 1}">Previous</a></li>
 				    </c:if>
 				    <c:set var="start" scope="request" value="${pageInfo.listIndex.get(0)}"/>
 				    
 			        <c:forEach var="index" items="${pageInfo.listIndex}" varStatus="loop">
 			                <c:choose>
 			                    <c:when test="${pageInfo.currentPage eq index}">
-			                        <li class="active"><a href="Controller?command=show_list_film&page=${index}&start=${start}">${index}</a></li>
+			                        <li class="active"><a href="Controller?command=a_show_list_film&page=${index}&start=${start}">${index}</a></li>
 			                    </c:when>
 			                    <c:otherwise>
-			                        <li><a href="Controller?command=show_list_film&page=${index}&start=${start}">${index}</a></li>
+			                        <li><a href="Controller?command=a_show_list_film&page=${index}&start=${start}">${index}</a></li>
 			                    </c:otherwise>
 			                </c:choose>
 			        </c:forEach>
 			        
 			        <c:if test="${pageInfo.currentPage lt pageInfo.countPages}">
-						<li><a href="Controller?command=show_list_film&page=${pageInfo.currentPage + 1}&start=${pageInfo.currentPage + 1}">Next</a></li>
+						<li><a href="Controller?command=a_show_list_film&page=${pageInfo.currentPage + 1}&start=${pageInfo.currentPage + 1}">Next</a></li>
 					</c:if>
 				</ul>
 			</div>
 			<!-- content -->
 		</div>
 	</div>
-	<c:import url="jsp/notContent/footer.jsp" />
+	<c:import url="notContent/footer.jsp" />
 </body>
 </html>

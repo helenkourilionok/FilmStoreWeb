@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
 import by.training.filmstore.command.util.ConvertStringToIntUtil;
-import by.training.filmstore.command.util.CookieUtil;
 import by.training.filmstore.command.util.PageUtil;
 import by.training.filmstore.command.util.PaginationUtil;
 import by.training.filmstore.command.util.QueryUtil;
@@ -25,10 +24,10 @@ import by.training.filmstore.service.exception.FilmStoreServiceException;
 import by.training.filmstore.service.exception.FilmStoreServiceIncorrectFilmParamException;
 import by.training.filmstore.service.exception.FilmStoreServiceListFilmNotFoundException;
 
-public class ShowListFilmCommand implements Command {
+public class AdminShowListFilmCommand implements Command {
 
-	private final static Logger logger = LogManager.getLogger(ShowListFilmCommand.class);
-
+	private final static Logger logger = LogManager.getLogger(AdminShowListFilmCommand.class);
+		
 	private final static int COUNT_REF_PER_PAGE = 5;
 	private final static int FILM_RECORDS_PER_PAGE = 5;
 
@@ -40,17 +39,23 @@ public class ShowListFilmCommand implements Command {
 	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+		
 		HttpSession session = request.getSession(true);
 
 		String query = QueryUtil.createHttpQueryString(request);
 		session.setAttribute(CommandParamName.PREV_QUERY, query);
 		
+		HttpSession sessionCheckRole = request.getSession(false);
+		if ((sessionCheckRole == null)
+				|| (!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_ADMIN"))) {
+			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+		}
+		
 		FilmStoreServiceFactory filmStoreServiceFactoryImpl = FilmStoreServiceFactory.getServiceFactory();
 		FilmService filmService = filmStoreServiceFactoryImpl.getFilmService();
 
 		List<Film> listFilm = null;
-		boolean lazyInit = false;
+		boolean lazyInit = true;
 		List<Integer> countAllRec = new ArrayList<>();
 		List<Integer> listIndex = null;
 		int countAllRecords = 0;
@@ -76,20 +81,19 @@ public class ShowListFilmCommand implements Command {
 			
 			request.setAttribute(LIST_FILM_ATTR, listFilm);
 			request.setAttribute(PAGE_INFO, pageInfo);
-			
-			session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountValuesInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
-			
-			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX).forward(request, response);
+
+			request.getRequestDispatcher(CommandParamName.PATH_LIST_FILM_PAGE).forward(request, response);
 
 		} catch (FilmStoreServiceException e) {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE);
 		} catch (FilmStoreServiceListFilmNotFoundException e) {
 			logger.error("None film wasn't found!", e);
 			request.setAttribute(NOT_FOUND_ATTR, "true");
-			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX).forward(request, response);
+			request.getRequestDispatcher(CommandParamName.PATH_LIST_FILM_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectFilmParamException e) {
 			logger.error("Incorrect parametrs!", e);
-			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
+			request.getRequestDispatcher(CommandParamName.PATH_LIST_FILM_PAGE).forward(request, response);
 		}
 	}
+
 }

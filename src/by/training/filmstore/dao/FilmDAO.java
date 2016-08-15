@@ -11,7 +11,8 @@ public interface FilmDAO extends AbstractDAO<Film, Short>{
 					List<Integer> countAllRecords) throws FilmStoreDAOException;
 	List<Film> findFilmByGenre(String genre) throws FilmStoreDAOException;
 	List<Film> findFilmByName(String name) throws FilmStoreDAOException;
-	boolean createFilmActor(Film entity,List<Short> idActors) throws FilmStoreDAOException;
+	boolean createFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException;
+	boolean updateFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException;
 	boolean deleteFilmActor(Short filmId) throws FilmStoreDAOException;
 	boolean findActorFilmDirectorForFilm(Film film) throws FilmStoreDAOException;
 }

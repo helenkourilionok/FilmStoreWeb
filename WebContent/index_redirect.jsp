@@ -11,6 +11,7 @@
 	<c:redirect url="Controller">
 		<c:param name="command" value="show_list_film"/>
 		<c:param name="page" value="1" />
+		<c:param name="start" value="1" />
 	</c:redirect>
 </body>
 </html>

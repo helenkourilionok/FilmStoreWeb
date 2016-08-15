@@ -2,6 +2,7 @@
 	pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <fmt:setLocale value="${sessionScope.locale}" />
 <fmt:setBundle basename="localization.locale" var="locale" />
 <fmt:message bundle="${locale}" key="locale.filmedit.filmName"
@@ -38,66 +39,68 @@
 <div class="row-offset">
 	<label for="name">${filmName}:</label> <input type="text"
 		class="form-control" id="name" name="name"
-		placeholder="${enterFilmName}" />
+		placeholder="${enterFilmName}" value="${sessionScope.film.name}" />
 </div>
 <div class="row-offset">
 	<label for="yearOfRelease">${yearOfRelease}:</label> <input type="text"
 		class="form-control" id="yearOfRelease" name="yearOfRelease"
-		placeholder="${enterYearOfRel}" />
+		placeholder="${enterYearOfRel}" value="${sessionScope.film.yearOfRelease}" />
 </div>
 <div class="row-offset">
 	<label for="price">${price}:</label> <input type="text"
 		class="form-control" id="price" name="price"
-		placeholder="${enterPrice}" />
+		placeholder="${enterPrice}" value="${sessionScope.film.price}" />
 </div>
 <div class="row-offset">
 	<label for="countFilms">${countFilms}:</label> <input type="text"
 		class="form-control" id="countFilms" name="countFilms"
-		placeholder="${enterCountFilms}" />
+		placeholder="${enterCountFilms}" value="${sessionScope.film.countFilms}"/>
 </div>
 <div class="row-offset">
 	<select name="quality" class="selectpicker" data-style="btn-primary"
 		data-live-search="true" title="${chooseQuality}">
-		<option value="DVDRip">DVDRip</option>
-		<option value="CAMPRip">CAMPRip</option>
-		<option value="WEB-DL">WEB-DL</option>
-		<option value="WEB-DLRip">WEB-DLRip</option>
+		<c:forEach var="quality" items="${requestScope.listQuality}">
+			<c:choose>
+				<c:when test="${sessionScope.film.quality.getNameQuality().equals(quality)}">
+					<option value="${quality}" selected>${quality}</option>
+				</c:when>
+				<c:otherwise>
+					<option value="${quality}">${quality}</option>
+				</c:otherwise>
+			</c:choose>			
+		</c:forEach>
 	</select>
 </div>
 <div class="row-offset">
 	<select name="list_countries" multiple class="selectpicker"
 		data-style="btn-primary" data-live-search="true"
 		title="${chooseCounties}">
-		<option value="США">США</option>
-		<option value="Англия">Англия</option>
-		<option value="Япония">Япония</option>
-		<option value="Китай">Китай</option>
-		<option value="Италия">Италия</option>
-		<option value="Франция">Франция</option>
-		<option value="Россия">Россия</option>
-		<option value="Германия">Германия</option>
-		<option value="Канада">Канада</option>
-		<option value="Испания">Испания</option>
+		<c:forEach var="country" items="${requestScope.listCountries}">
+			<c:choose>
+				<c:when test="${sessionScope.film.country.contains(country)}">
+					<option value="${country}" selected>${country}</option>
+				</c:when>
+				<c:otherwise>
+					<option value="${country}">${country}</option>
+				</c:otherwise>
+			</c:choose>			
+		</c:forEach>
 	</select>
 </div>
 <div class="row-offset">
 	<select name="genres" multiple class="selectpicker"
 		data-style="btn-primary" data-live-search="true"
 		title="${chooseGenres}">
-		<option value="Драма">Драма</option>
-		<option value="Комедия">Комедия</option>
-		<option value="Мелодрама">Мелодрама</option>
-		<option value="Триллер">Триллер</option>
-		<option value="Криминал">Криминал</option>
-		<option value="Детктив">Детктив</option>
-		<option value="Фантастика">Фантастика</option>
-		<option value="Боевик">Боевик</option>
-		<option value="Ужасы">Ужасы</option>
-		<option value="Биография">Биография</option>
-		<option value="Мистика">Мистика</option>
-		<option value="Мультфильм">Мультфильм</option>
-		<option value="Исторический">Исторический</option>
-		<option value="Документальный">Документальный</option>
+		<c:forEach var="genre" items="${requestScope.listGenres}">
+			<c:choose>
+				<c:when test="${sessionScope.film.genre.contains(genre)}">
+					<option value="${genre}" selected>${genre}</option>
+				</c:when>
+				<c:otherwise>
+					<option value="${genre}">${genre}</option>
+				</c:otherwise>
+			</c:choose>			
+		</c:forEach>
 	</select>
 </div>
 <div class="row-offset">
@@ -105,7 +108,14 @@
 		data-style="btn-primary" data-live-search="true"
 		title="${chooseFilmDirector}">
 		<c:forEach var="filmDir" items="${requestScope.listFilmDir}">
-			<option value="${filmDir.id}">${filmDir.fio}</option>
+			<c:choose>
+				<c:when test="${sessionScope.film.filmDirector.equals(filmDir)}">
+					<option value="${filmDir.id}" selected>${filmDir.fio}</option>
+				</c:when>
+				<c:otherwise>
+					<option value="${filmDir.id}">${filmDir.fio}</option>
+				</c:otherwise>
+			</c:choose>			
 		</c:forEach>
 	</select>
 </div>
@@ -114,7 +124,14 @@
 		data-style="btn-primary" data-live-search="true"
 		title="${chooseActors}">
 		<c:forEach var="actor" items="${requestScope.listActors}">
-			<option value="${actor.id}">${actor.fio}</option>
+			<c:choose>
+				<c:when test="${sessionScope.film.actors.contains(actor)}">
+						<option value="${actor.id}" selected>${actor.fio}</option>
+				</c:when>
+				<c:otherwise>
+						<option value="${actor.id}">${actor.fio}</option>
+				</c:otherwise>
+			</c:choose>	
 		</c:forEach>
 	</select>
 </div>
@@ -122,17 +139,24 @@
 	<h3>${filmDescription}</h3>
 	<p>
 		<textarea name="description" placeholder="${filmDescriptionPlace}"
-			cols="38" rows="8" maxlength="500"></textarea>
+			cols="38" rows="8" maxlength="500" >${sessionScope.film.description}</textarea>
 	</p>
 </div>
 <div class="row-offset">
 	<div>
-		<input id="uploadFile" name="image" placeholder="${chooseImage}"
-			readonly />
+		<div id="imageForFilm">
+			<c:if test="${sessionScope.film != null}">
+					<span>Current image</span>
+					<img src="${sessionScope.film.image}" alt="${sessionScope.film.name}" width="200" height="250"/>
+			</c:if>
+		</div>
+		<input id="uploadFile" name="image" placeholder="${chooseImage}" 
+		value="${fn:replace(sessionScope.film.image,'images/', '')}" readonly />
 		<div class="fileUpload btn btn-primary">
-			<span> <span
-				class="icon-span-filestyle glyphicon glyphicon-folder-open">
-			</span>${chooseImage}</span> <input id="uploadBtn" name="file" type="file"
+			<span> 
+			<span class="icon-span-filestyle glyphicon glyphicon-folder-open">
+			</span>${chooseImage}</span> 
+			<input id="uploadBtn" name="file" type="file"
 				class="upload" onchange="showFileName(this.value);" />
 		</div>
 	</div>
