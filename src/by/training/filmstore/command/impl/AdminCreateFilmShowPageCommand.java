@@ -32,13 +32,14 @@ public class AdminCreateFilmShowPageCommand implements Command {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession sessionCheckRole = request.getSession(false);
-		if((sessionCheckRole == null) || (!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_ADMIN"))){
+		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+			return;
 		}
 		
-		HttpSession session = request.getSession(true);
+		
 		String query = QueryUtil.createHttpQueryString(request);
-		session.setAttribute(CommandParamName.PREV_QUERY, query);
+		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);
 		
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
 		ActorService actorService = filmStoreServiceFactory.getActorService();

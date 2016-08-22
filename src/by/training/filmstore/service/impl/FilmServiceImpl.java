@@ -164,22 +164,21 @@ public class FilmServiceImpl implements FilmService {
 	}
 
 	@Override
-	public void updateFilmActor(String filmId, List<Short> idActors) throws FilmStoreServiceException,
+	public void updateFilmActor(short filmId, List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreServiceException,
 			FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException {
-		if(!ValidationParamUtil.notEmpty(filmId)){
-			throw new FilmStoreServiceIncorrectFilmParamException("Film id is empty!");
-		}
-		short id = Validation.varalidateNumber(filmId);
-		if (id==-1) {
+		if (filmId<=0) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect id film!");
 		}
-		if ((idActors == null) || (idActors.isEmpty())) {
-			throw new FilmStoreServiceIncorrectFilmParamException("Film hasn't any actors!");
+		if ((idNewActors == null) || (idNewActors.isEmpty())) {
+			throw new FilmStoreServiceIncorrectFilmParamException("List new actors is null or empty!");
+		}
+		if((idOldActors==null)||(idOldActors.isEmpty())){
+			throw new FilmStoreServiceIncorrectFilmParamException("List old actors is null or empty!");
 		}
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
 		try {
-			if (!filmDAO.updateFilmActor(id, idActors)) {
+			if (!filmDAO.updateFilmActor(filmId, idNewActors,idOldActors)) {
 				throw new FilmStoreServiceInvalidFilmOperException("Can't update film_actor table!");
 			}
 		} catch (FilmStoreDAOException e) {
@@ -192,6 +191,27 @@ public class FilmServiceImpl implements FilmService {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public void deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreServiceException,												FilmStoreServiceIncorrectFilmParamException,
+		FilmStoreServiceIncorrectFilmParamException,FilmStoreServiceInvalidFilmOperException {
+		if(filmId<=0){
+			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect film id!");
+		}
+		if((idActors==null)||(idActors.isEmpty())){
+			throw new FilmStoreServiceIncorrectFilmParamException("List actors is empty!");
+		}
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
+		
+		try {
+			if(!filmDAO.deleteFilmActor(filmId,idActors)){
+				throw new FilmStoreServiceException("Deleting records in film_actor table failed!");
+			}
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+	}
+	
 	private Film validateFilm(String name, String genre, String country, String yearOfRelease, String quality,
 			String filmDirId, String description, String price, String countFilms, String image) 
 					throws FilmStoreServiceIncorrectFilmParamException{

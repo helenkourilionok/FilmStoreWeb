@@ -12,7 +12,7 @@ public interface FilmDAO extends AbstractDAO<Film, Short>{
 	List<Film> findFilmByGenre(String genre) throws FilmStoreDAOException;
 	List<Film> findFilmByName(String name) throws FilmStoreDAOException;
 	boolean createFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException;
-	boolean updateFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException;
-	boolean deleteFilmActor(Short filmId) throws FilmStoreDAOException;
+	boolean updateFilmActor(short filmId,List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreDAOException;
+	boolean deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException;
 	boolean findActorFilmDirectorForFilm(Film film) throws FilmStoreDAOException;
 }

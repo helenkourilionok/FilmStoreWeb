@@ -36,7 +36,8 @@ public class FilmDAOImpl implements FilmDAO {
 	private static final String SQL_UPDATE_FILM_ACTOR = 
 			"update film_actor  SET film_actor.act_id = ? where film_actor.fm_id = ? and film_actor.act_id = ?";
 	private static final String SQL_DELETE = "DELETE FROM film WHERE film.fm_uid = ?";
-	private static final String SQL_DELETE_FILM_ACTOR = "DELETE FROM film_actor WHERE film_actor.fm_id = ?";
+	private static final String SQL_DELETE_FILM_ACTOR = "DELETE FROM film_actor WHERE "
+			+ "film_actor.fm_id = ? and film_actor.act_id=?";
 	
 	private static final String SQL_FIND_ALL = "select "+
 			"film.fm_uid,film.fm_name,film.fm_genre,film.fm_country,"+
@@ -91,13 +92,12 @@ public class FilmDAOImpl implements FilmDAO {
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
 		boolean success = false;
-		boolean createOper = true;
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_INSERT_FILM_ACTOR);
 
-			fillBatchForExecute(filmId,idActors, prepStatement,createOper);
+			fillBatchForExecute(filmId,idActors, prepStatement);
 
 			int[] results = prepStatement.executeBatch();
 
@@ -118,18 +118,17 @@ public class FilmDAOImpl implements FilmDAO {
 	}
 
 	@Override
-	public boolean updateFilmActor(short filmId, List<Short> idActors) throws FilmStoreDAOException {
+	public boolean updateFilmActor(short filmId, List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreDAOException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
 		boolean success = false;
-		boolean createOper = false;
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_UPDATE_FILM_ACTOR);
 
-			fillBatchForExecute(filmId,idActors, prepStatement,createOper);
+			fillBatchForExecute(filmId,idNewActors, idOldActors,prepStatement);
 
 			int[] results = prepStatement.executeBatch();
 
@@ -150,7 +149,7 @@ public class FilmDAOImpl implements FilmDAO {
 	}
 	
 	@Override
-	public boolean deleteFilmActor(Short filmId) throws FilmStoreDAOException {
+	public boolean deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
@@ -160,13 +159,11 @@ public class FilmDAOImpl implements FilmDAO {
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_DELETE_FILM_ACTOR);
 
-			prepStatement.setShort(1, filmId);
+			fillBatchForExecute(filmId,idActors, prepStatement);
 
-			int affectedRows = prepStatement.executeUpdate();
+			int[] results = prepStatement.executeBatch();
 
-			if (affectedRows != 0) {
-				success = true;
-			}
+			success = isBatchExecuteSuccessful(results);
 
 		} catch (SQLException | PoolConnectionException e) {
 			logger.error("Error creating of PreparedStatement.Can't fill film_actor table", e);
@@ -426,19 +423,23 @@ public class FilmDAOImpl implements FilmDAO {
 		}
 	}
 
-	private void fillBatchForExecute(short filmId,List<Short> idActors, PreparedStatement prepStatement,boolean createOper) throws SQLException {
-		int index1 = createOper?1:2;
-		int index2 = createOper?2:1;
+	private void fillBatchForExecute(short filmId,List<Short> idActors, PreparedStatement prepStatement) throws SQLException {
 		for (Short id : idActors) {
-			prepStatement.setShort(index1,filmId);
-			prepStatement.setShort(index2, id);
-			if(!createOper){
-				prepStatement.setShort(3, id);
-			}
+			prepStatement.setShort(1,filmId);
+			prepStatement.setShort(2, id);
 			prepStatement.addBatch();
 		}
 	}
 
+	private void fillBatchForExecute(short filmId,List<Short> idNewActors, List<Short>  idOldActors,PreparedStatement prepStatement) throws SQLException{
+		for(int i=0;i<idNewActors.size();i++){
+			prepStatement.setShort(1,idNewActors.get(i));
+			prepStatement.setShort(2, filmId);
+			prepStatement.setShort(3, idOldActors.get(i));
+			prepStatement.addBatch();
+		}
+	}
+	
 	private boolean isBatchExecuteSuccessful(int[] results) {
 		boolean success = false;
 		int countUpdatedRows = 0;

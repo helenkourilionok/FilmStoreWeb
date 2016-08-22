@@ -29,8 +29,8 @@
 <fmt:message bundle="${locale}" key="locale.nav.login" var="login" />
 <header class="row">
 	<div class="col-md-12">
-		<a href="#"><img src="images/logo.png" alt="FilmStore logo"></a>
-		<a href="#" class="basket">${basket}<span class="badge">${sessionScope.countFilmInBasket}</span></a>
+		<a href="Controller?command=show_list_film"><img src="images/logo.png" alt="FilmStore logo"></a>
+		<a href="Controller?command=make_order_show_page" class="basket">${basket}<span class="badge">${sessionScope.countFilmInBasket}</span></a>
 		<ul class="language">
 			<li><a href="Controller?command=change_language&language=ru"
 				id="ru"><img src="images/russia.png" alt="Russian" /></a></li>

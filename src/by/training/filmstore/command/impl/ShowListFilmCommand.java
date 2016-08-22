@@ -77,7 +77,7 @@ public class ShowListFilmCommand implements Command {
 			request.setAttribute(LIST_FILM_ATTR, listFilm);
 			request.setAttribute(PAGE_INFO, pageInfo);
 			
-			session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountValuesInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
+			session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodsInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
 			
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX).forward(request, response);
 

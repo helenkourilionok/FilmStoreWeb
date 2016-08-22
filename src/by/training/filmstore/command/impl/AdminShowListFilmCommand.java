@@ -40,16 +40,14 @@ public class AdminShowListFilmCommand implements Command {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
-		HttpSession session = request.getSession(true);
+		HttpSession sessionCheckRole = request.getSession(false);
+		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+			return;
+		}
 
 		String query = QueryUtil.createHttpQueryString(request);
-		session.setAttribute(CommandParamName.PREV_QUERY, query);
-		
-		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)
-				|| (!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_ADMIN"))) {
-			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
-		}
+		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);
 		
 		FilmStoreServiceFactory filmStoreServiceFactoryImpl = FilmStoreServiceFactory.getServiceFactory();
 		FilmService filmService = filmStoreServiceFactoryImpl.getFilmService();

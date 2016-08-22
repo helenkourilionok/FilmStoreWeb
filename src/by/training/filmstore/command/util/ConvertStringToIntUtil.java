@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 public final class ConvertStringToIntUtil {
 	
 	public static int getIntFromString(String value) {
-		if (value == null) {
+		if ((value == null)||(value.isEmpty())) {
 			return -1;
 		}
 		try {
@@ -17,7 +17,7 @@ public final class ConvertStringToIntUtil {
 	
 	public static int getIntFromString(HttpServletRequest request, String nameParam) {
 		String strParam = request.getParameter(nameParam);
-		if (strParam == null) {
+		if ((strParam == null)||(nameParam.isEmpty())) {
 			return -1;
 		}
 		try {

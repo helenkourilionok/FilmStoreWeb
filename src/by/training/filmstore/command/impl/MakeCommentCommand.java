@@ -35,9 +35,11 @@ public class MakeCommentCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		HttpSession session = request.getSession(false);
-		if((session == null) || (session.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_GUEST"))){
+		if((session == null)||(session.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+			return;
 		}
+	
 		
 		String filmId = request.getParameter(FILM_ID);
 		String content = request.getParameter(CONTENT);

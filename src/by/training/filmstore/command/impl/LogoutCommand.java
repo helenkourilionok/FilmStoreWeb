@@ -14,9 +14,13 @@ public class LogoutCommand implements Command {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-		HttpSession session = request.getSession(true);
-		session.invalidate();
-		request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
+		HttpSession session = request.getSession(false);
+		if((session!=null)&&(!session.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))){
+			session.invalidate();
+			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
+		}else{
+			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+		}
 	}
 
 }

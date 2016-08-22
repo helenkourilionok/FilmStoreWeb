@@ -56,6 +56,7 @@ public class CommentServiceImpl implements CommentService {
 		if(!ValidationParamUtil.validateEmail(userEmail, permissibleEmailLength)){
 			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect user email!");
 		}
+		System.out.println(filmId);
 		if(!ValidationParamUtil.notEmpty(filmId)){
 			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect film id!");
 		}

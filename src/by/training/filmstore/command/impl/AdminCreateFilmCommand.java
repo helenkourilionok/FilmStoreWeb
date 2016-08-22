@@ -43,9 +43,10 @@ public class AdminCreateFilmCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)
-				|| (!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_ADMIN"))) {
+		if ((sessionCheckRole == null)||
+		(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+			return;
 		}
 		
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
@@ -74,7 +75,7 @@ public class AdminCreateFilmCommand implements Command {
 				idActors = EditFilmUtil.strToListShort(listActors);
 				film = filmService.create(name, genres, countries, yearOfRel, quality, filmDirId, description, price, countFilms, image);
 				filmService.createFilmActor(film.getId(), idActors);
-				response.sendRedirect(prev_query);
+				request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 			}
 			else{
 				request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);

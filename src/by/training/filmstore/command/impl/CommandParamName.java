@@ -15,10 +15,12 @@ public final class CommandParamName {
 	final static String PATH_PAGE_SIGNUP = "jsp/signup.jsp";
 	final static String PATH_ERROR_PAGE = "error-page.jsp";
 	final static String PATH_FILM_WITH_COMMENT_PAGE="jsp/film.jsp";
+	final static String PATH_MAKE_ORDER_PAGE = "jsp/order.jsp";
 		/******Path to admin jsp pages*****/
 		final static String PATH_CREATE_FILM_PAGE = "jsp/filmCreate.jsp";
 		final static String PATH_UPDATE_FILM_PAGE = "jsp/filmUpdate.jsp";
 		final static String PATH_LIST_FILM_PAGE = "jsp/listFilm.jsp";
+		final static String PATH_SUCCESS_PAGE = "jsp/successfulOp.jsp";
 		/******Path to admin jsp pages*****/
 	/*****Path to jsp pages************/
 	final static String[] listCountries = {"США","Англия","Япония",
@@ -28,5 +30,8 @@ public final class CommandParamName {
 									"Криминал","Детектив","Фантастика","Боевик","Ужасы","Биография"
 									,"Мистика","Мультфильм","Исторический","Документальный"};
 	final static String[] listQuality = {"DVDRip","CAMPRip","WEB-DL","WEB-DLRip"};
+	final static String[] listKindOfDelivery = {"По почте","Самовывоз","Курьером","Другой вариант"};
+	final static String[] listKindOfPayment = {"Карточкой","Наличными"};
 	final static int MAX_AGE_COOKIE = 3600 * 24 * 30;
+	final static String DEFAULT_ADDRESS_OF_DELIVERY = "ул. Сурганова дом 35";
 }

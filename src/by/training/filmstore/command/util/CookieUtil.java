@@ -18,8 +18,8 @@ public final class CookieUtil {
 		}
 		return value;
 	}
-	
-	public static int getCountValuesInCookie(HttpServletRequest httpServletRequest,String prefix){
+
+	public static int getCountGoodsInCookie(HttpServletRequest httpServletRequest,String prefix){
 		Cookie[] listCookies = httpServletRequest.getCookies();
 		int count = 0;
 		if(prefix == null){
@@ -27,9 +27,29 @@ public final class CookieUtil {
 		}
 		for (Cookie cookie : listCookies) {
 			if (cookie.getName().contains(prefix)) {
-				count++;
+			    count = count + ConvertStringToIntUtil.getIntFromString(cookie.getValue());
 			}
 		}
 		return count;
+	}
+
+	public static Cookie getCookie(HttpServletRequest request, String name) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(name)) {
+                    return cookie;
+                }
+            }
+        }
+        return null;
+    }
+	
+	public static void showArrayCookies(HttpServletRequest httpServletRequest,String prefix){
+		Cookie[] listCookies = httpServletRequest.getCookies();
+		for (Cookie cookie : listCookies) {
+			if (cookie.getName().contains(prefix)) {
+			   System.out.println(cookie.getName()+"-"+cookie.getValue());;
+			}
+		}
 	}
 }

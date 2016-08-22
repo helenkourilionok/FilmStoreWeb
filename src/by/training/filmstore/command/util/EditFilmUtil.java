@@ -17,6 +17,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 public final class EditFilmUtil {
 	
+	private final static String IMAGE_FOLDER = "/images/";
 	private final static String ENCODING = "UTF-8";
 	private final static String IMAGE = "image";
 	
@@ -43,23 +44,16 @@ public final class EditFilmUtil {
 
 		try{
 			if (isMultipart) {
-	
+
 				FileItemFactory factory = new DiskFileItemFactory();
 				ServletFileUpload upload = new ServletFileUpload(factory);
 				List<FileItem> multiparts = upload.parseRequest(request);
 				for (FileItem item : multiparts) {
-					if (item.isFormField()) {
-						processFormField(item, listParamValue);
-					} else {
-						if(!item.getName().isEmpty()){
-							UUID id = UUID.randomUUID();
-							String fileUID = id.toString().replaceAll("-","");
-							String fileUID10 = fileUID.substring(0, 10)+"_";
-							String imageUploadPath = request.getServletContext().getRealPath("/images/"+ fileUID10+item.getName());
-							processUploadedFile(request,item,imageUploadPath);
-							listParamValue.put(IMAGE, "images/"+ fileUID10 + item.getName());
+						if (item.isFormField()) {
+							processFormField(item, listParamValue);
+						} else {
+							processFileField(request,item,listParamValue);
 						}
-					}
 				}
 			}
 		}catch(Exception e){
@@ -68,30 +62,12 @@ public final class EditFilmUtil {
 		
 		return listParamValue;
 	}
-
-	private static boolean isFileExist(HttpServletRequest request,String filename){
-		String imageUploadPath = request.getServletContext().getRealPath("/images/"+filename);
-		File uploadedFile = new File(imageUploadPath);
-		if(uploadedFile.exists()){
-			return true;
-		}
-		return false;
-	}
 	
-	private static void processUploadedFile(HttpServletRequest request,FileItem item, String uploadPath) throws Exception {
-		if(isFileExist(request, item.getName())){
-			return;
-		}
-		File uploadedFile = new File(uploadPath);
-		item.write(uploadedFile);
-	}
-
 	private static void processFormField(FileItem item, Map<String, String> listParamValue)
 			throws UnsupportedEncodingException {
 
 		String key = item.getFieldName();
 		String value = item.getString(ENCODING);
-		System.out.println(key+"  "+value);
 		if (listParamValue.containsKey(key)) {
 			String oldValue = listParamValue.get(key);
 			listParamValue.put(key, oldValue + "," + value);
@@ -99,4 +75,33 @@ public final class EditFilmUtil {
 			listParamValue.put(key, value);
 		}
 	}
+	
+	private static void processFileField(HttpServletRequest request,FileItem item,Map<String,String> listParamValue) throws Exception{
+		if(!item.getName().isEmpty()){
+			UUID id = UUID.randomUUID();
+			String fileUID = id.toString().replaceAll("-","");
+			String fileUID10 = fileUID.substring(0, 10)+"_";
+			String imageUploadPath = request.getServletContext().getRealPath(IMAGE_FOLDER+ fileUID10+item.getName());
+				if(processUploadedFile(request,item,imageUploadPath)){
+					listParamValue.put(IMAGE, "images/"+ fileUID10 + item.getName());
+				}
+		}
+	}
+	
+	private static boolean processUploadedFile(HttpServletRequest request,FileItem item, String uploadPath) throws Exception {
+		if(isFileExist(request, item.getName())){
+			return false;//because file isn't uploaded
+		}
+		File uploadedFile = new File(uploadPath);
+		item.write(uploadedFile);
+		return true;//if file is uploaded
+	}
+
+	private static boolean isFileExist(HttpServletRequest request,String filename){
+		String imageUploadPath = request.getServletContext().getRealPath(IMAGE_FOLDER+filename);
+		File uploadedFile = new File(imageUploadPath);
+		return uploadedFile.exists();
+	}
+
+	
 }

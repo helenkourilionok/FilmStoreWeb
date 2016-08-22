@@ -58,7 +58,7 @@
 </div>
 <div class="row-offset">
 	<select name="quality" class="selectpicker" data-style="btn-primary"
-		data-live-search="true" title="${chooseQuality}">
+	    title="${chooseQuality}">
 		<c:forEach var="quality" items="${requestScope.listQuality}">
 			<c:choose>
 				<c:when test="${sessionScope.film.quality.getNameQuality().equals(quality)}">
@@ -120,7 +120,7 @@
 	</select>
 </div>
 <div class="row-offset">
-	<select name="list_actors" multiple multiple class="selectpicker"
+	<select name="list_actors" multiple class="selectpicker"
 		data-style="btn-primary" data-live-search="true"
 		title="${chooseActors}">
 		<c:forEach var="actor" items="${requestScope.listActors}">

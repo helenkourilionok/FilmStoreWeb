@@ -75,7 +75,7 @@
 						      </c:if>
 						      <br/>
 						    </div>
-						    <div class="form-group" style="margin-bottom:40px">
+						    <div class="form-group" style="margin-bottom:30px">
 						    	<button type="submit" class="btn btn-primary">${login}</button>
 						    </div>
 						    <div style="margin-bottom:10px">

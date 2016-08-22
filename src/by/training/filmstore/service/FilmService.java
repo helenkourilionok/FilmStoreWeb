@@ -27,10 +27,13 @@ public interface FilmService {
 					throws FilmStoreServiceIncorrectFilmParamException,
 					FilmStoreServiceInvalidFilmOperException,
 							FilmStoreServiceException;
-	void updateFilmActor(String filmId,List<Short> idActors) throws FilmStoreServiceException,
+	void updateFilmActor(short filmId,List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreServiceException,
 													FilmStoreServiceIncorrectFilmParamException,
 													FilmStoreServiceInvalidFilmOperException;
 	void delete(short id) throws FilmStoreServiceException;
+	void deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreServiceException,
+												FilmStoreServiceIncorrectFilmParamException,
+												FilmStoreServiceInvalidFilmOperException;
 	Film find(String id, boolean lazyInit) throws FilmStoreServiceException, 
 									FilmStoreServiceIncorrectFilmParamException,
 									FilmStoreServiceFilmNotFoundException;

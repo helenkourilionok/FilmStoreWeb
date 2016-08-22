@@ -13,7 +13,7 @@ public enum CommandName {
 	SHOW_COMMENT_PAGE,
 	MAKE_COMMENT,
 	PUT_IN_BASKET,
-	MAKE_ORDER,
+	MAKE_ORDER_SHOW_PAGE,
 	/*admin commands*/
 	A_CREATE_FILM_SHOW_PAGE, 
 	A_CREATE_FILM,

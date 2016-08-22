@@ -125,7 +125,7 @@ public class ActorDAOImpl implements ActorDAO {
 		case UPDATE: {
 			prepStatement = connection.prepareStatement(SQL_UPDATE);
 			prepStatement.setString(1, ((Actor) parametr).getFio());
-			prepStatement.setShort(1, ((Actor) parametr).getId());
+			prepStatement.setShort(2, ((Actor) parametr).getId());
 		}
 			break;
 		case DELETE: {

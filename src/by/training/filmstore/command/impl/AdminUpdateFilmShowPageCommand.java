@@ -40,14 +40,13 @@ public class AdminUpdateFilmShowPageCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)
-				|| (!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).equals("ROLE_ADMIN"))) {
+		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+			return;
 		}
 		
-		HttpSession session = request.getSession(true);
 		String query = QueryUtil.createHttpQueryString(request);
-		session.setAttribute(CommandParamName.PREV_QUERY, query);
+		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);
 		
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
 		FilmService filmService = filmStoreServiceFactory.getFilmService();
@@ -69,7 +68,7 @@ public class AdminUpdateFilmShowPageCommand implements Command {
 		    request.setAttribute(LIST_COUNTRIES, CommandParamName.listCountries);
 		    request.setAttribute(LIST_GENRES,CommandParamName.listGenres);
 		    request.setAttribute(LIST_QUALITY, CommandParamName.listQuality);
-		    session.setAttribute(FILM, film);
+		    sessionCheckRole.setAttribute(FILM, film);
 			request.getRequestDispatcher(CommandParamName.PATH_UPDATE_FILM_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);

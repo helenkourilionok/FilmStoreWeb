@@ -111,7 +111,7 @@
 									<form method="post">
 										<div style="margin: 10px 30px">
 											<button type="submit" class="btn btn-primary"
-											formaction="Controller?command=make_order" 
+											formaction="Controller?command=make_order_show_page" 
 											id="order">${makeOrder}</button>
 										</div>
 									</form>
@@ -197,7 +197,7 @@
 										<input type="hidden" name="command" value="make_comment" /> 
 										<input type="hidden" name="userEmail"
 											   value="${sessionScope.userEmail}" /> 
-										<input type="hidden" name="filmId" value="${sessionScope.film.id}" />
+										<input type="hidden" name="filmId" value="${sessionScope.filmInfo.id}" />
 										<p>
 											<textarea name="content" placeholder="${yourComment}"
 												cols="38" rows="8" maxlength="300"></textarea>
