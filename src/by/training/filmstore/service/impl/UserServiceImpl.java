@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
 		if (phone == null) {
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect phone!");
 		}
-		BigDecimal balanceBD = Validation.validateBalance(balance);
+		BigDecimal balanceBD = ValidationParamUtil.validateBalance(balance);
 		if (balanceBD == null) {
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect balance!");
 		}
@@ -126,17 +126,5 @@ public class UserServiceImpl implements UserService {
 			}
 			return phoneDB;
 		}
-
-		static BigDecimal validateBalance(String balance) {
-			if (!ValidationParamUtil.notEmpty(balance)) {
-				return null;
-			}
-			try {
-				return new BigDecimal(balance.replaceAll(" ", ""));
-			} catch (NumberFormatException e) {
-				return null;
-			}
-		}
-
 	}
 }

@@ -64,7 +64,7 @@
 	var="filmCreationFailedMes" />
 <fmt:message bundle="${locale}" key="locale.filmedit.updatingFilmFailed"
 	var="updatingFilmFailedMes" />
-<fmt:message bundle="${locale}" key="locale.filmedie.incorrectParams"
+<fmt:message bundle="${locale}" key="locale.filmedit.incorrectParams"
 	var="incorrectParamsMes" />
 </head>
 <body>

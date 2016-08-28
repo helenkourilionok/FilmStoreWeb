@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -19,12 +16,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
-import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.command.util.CookieUtil;
 import by.training.filmstore.command.util.QueryUtil;
 import by.training.filmstore.entity.Film;
-import by.training.filmstore.entity.GoodOfOrder;
-import by.training.filmstore.entity.GoodOfOrderPK;
 import by.training.filmstore.entity.KindOfDelivery;
 import by.training.filmstore.entity.KindOfPayment;
 import by.training.filmstore.entity.Order;
@@ -48,17 +42,14 @@ public class MakeOrderShowPageCommand implements Command {
 		
 		HttpSession sessionCheckRole = request.getSession(false);
 		if ((sessionCheckRole == null)||(sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))) {
-			System.out.println("srfsfsf");
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 			return;
 		}
 		
-		System.out.println(sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"));
-		
 		String query = QueryUtil.createHttpQueryString(request);
 		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);
 	
-		Map<Short,Short> mapIdFilmCountFilm = getMapIdCountFromCookies(request, CommandParamName.COOKIE_PREFIX_FOR_ORDER);
+		Map<Short,Short> mapIdFilmCountFilm = CookieUtil.getMapIdCountFromCookies(request, CommandParamName.COOKIE_PREFIX_FOR_ORDER);
 		List<Film> listFilm = new ArrayList<>();
 		boolean lazyInit = true;
 		String userEmail = (String)sessionCheckRole.getAttribute(CommandParamName.USER_EMAIL);
@@ -72,17 +63,16 @@ public class MakeOrderShowPageCommand implements Command {
 					listFilm.add(filmFromCookie);
 			}
 			Order order = createOrder(userEmail, mapIdFilmCountFilm, listFilm);
-			Short[] countOrderedFilm = (Short[])mapIdFilmCountFilm.values().toArray();
-			CookieUtil.showArrayCookies(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER);
 			
-			request.setAttribute(LIST_FILMS, listFilm);
-			request.setAttribute(ORDER, order);
+			Short[] countOrderedFilm = new Short[mapIdFilmCountFilm.size()];
+			mapIdFilmCountFilm.values().toArray(countOrderedFilm);
+	
 			request.setAttribute(COUNT_ORDERED_FILM, countOrderedFilm);
-			//use this in order page
+			request.setAttribute(ORDER, order);
+			
+			sessionCheckRole.setAttribute(LIST_FILMS, listFilm);
+			
 			request.getRequestDispatcher(CommandParamName.PATH_MAKE_ORDER_PAGE).forward(request, response);
-			//pagination
-			//make in Cookie util method for get goodOfOrders using cookies
-	        //goodOfOredr for each cookie
 		} catch (FilmStoreServiceException e) {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}catch(FilmStoreServiceIncorrectFilmParamException e){
@@ -93,24 +83,6 @@ public class MakeOrderShowPageCommand implements Command {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
 		
-	}
-
-	
-	private Map<Short,Short> getMapIdCountFromCookies(HttpServletRequest request,String prefix){
-		Map<Short,Short> mapIdCountFilm = new HashMap<>();
-		Cookie[] cookies = request.getCookies();
-		String replacement = "";
-		for(Cookie cookie:cookies){
-			if (cookie.getName().contains(prefix)) {
-				String cookieName = cookie.getName();
-				String filmId = cookieName.replaceAll(prefix,replacement);
-				short id = (short)ConvertStringToIntUtil.getIntFromString(filmId);
-				short countFilm = (short)ConvertStringToIntUtil.getIntFromString(cookie.getValue());
-				mapIdCountFilm.put(id,countFilm);
-				System.out.println(filmId);
-			}
-		}
-		return mapIdCountFilm;
 	}
 
 	private Order createOrder(String userEmail,Map<Short,Short> mapIdFilmCountFilm,List<Film> listFilm){
@@ -140,22 +112,5 @@ public class MakeOrderShowPageCommand implements Command {
 		}
 		return commonPrice;
 	}
-	
-	//we don't need use this method becouse of map<short,short>
-	//move to make order command
-	private List<GoodOfOrder> makeListGoodsFromCookies(HttpServletRequest request,
-			String prefix,int idOrder,short idFilm){
-		List<GoodOfOrder> listGoods = new ArrayList<>();
-		Cookie[] cookies = request.getCookies();
-		for(Cookie cookie:cookies){
-			if (cookie.getName().contains(prefix)) {
-				byte countFilms = (byte)ConvertStringToIntUtil.getIntFromString(cookie.getValue());
-				GoodOfOrderPK goodPK = new GoodOfOrderPK();
-				goodPK.setIdFilm(idFilm);
-				goodPK.setIdOrder(idOrder);
-				listGoods.add(new GoodOfOrder(goodPK,countFilms));
-			}
-		}
-		return listGoods;
-	}
+
 }

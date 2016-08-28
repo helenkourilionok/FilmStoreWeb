@@ -10,6 +10,8 @@ public abstract class FilmStoreDAOFactory {
 	public abstract CommentDAO getCommentDAO();
 	public abstract ActorDAO getActorDAO();
 	public abstract FilmDirectorDAO getFilmDirectorDAO();
+	public abstract OrderDAO getOrderDAO();
+	public abstract GoodOfOrderDAO getGoodOfOrderDAO();
 	
 	public static FilmStoreDAOFactory getDAOFactory(){
 		return filmStoreDAOFactoryImpl;

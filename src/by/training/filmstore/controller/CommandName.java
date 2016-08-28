@@ -14,6 +14,7 @@ public enum CommandName {
 	MAKE_COMMENT,
 	PUT_IN_BASKET,
 	MAKE_ORDER_SHOW_PAGE,
+	MAKE_ORDER,
 	/*admin commands*/
 	A_CREATE_FILM_SHOW_PAGE, 
 	A_CREATE_FILM,

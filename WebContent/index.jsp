@@ -64,6 +64,8 @@
 	var="actors" />
 <fmt:message bundle="${locale}" key="locale.showfilm.makeComment"
 	var="makeComment" />
+<fmt:message bundle="${locale}" key="locale.filmpage.putInBasket"
+	var="putInBasket" />
 <fmt:message bundle="${locale}" key="locale.index.noneFilmWasFound"
 	var="noneFilmWasFound" />
 </head>
@@ -87,7 +89,7 @@
 							<div class="mosaic-block bar">
 									<div class="mosaic-overlay">
 										<form method="post">
-											<button title="${makeComment}" type="submit"
+											<button title="${putInBasket}" type="submit"
 												class="btn btn-default btn-default-custom"
 												formaction="Controller?command=put_in_basket&id=${film.id}">
 												<span class="glyphicon glyphicon-shopping-cart"></span>

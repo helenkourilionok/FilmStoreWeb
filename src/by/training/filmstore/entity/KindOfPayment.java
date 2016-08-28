@@ -3,7 +3,7 @@ package by.training.filmstore.entity;
 public enum KindOfPayment {
 	PAYMENT_IN_CASH("наличными"),PAYMENT_BY_CARD("банковская карта");
 	private final String nameKindOfPAyment;
-	public String getNameKindOfPAyment()
+	public String getNameKindOfPayment()
 	{
 		return nameKindOfPAyment;
 	}

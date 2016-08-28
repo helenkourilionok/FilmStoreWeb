@@ -30,8 +30,6 @@ public final class CommandParamName {
 									"Криминал","Детектив","Фантастика","Боевик","Ужасы","Биография"
 									,"Мистика","Мультфильм","Исторический","Документальный"};
 	final static String[] listQuality = {"DVDRip","CAMPRip","WEB-DL","WEB-DLRip"};
-	final static String[] listKindOfDelivery = {"По почте","Самовывоз","Курьером","Другой вариант"};
-	final static String[] listKindOfPayment = {"Карточкой","Наличными"};
 	final static int MAX_AGE_COOKIE = 3600 * 24 * 30;
 	final static String DEFAULT_ADDRESS_OF_DELIVERY = "ул. Сурганова дом 35";
 }

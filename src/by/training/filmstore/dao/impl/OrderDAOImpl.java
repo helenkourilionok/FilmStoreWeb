@@ -145,7 +145,7 @@ public class OrderDAOImpl implements OrderDAO {
 		preparedStatement.setBigDecimal(2, entity.getCommonPrice());
 		preparedStatement.setString(3, entity.getStatus().getNameStatus());
 		preparedStatement.setString(4, entity.getKindOfDelivery().getNameKindOfDelivery());
-		preparedStatement.setString(5, entity.getKindOfPayment().getNameKindOfPAyment());
+		preparedStatement.setString(5, entity.getKindOfPayment().getNameKindOfPayment());
 		preparedStatement.setDate(6, entity.getDateOfOrder());
 		preparedStatement.setDate(7, entity.getDateOfDelivery());
 		preparedStatement.setString(8, entity.getAddress());
@@ -158,7 +158,9 @@ public class OrderDAOImpl implements OrderDAO {
 		if(commandDAO == CommandDAO.INSERT){
 			ResultSet resultset = prepStatement.getGeneratedKeys();
 			if (resultset != null && resultset.next()) {
+				System.out.println("generated keys");
 				order.setId(resultset.getInt(1));
+				System.out.println("generated keys"+order.getId());
 			}
 		}
 	}

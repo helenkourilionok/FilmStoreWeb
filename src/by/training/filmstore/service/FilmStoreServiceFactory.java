@@ -12,6 +12,8 @@ public abstract class FilmStoreServiceFactory {
 	public abstract CommentService getCommentService();
 	public abstract ActorService getActorService();
 	public abstract FilmDirectorService getFilmDirectorService();
+	public abstract OrderService getOrderService();
+	public abstract GoodOfOrderService getGoodOfOrderService();
 	
 	public static FilmStoreServiceFactory getServiceFactory(){
 		return filmStoreServiceFactoryImpl;

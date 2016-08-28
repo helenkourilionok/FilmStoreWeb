@@ -15,6 +15,7 @@ import by.training.filmstore.command.impl.LoginShowPageCommand;
 import by.training.filmstore.command.impl.LoginationCommand;
 import by.training.filmstore.command.impl.LogoutCommand;
 import by.training.filmstore.command.impl.MakeCommentCommand;
+import by.training.filmstore.command.impl.MakeOrderCommand;
 import by.training.filmstore.command.impl.MakeOrderShowPageCommand;
 import by.training.filmstore.command.impl.PoolConnectionDestroyCommand;
 import by.training.filmstore.command.impl.PoolConnectionInitCommand;
@@ -44,6 +45,7 @@ public final class CommandHelper {
 		commands.put(CommandName.MAKE_COMMENT, new MakeCommentCommand());
 		commands.put(CommandName.PUT_IN_BASKET,new PutInBasketCommand());
 		commands.put(CommandName.MAKE_ORDER_SHOW_PAGE,new MakeOrderShowPageCommand());
+		commands.put(CommandName.MAKE_ORDER, new MakeOrderCommand());
 		//создавать отдельно список картинок и по индексу писать в поток ту или иную картинку
 		commands.put(CommandName.A_CREATE_FILM, new AdminCreateFilmCommand());
 		commands.put(CommandName.A_CREATE_FILM_SHOW_PAGE, new AdminCreateFilmShowPageCommand());

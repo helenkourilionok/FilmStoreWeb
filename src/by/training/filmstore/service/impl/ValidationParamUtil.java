@@ -1,5 +1,6 @@
 package by.training.filmstore.service.impl;
 
+import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,4 +53,16 @@ public final class ValidationParamUtil {
 		return matcher.matches();
 	}
 
+	static BigDecimal validateBalance(String balance) {
+		if (!ValidationParamUtil.notEmpty(balance)) {
+			return null;
+		}
+		try {
+			return new BigDecimal(balance.replaceAll(" ", ""));
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	
 }
