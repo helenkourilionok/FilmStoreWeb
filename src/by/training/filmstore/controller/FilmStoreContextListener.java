@@ -2,6 +2,7 @@ package by.training.filmstore.controller;
 
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
@@ -18,9 +19,11 @@ public final class FilmStoreContextListener implements ServletContextListener {
 	
 	private final static String INIT_POOL_CONNECTION = "INIT_POOL_CONNECTION";
 	private final static String DESTROY_POOL_CONNECTION = "DESTROY_POOL_CONNECTION";
+
+	
 	
 	@Override
-	public void contextDestroyed(ServletContextEvent arg0) {
+	public void contextDestroyed(ServletContextEvent event) {
 		CommandHelper commandHelper = CommandHelper.getInstance();
 		Command command = commandHelper.getCommand(DESTROY_POOL_CONNECTION);
 		try {
@@ -31,7 +34,9 @@ public final class FilmStoreContextListener implements ServletContextListener {
 	}
 
 	@Override
-	public void contextInitialized(ServletContextEvent arg0) {
+	public void contextInitialized(ServletContextEvent event) {
+		ServletContext context = event.getServletContext();
+		CommandLoader.loadCommand(context);
 		CommandHelper commandHelper = CommandHelper.getInstance();
 		Command command = commandHelper.getCommand(INIT_POOL_CONNECTION);
 		try {

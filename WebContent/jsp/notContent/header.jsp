@@ -37,7 +37,7 @@
 				id="ru"><img src="images/russia.png" alt="Russian" /></a></li>
 			<li><a href="Controller?command=change_language&language=en"
 				id="en"><img src="images/usa.png" alt="English" /></a></li>
-			<li><a>${sessionScope.userEmail}</a></li>
+			<li><a href="Controller?command=personal_info_show">${sessionScope.userEmail}</a></li>
 			<c:if test="${sessionScope.userRole !='ROLE_GUEST'}">
 				<li><a href="Controller?command=logout">${logout}</a></li>
 			</c:if>

@@ -29,7 +29,7 @@ public class PutInBasketCommand implements Command {
 		countFilms = countFilms == -1?1:++countFilms;
 
 		Cookie cookie = CookieUtil.getCookie(request, CommandParamName.COOKIE_PREFIX_FOR_ORDER+filmId);
-		//it's necessary check count films because of film's number on stock
+
 		if (cookie != null) {
 		    cookie.setValue(String.valueOf(countFilms));
 		    cookie.setMaxAge(CommandParamName.MAX_AGE_COOKIE);

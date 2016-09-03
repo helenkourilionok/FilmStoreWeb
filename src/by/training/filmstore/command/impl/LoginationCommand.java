@@ -71,7 +71,8 @@ public class LoginationCommand implements Command {
 		UserService userService = filmStoreServiceFactoryImpl.getUserService();
 
 		User user = userService.authorisation(email, password);
-
+		
+		httpSession.setAttribute(CommandParamName.DISCOUNT, user.getDiscount());
 		httpSession.setAttribute(CommandParamName.USER_EMAIL, user.getEmail());
 		httpSession.setAttribute(CommandParamName.USER_ROLE, user.getRole().name());
 

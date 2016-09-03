@@ -51,7 +51,7 @@ public class MakeOrderShowPageCommand implements Command {
 	
 		Map<Short,Short> mapIdFilmCountFilm = CookieUtil.getMapIdCountFromCookies(request, CommandParamName.COOKIE_PREFIX_FOR_ORDER);
 		List<Film> listFilm = new ArrayList<>();
-		boolean lazyInit = true;
+		boolean lazyInit = false;
 		String userEmail = (String)sessionCheckRole.getAttribute(CommandParamName.USER_EMAIL);
 		
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
@@ -62,7 +62,7 @@ public class MakeOrderShowPageCommand implements Command {
 					Film filmFromCookie = filmService.find(id.toString(), lazyInit);
 					listFilm.add(filmFromCookie);
 			}
-			Order order = createOrder(userEmail, mapIdFilmCountFilm, listFilm);
+			Order order = createOrder(userEmail, mapIdFilmCountFilm, listFilm,sessionCheckRole);
 			
 			Short[] countOrderedFilm = new Short[mapIdFilmCountFilm.size()];
 			mapIdFilmCountFilm.values().toArray(countOrderedFilm);
@@ -70,6 +70,7 @@ public class MakeOrderShowPageCommand implements Command {
 			request.setAttribute(COUNT_ORDERED_FILM, countOrderedFilm);
 			request.setAttribute(ORDER, order);
 			
+			sessionCheckRole.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodsInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
 			sessionCheckRole.setAttribute(LIST_FILMS, listFilm);
 			
 			request.getRequestDispatcher(CommandParamName.PATH_MAKE_ORDER_PAGE).forward(request, response);
@@ -85,22 +86,25 @@ public class MakeOrderShowPageCommand implements Command {
 		
 	}
 
-	private Order createOrder(String userEmail,Map<Short,Short> mapIdFilmCountFilm,List<Film> listFilm){
+	private Order createOrder(String userEmail,Map<Short,Short> mapIdFilmCountFilm,List<Film> listFilm,HttpSession session){
 		LocalDate dateOfDelivery = LocalDate.now();
 		dateOfDelivery = dateOfDelivery.plusMonths(1);
+		Long discount = ((Byte)session.getAttribute(CommandParamName.DISCOUNT)).longValue();
 		Order order = new Order();
 		order.setUserEmail(userEmail);
 		order.setStatus(Status.UNPAID);
-		order.setCommonPrice(calculateCommonPriceForOrder(mapIdFilmCountFilm, listFilm));
+		order.setCommonPrice(calculateCommonPriceForOrder(mapIdFilmCountFilm, listFilm,discount));
 		order.setKindOfDelivery(KindOfDelivery.SELFDELIVERY);
 		order.setKindOfPayment(KindOfPayment.PAYMENT_IN_CASH);
 		order.setAddress(CommandParamName.DEFAULT_ADDRESS_OF_DELIVERY);
 		order.setDateOfDelivery(java.sql.Date.valueOf(dateOfDelivery));
 		return order;
 	}
-	
-	private BigDecimal calculateCommonPriceForOrder(Map<Short,Short> mapIdFilmCountFilm,List<Film> listFilm){
+	//!!!!!
+	private BigDecimal calculateCommonPriceForOrder(Map<Short,Short> mapIdFilmCountFilm,List<Film> listFilm,Long discount){
 		BigDecimal commonPrice = new BigDecimal(0);
+		BigDecimal _discount = new BigDecimal(discount);
+		BigDecimal hundred = new BigDecimal(100);
 		for(Film film:listFilm){
 			short countFilm = mapIdFilmCountFilm.get(film.getId());
 			if(countFilm>film.getCountFilms()){
@@ -110,6 +114,9 @@ public class MakeOrderShowPageCommand implements Command {
 			BigDecimal buf = BigDecimal.valueOf(countFilm);
 			commonPrice = commonPrice.add(film.getPrice().multiply(buf));
 		}
+		BigDecimal mul = commonPrice.multiply(_discount);
+		BigDecimal intermResult = mul.divide(hundred);
+		commonPrice = commonPrice.subtract(intermResult);
 		return commonPrice;
 	}
 

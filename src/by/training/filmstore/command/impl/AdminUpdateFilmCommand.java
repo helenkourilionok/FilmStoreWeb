@@ -51,7 +51,7 @@ public class AdminUpdateFilmCommand implements Command {
 
 		HttpSession sessionCheckRole = request.getSession(false);
 		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
-			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
+			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}
 		

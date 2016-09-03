@@ -63,12 +63,25 @@ public final class CookieUtil {
 		Cookie tempCookie = null;
 		
 		for(int i = 0;i<cookies.length;i++){
-			if(cookies[i].getValue().contains(prefix)){
-				tempCookie = new Cookie(cookies[i].getName(),null);
-				
+			if(cookies[i].getName().contains(prefix)){
+				tempCookie = new Cookie(cookies[i].getName(),"");
 				tempCookie.setMaxAge(0);
 				
 				response.addCookie(tempCookie);
+			}
+		}
+	}
+	
+	public static void removeOrderCookies(HttpServletRequest request,
+			HttpServletResponse response,String prefix,String filmId){
+		Cookie[] cookies = request.getCookies();
+		Cookie tempCookie = null;
+		for(int i = 0;i<cookies.length;i++){
+			if(cookies[i].getName().equals(prefix+filmId)){
+				tempCookie = new Cookie(cookies[i].getName(),"");
+				tempCookie.setMaxAge(0);
+				response.addCookie(tempCookie);
+				break;
 			}
 		}
 	}

@@ -1,9 +1,11 @@
 package by.training.filmstore.service.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.UserDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
@@ -13,6 +15,7 @@ import by.training.filmstore.service.UserService;
 import by.training.filmstore.service.exception.FilmStoreServiceAuthException;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
 import by.training.filmstore.service.exception.FilmStoreServiceIncorrectUserParamException;
+import by.training.filmstore.service.exception.FilmStoreServiceInvalidUserOperException;
 
 public class UserServiceImpl implements UserService {
 
@@ -45,6 +48,78 @@ public class UserServiceImpl implements UserService {
 	public User create(String email, String password, String copyPass, String lastName, String firstName,
 			String patronimic, String mobilePhone, String balance)
 			throws FilmStoreServiceException, FilmStoreServiceIncorrectUserParamException {
+		User user = validateUser(email, password, copyPass, lastName, 
+				firstName, patronimic, mobilePhone, balance);
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
+		try {
+			userDAO.create(user);
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		return user;
+	}
+
+	@Override
+	public void makeDiscount(String sizeOfDiscount, String year, String month, String countOrders)
+			throws FilmStoreServiceIncorrectUserParamException, FilmStoreServiceInvalidUserOperException,
+			FilmStoreServiceException {
+		int[] arrResults = validateParamForMakeDiscount(sizeOfDiscount, year, month, countOrders);
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
+
+		try {
+			if(!userDAO.makeDiscount((byte)arrResults[0],arrResults[1],arrResults[2],(byte)arrResults[3])){
+				throw new FilmStoreServiceInvalidUserOperException("Operation failed!Can't make discount for users!");
+			}
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+	}
+	
+	@Override
+	public User find(String id) throws FilmStoreServiceException, FilmStoreServiceIncorrectUserParamException {
+		int permissibleEmailLength = 40;
+		if(!ValidationParamUtil.validateEmail(id,permissibleEmailLength)){
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect user email!");
+		}
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
+		
+		User user = null; 
+		
+		try {
+			user = userDAO.find(id);
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		
+		return user;
+	}
+	
+	@Override
+	public List<User> findUserForMakeDiscount(String year, String month, String countOrders) throws FilmStoreServiceException,
+			FilmStoreServiceIncorrectUserParamException, FilmStoreServiceInvalidUserOperException {
+		String stub = "0";
+		int[] arrResults = validateParamForMakeDiscount(stub, year, month, countOrders);
+		List<User> listUser = null;
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
+		
+		try {
+			listUser = userDAO.findUserForMakeDiscount(arrResults[1],arrResults[2],(byte)arrResults[3]);
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		
+		return listUser;
+	}
+	
+	private User validateUser(String email, String password, String copyPass, String lastName, String firstName,
+			String patronimic, String mobilePhone, String balance) throws FilmStoreServiceIncorrectUserParamException{ 
 		int permissibleEmailLength = 40;
 		byte discount = 0;
 		if (!ValidationParamUtil.validateEmail(email, permissibleEmailLength)) {
@@ -70,18 +145,31 @@ public class UserServiceImpl implements UserService {
 		if (balanceBD == null) {
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect balance!");
 		}
-		User user = new User(email, password, Role.ROLE_USER, lastName, firstName, patronimic, phone, balanceBD,
+		return new User(email, password, Role.ROLE_USER, lastName, firstName, patronimic, phone, balanceBD,
 				discount);
-		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
-		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
-		try {
-			userDAO.create(user);
-		} catch (FilmStoreDAOException e) {
-			throw new FilmStoreServiceException(e);
-		}
-		return user;
 	}
-
+	
+	private int[] validateParamForMakeDiscount(String sizeOfDiscount, String year, String month, String countOrders) throws FilmStoreServiceIncorrectUserParamException{
+		byte _sizeOfDiscount = (byte)ConvertStringToIntUtil.getIntFromString(sizeOfDiscount);
+		if(_sizeOfDiscount == -1){
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect size of discount!");
+		}
+		int _year = ConvertStringToIntUtil.getIntFromString(year);
+		if(_year == -1){
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect year!");
+		}
+		int _month = ConvertStringToIntUtil.getIntFromString(month);
+		if(_month == -1){
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect month!");
+		}
+		byte _countOrders = (byte)ConvertStringToIntUtil.getIntFromString(countOrders);
+		if(_countOrders == -1){
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect count of orders!");
+		}
+		int[] arrResults = new int[]{_sizeOfDiscount,_year,_month,_countOrders};
+		return arrResults;
+	}
+	
 	static class Validation {
 
 		private static final String PASSWORD_PATTERN = "^[a-zA-Z0-9#@%=\\-\\>\\<\\?\\.\\!\\(\\)\\+\\|\\*]{8,40}$";

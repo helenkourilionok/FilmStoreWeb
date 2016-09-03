@@ -2,6 +2,7 @@
 	contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,6 +95,9 @@
 <fmt:message bundle="${locale}" key="locale.order.confirmOrder" var="confirmOrder" />
 <fmt:message bundle="${locale}" key="locale.order.commonPrice" var="commonPrice" />
 <fmt:message bundle="${locale}" key="locale.order.customer" var="customer" />
+<fmt:message bundle="${locale}" key="locale.order.illegalAddress" var="illegalAddress" />
+<fmt:message bundle="${locale}" key="locale.order.notNum" var="notNum" />
+<fmt:message bundle="${locale}" key="locale.order.discount" var="discount" />
 </head>
 <body>
 	<div class="wrapper container">
@@ -105,126 +109,130 @@
 			<section class="col-md-9">
 				<div class="row">
 					<c:choose>
-					    <c:when test="${sessionScope.locale == 'ru'}">
-					       <c:set var="language" scope="session" value="return validateAddress('ru');"/>
-					    </c:when>
-					    <c:when test="${sessionScope.locale == 'en'}">
-					        <c:set var="language" scope="session" value="return validateAddress('en');"/>
-					    </c:when>
-					      <c:otherwise>
-						    <c:set var="language" scope="session" value="return validateAddress('ru');"/>
-					    </c:otherwise>
-					</c:choose>	
-					<form method="post" action="Controller" name="order" onsubmit="${language}">
-						<input type="hidden" name="command" value="make_order" />
-						<div class="col-md-8">
-							<table class="table table-condensed" id="films">
-								<tbody>
-									<c:forEach var="film" items="${sessionScope.listFilm}"
-										varStatus="loopIndex">
-										<tr>
-											<td style="width: 20%"><img src="${film.image}"
-												alt="${film.name}" width="100" height="150"></td>
-											<td style="width: 45%">${film.name}(${film. yearOfRelease})</td>
-											<td style="width: 15%">
-											<select class="form-control" id="${loopIndex.index+1}" onchange="calcPrice(this,${film.id},'orderFilm')">
-													<c:forEach var="count" begin="1" end="${film.countFilms}">
-														<c:choose>
-															<c:when
-																test="${count == countOrderedFilm[loopIndex.index]}">
-																<option value="${count}" selected>${count}</option>
-															</c:when>
-															<c:otherwise>
-																<option value="${count}">${count}</option>
-															</c:otherwise>
-														</c:choose>
-													</c:forEach>
-											</select></td>
-											<td style="width: 15%">${film.price}</td>
-											<td style="width: 5%"><a href="#"> <span
-													class="glyphicon glyphicon-trash"></span>
-											</a></td>
-										</tr>
-									</c:forEach>
-								</tbody>
-							</table>
-						</div>
-						<div class="col-md-4">
-							<div class="form-group">
-								<label for="userEmail">${customer}:</label> 
-								<input type="text"
-									class="form-control" id="userEmail" name="userEmail"
-									value="${requestScope.order.userEmail}" readonly />
+						<c:when test="${(sessionScope.listFilm!=null)&&(fn:length(sessionScope.listFilm) > 0)}" >
+							<form method="post" action="Controller" name="order" onsubmit="return validateAddress();">
+							<input type="hidden" name="command" value="make_order" />
+							<div class="col-md-8">
+								<table class="table table-condensed" id="films">
+									<tbody>
+										<c:forEach var="film" items="${sessionScope.listFilm}"
+											varStatus="loopIndex">
+											<tr>
+												<td style="width: 20%"><img src="${film.image}"
+													alt="${film.name}" width="100" height="150"></td>
+												<td style="width: 45%">${film.name}(${film. yearOfRelease})</td>
+												<td style="width: 15%">
+												<select class="form-control" id="${loopIndex.index+1}" onchange="calcPrice(this,${film.id},'orderFilm')">
+														<c:forEach var="count" begin="1" end="${film.countFilms}">
+															<c:choose>
+																<c:when
+																	test="${count == countOrderedFilm[loopIndex.index]}">
+																	<option value="${count}" selected>${count}</option>
+																</c:when>
+																<c:otherwise>
+																	<option value="${count}">${count}</option>
+																</c:otherwise>
+															</c:choose>
+														</c:forEach>
+												</select></td>
+												<td style="width: 15%">${film.price}</td>
+												<td style="width: 5%"><a href="Controller?command=remove_film_from_basket&id=${film.id}"> 
+												<span
+														class="glyphicon glyphicon-trash"></span>
+												</a></td>
+											</tr>
+										</c:forEach>
+									</tbody>
+								</table>
 							</div>
-							<div class="form-group">
-								<label for="commonPrice">${commonPrice}:</label> <input
-									type="text" class="form-control" id="commonPrice"
-									name="commonPrice" value="${requestScope.order.commonPrice}"
-									readonly />
-							</div>
-							<div class="form-group">
-								<label for="status">${status}:</label> 
-								<input type="text" class="form-control" id="status" name="status"
-									value="${requestScope.order.status.getNameStatus()}" readonly />
-							</div>
-							<c:set var="kindOfDelivery" value="${requestScope.order.kindOfDelivery.name()}" />
-							<c:choose>
-								<c:when test="${kindOfDelivery.equals('MAILING')}">
-									<c:set var="mailing" value="selected"/>
-								</c:when>
-								<c:when test="${kindOfDelivery.equals('COURIER')}">
-									<c:set var="courier" value="selected"/>
-								</c:when>
-								<c:when test="${kindOfDelivery.equals('SELFDELIVERY')}">
-									<c:set var="selfdelivery" value="selected"/>
-								</c:when>
-								<c:when test="${kindOfDelivery.equals('ANOTHER')}">
-									<c:set var="another" value="selected"/>
-								</c:when>
-							</c:choose>
-							<div class="form-group">
-								<select name="kindOfDelivery" class="selectpicker"
-									data-style="btn-primary" title="${chooseKindOfDelivery}">
-									<option value='MAILING' ${mailing}>${mailing}</option>
-									<option value='COURIER' ${courier}>${courier}</option>
-									<option value='SELFDELIVERY' ${selfdelivery}>${selfDelivery}</option>
-									<option value='ANOTHER' ${another}>${another}</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="payment">${payment}:</label> <br>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label for="userEmail">${customer}:</label> 
+									<input type="text"
+										class="form-control" id="userEmail" name="userEmail"
+										value="${requestScope.order.userEmail}" readonly />
+								</div>
+								<div class="form-group">
+									<label for="discount">${discount}:</label> 
+									<input type="text" class="form-control" id="discount" name="discount"
+										value="${sessionScope.discount}" readonly />
+								</div>
+								<div class="form-group">
+									<label for="commonPrice">${commonPrice}:</label> <input
+										type="text" class="form-control" id="commonPrice"
+										name="commonPrice" value="${requestScope.order.commonPrice}"
+										readonly />
+								</div>
+								<div class="form-group">
+									<label for="status">${status}:</label> 
+									<input type="text" class="form-control" id="status" name="status"
+										value="${requestScope.order.status.getNameStatus()}" readonly />
+								</div>
+								<c:set var="kindOfDelivery" value="${requestScope.order.kindOfDelivery.name()}" />
 								<c:choose>
-									<c:when
-										test="${requestScope.order.kindOfPayment.getNameKindOfPayment() == 'наличными'}">
-										<input type="radio" name="payment" checked value="PAYMENT_IN_CASH" />${payInCash}
-												<br>
-										<input type="radio" name="payment" value="PAYMENT_BY_CARD" />${payByCard}
+									<c:when test="${kindOfDelivery.equals('MAILING')}">
+										<c:set var="mailing" value="selected"/>
 									</c:when>
-									<c:otherwise>
-										<input type="radio" name="payment" value="PAYMENT_IN_CASH" />${payInCash}
-												<br>
-										<input type="radio" name="payment" checked value="PAYMENT_BY_CARD" />${payByCard}
-									</c:otherwise>
+									<c:when test="${kindOfDelivery.equals('COURIER')}">
+										<c:set var="courier" value="selected"/>
+									</c:when>
+									<c:when test="${kindOfDelivery.equals('SELFDELIVERY')}">
+										<c:set var="selfdelivery" value="selected"/>
+									</c:when>
+									<c:when test="${kindOfDelivery.equals('ANOTHER')}">
+										<c:set var="another" value="selected"/>
+									</c:when>
 								</c:choose>
+								<div class="form-group">
+									<select name="kindOfDelivery" class="selectpicker"
+										data-style="btn-primary" title="${chooseKindOfDelivery}">
+										<option value='MAILING' ${mailing}>${mailing}</option>
+										<option value='COURIER' ${courier}>${courier}</option>
+										<option value='SELFDELIVERY' ${selfdelivery}>${selfDelivery}</option>
+										<option value='ANOTHER' ${another}>${another}</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="payment">${payment}:</label> <br>
+									<c:choose>
+										<c:when
+											test="${requestScope.order.kindOfPayment.getNameKindOfPayment() == 'наличными'}">
+											<input type="radio" name="payment" checked value="PAYMENT_IN_CASH" />${payInCash}
+													<br>
+											<input type="radio" name="payment" value="PAYMENT_BY_CARD" />${payByCard}
+										</c:when>
+										<c:otherwise>
+											<input type="radio" name="payment" value="PAYMENT_IN_CASH" />${payInCash}
+													<br>
+											<input type="radio" name="payment" checked value="PAYMENT_BY_CARD" />${payByCard}
+										</c:otherwise>
+									</c:choose>
+								</div>
+								<div class="form-group">
+									<label for="address">${address}:</label> <input type="text"
+										class="form-control" id="address" name="address"
+										value="${requestScope.order.address}"
+										placeholder="${chooseAddress}" />
+										<span id="address_empty_error" style="color:#eb6a5a;" hidden="true">${chooseAddress}</span>
+										<span id="address_illegal_error" style="color:#eb6a5a;" hidden="true">${illegalAddress}</span>
+										<span id="address_notnum_error" style="color:#eb6a5a;" hidden="true">${notNum}</span>
+								</div>
+								<fmt:formatDate pattern="dd/MM/yyyy" value="${requestScope.order.dateOfDelivery}" var="valDateOfDelivery" />
+								<div class="form-group">
+									<label for="dateOfDelivery">${dateOfDelivery}:</label> 
+									<input type="text" class="form-control" id="dateOfDelivery" 
+									name="dateOfDelivery" value="${valDateOfDelivery}" readonly />							
+								</div>
+								<div class="form-order form-order-commoninfo form-button-style" style="margin:2px">
+									<button class="i-button_primary " type="submit" >${confirmOrder}</button>
+								</div>
 							</div>
-							<div class="form-group">
-								<label for="address">${address}:</label> <input type="text"
-									class="form-control" id="address" name="address"
-									value="${requestScope.order.address}"
-									placeholder="${chooseAddress}" />
-									<span id="address_error" class="error"></span>
-							</div>
-							<fmt:formatDate pattern="dd/MM/yyyy" value="${requestScope.order.dateOfDelivery}" var="valDateOfDelivery" />
-							<div class="form-group">
-								<label for="dateOfDelivery">${dateOfDelivery}:</label> 
-								<input type="text" class="form-control" id="dateOfDelivery" 
-								name="dateOfDelivery" value="${valDateOfDelivery}" readonly />							
-							</div>
-							<div class="form-order form-order-commoninfo form-button-style" style="margin:2px">
-								<button class="i-button_primary " type="submit" >${confirmOrder}</button>
-							</div>
-						</div>
-					</form>
+						</form>
+						</c:when>
+						<c:otherwise>
+							<span>Basket is empty!Go to the <a href="Controller?command=show_list_film">index</a> page and choose film!</span>
+						</c:otherwise>
+					</c:choose>
 				</div>
 			</section>
 		</div>

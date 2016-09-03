@@ -46,9 +46,11 @@
 <fmt:setLocale value="${sessionScope.locale}" />
 <fmt:setBundle basename="localization.locale" var="locale" />
 <fmt:message bundle="${locale}" key="locale.operSuccess.operSuccess" var="operSuccess" />
-<fmt:message bundle="${locale}" key="locale.nav.home" var="home" />
-<fmt:message bundle="${locale}" key="locale.operSuccess.goTo" var="goTo" />
-<fmt:message bundle="${locale}" key="locale.operSuccess.page" var="page" />
+<fmt:message bundle="${locale}" key="locale.nav.login" var="login" />
+<fmt:message bundle="${locale}" key="locale.header.logout" var="logout" />
+<fmt:message bundle="${locale}" key="locale.accessDenied.andOr" var="andOr" />
+<fmt:message bundle="${locale}" key="locale.accessDenied.asAdministrator" var="asAdministrator" />
+<fmt:message bundle="${locale}" key="locale.accessDenied.accessDenied" var="accessDenied" />
 </head>
 <body>
 	<div class="wrapper container">
@@ -58,22 +60,19 @@
 		<div class="wrapper row">
 			<c:import url="notContent/aside.jsp" />
 			<section class="col-md-9">
-				<div class="row">
-					<div class="col-md-6 col-md-offset-3">
-						<img src="images/successfulOp.png" alt="Successful operation"
-							style="width: 85%; height: 85%;" />
+					<div class="row">
+						<div class="col-md-6 col-md-offset-3">				
+							<img src="images/accessDenied.jpg" alt="${accessDenied}" style="width:85%;height:85%;"/>
+						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-9 col-md-offset-3">
-						<h3>${operSuccess}</h3>
+					<div class="row">
+						<div class="col-md-9 col-md-offset-4">
+							<h3>${accessDenied}!</h3>
+						</div>
+						<div class="col-md-9 col-md-offset-3">
+							<h3><a href="Controller?command=logout">${logout}</a> ${andOr} <a href="Controller?command=login_show_page">${login}</a> ${asAdministrator}!</h3>
+						</div>
 					</div>
-					<div class="col-md-9 col-md-offset-4">
-						<h3>
-							${goTo} <a href="Controller?command=show_list_film">${home}</a>${page}
-						</h3>
-					</div>
-				</div>
 			</section>
 		</div>
 	</div>

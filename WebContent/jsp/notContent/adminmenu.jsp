@@ -28,7 +28,7 @@
 			<ul class="dropdown-menu">
 				<li><a href="#">${update}</a></li>
 				<li><a href="#">${delete}</a></li>
-				<li><a href="#">${makeDiscount}</a></li>
+				<li><a href="Controller?command=a_make_discount_show_page">${makeDiscount}</a></li>
 				<li><a href="#">${takeAwayDiscount}</a></li>
 				<li><a href="#">${listUsers}</a></li>
 			</ul></li>

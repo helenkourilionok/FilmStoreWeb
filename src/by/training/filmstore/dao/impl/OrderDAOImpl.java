@@ -40,7 +40,7 @@ public class OrderDAOImpl implements OrderDAO {
 	private static final String SQL_FIND_BY_STATUS = "select `order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
 			+ "`order`.ord_kind_of_delivery,`order`.ord_kind_of_payment,`order`.ord_date_of_order,"
 			+ "`order`.ord_date_of_delivery,`order`.ord_address from `order` where `order`.ord_status = ?";
-	private static final String SQL_FIND_EMAIL_USER = "select `order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
+	private static final String SQL_FIND_EMAIL_USER = "select `order`.ord_uid,`order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
 			+ "`order`.ord_kind_of_delivery,`order`.ord_kind_of_payment,`order`.ord_date_of_order,"
 			+ "`order`.ord_date_of_delivery,`order`.ord_address from `order` where `order`.ord_email_user = ?";
 
@@ -158,9 +158,7 @@ public class OrderDAOImpl implements OrderDAO {
 		if(commandDAO == CommandDAO.INSERT){
 			ResultSet resultset = prepStatement.getGeneratedKeys();
 			if (resultset != null && resultset.next()) {
-				System.out.println("generated keys");
 				order.setId(resultset.getInt(1));
-				System.out.println("generated keys"+order.getId());
 			}
 		}
 	}

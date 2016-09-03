@@ -3,7 +3,9 @@ package by.training.filmstore.service.impl;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.OrderDAO;
@@ -36,6 +38,28 @@ public class OrderServiceImpl implements OrderService {
 			throw new FilmStoreServiceException(e);
 		}
 		return order;
+	}
+	
+	@Override
+	public List<Order> findOrderByUserEmail(String userEmail)
+			throws FilmStoreServiceException, FilmStoreServiceIncorrectOrderParamException {
+		int permissibleEmailLength = 40;
+		if(!ValidationParamUtil.validateEmail(userEmail, permissibleEmailLength)){
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect user email!");
+		}
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
+		
+		List<Order> listOrder = null;
+		
+		try {
+			listOrder = orderDAO.findOrderByUserEmail(userEmail);
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		
+		return listOrder;
 	}
 	
 	private Order validateOrder(String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
@@ -77,7 +101,8 @@ public class OrderServiceImpl implements OrderService {
 	static class Validation{
 		
 		private final static String ADDRESS_PATTERN_EN = "^[a-zA-Z0-9\\s\\.\\,\\-]{7,40}$";
-		private static final String ADDRESS_PATTERN_RU = "^\\A[Р-пр-џ0-9\\s\\.\\,\\-]\\P{Alpha}{7,40}$";
+		private final static String ADDRESS_PATTERN_RU = "^\\A[Р-пр-џ0-9\\s\\.\\,\\-]\\P{Alpha}{7,40}$";
+		private final static String DATE_PATTERN = "dd/MM/uuuu";
 		
 		static Status validateStatus(String status) {
 			if (!ValidationParamUtil.notEmpty(status)) {
@@ -117,7 +142,8 @@ public class OrderServiceImpl implements OrderService {
 				return null;
 			}
 			try{ 
-				return LocalDate.parse(dateOfDelivery);
+				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+				return LocalDate.parse(dateOfDelivery,dateTimeFormatter);
 			}catch(DateTimeParseException e){
 				return null;
 			}

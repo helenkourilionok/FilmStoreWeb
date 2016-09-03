@@ -1,7 +1,6 @@
 package by.training.filmstore.command.impl;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import by.training.filmstore.command.Command;
 import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.command.util.CookieUtil;
-import by.training.filmstore.command.util.QueryUtil;
+
 import by.training.filmstore.entity.Film;
 import by.training.filmstore.entity.GoodOfOrder;
 import by.training.filmstore.entity.GoodOfOrderPK;
@@ -56,9 +55,6 @@ public class MakeOrderCommand implements Command {
 			return;
 		}
 
-		String query = QueryUtil.createHttpQueryString(request);
-		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);
-
 		List<GoodOfOrder> listGoods = null;
 		List<Film> listFilms = null;
 
@@ -73,7 +69,7 @@ public class MakeOrderCommand implements Command {
 			String prefix = CommandParamName.COOKIE_PREFIX_FOR_ORDER;
 			listGoods = makeListGoodsFromCookies(request, prefix,orderId);
 			createListGoods(listGoods, goodOfOrderService);
-			listFilms = (List<Film>) sessionCheckRole.getAttribute(LIST_FILMS);
+			listFilms = extractFilmsFromObject(sessionCheckRole.getAttribute(LIST_FILMS));
 			updateFilmsCount(listFilms, filmService, request);
 
 			CookieUtil.removeOrderCookies(request, response, prefix);
@@ -81,10 +77,12 @@ public class MakeOrderCommand implements Command {
 			sessionCheckRole.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET,0);
 			
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
-		} catch (FilmStoreServiceIncorrectOrderParamException |FilmStoreServiceIncorrectFilmParamException e) {
+		} catch (FilmStoreServiceIncorrectOrderParamException 
+				|FilmStoreServiceIncorrectFilmParamException e) {
 			logger.error("Invalid parametrs!", e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
-		} catch (FilmStoreServiceInvalidOrderOperException|FilmStoreServiceInvalidFilmOperException e) {
+		} catch (FilmStoreServiceInvalidOrderOperException
+				|FilmStoreServiceInvalidFilmOperException e) {
 			logger.error("Entity creation failed!", e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}catch (FilmStoreServiceIncorrectGoodParamException e) {
@@ -130,7 +128,6 @@ public class MakeOrderCommand implements Command {
 				GoodOfOrderPK goodPK = new GoodOfOrderPK();
 				goodPK.setIdFilm(idFilm);
 				goodPK.setIdOrder(idOrder);
-				System.out.println(goodPK.toString());
 				listGoods.add(new GoodOfOrder(goodPK, countFilms));
 			}
 		}
@@ -151,6 +148,20 @@ public class MakeOrderCommand implements Command {
 		}
 	}
 
+	private List<Film> extractFilmsFromObject(Object object) {
+		List<Film> films = new ArrayList<Film>();
+
+		if (object instanceof Iterable<?>) {
+			Iterable<?> iterable = (Iterable<?>) object;
+			for (Object i : iterable) {
+				if (i instanceof Film) {
+					films.add((Film) i);
+				}
+			}
+		}
+		return films;
+	}
+	
 	private void updateFilmsCount(List<Film> listFilms, FilmService filmService, HttpServletRequest request)
 			throws FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException,
 			FilmStoreServiceException {
