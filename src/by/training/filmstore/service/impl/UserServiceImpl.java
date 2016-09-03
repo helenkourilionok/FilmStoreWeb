@@ -79,6 +79,49 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
+	public User update(String email, String password, String copyPass, String lastName, String firstName,
+			String patronimic, String mobilePhone, String balance) throws FilmStoreServiceException,
+			FilmStoreServiceIncorrectUserParamException, FilmStoreServiceInvalidUserOperException {
+		
+		User user = validateUser(email, password, copyPass, lastName, 
+				firstName, patronimic, mobilePhone, balance);
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
+		
+		try {
+			userDAO.update(user);
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		
+		return user;
+	}
+	
+	@Override
+	public void changePassword(String email,String newPassword,String newCopyPassword) throws FilmStoreServiceException, FilmStoreServiceInvalidUserOperException,
+			FilmStoreServiceIncorrectUserParamException {
+		if (!ValidationParamUtil.notEmpty(email)) {
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect user email!");
+		}
+		if (!Validation.validatePassword(newPassword,newCopyPassword)) {
+			throw new FilmStoreServiceIncorrectUserParamException("Incorrect password!");
+		}
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
+		
+		try {
+			if(!userDAO.changePassword(email, newPassword)){
+				throw new FilmStoreServiceInvalidUserOperException("Can't update user password!");
+			}
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		
+	}
+	
+	@Override
 	public User find(String id) throws FilmStoreServiceException, FilmStoreServiceIncorrectUserParamException {
 		int permissibleEmailLength = 40;
 		if(!ValidationParamUtil.validateEmail(id,permissibleEmailLength)){
@@ -215,4 +258,5 @@ public class UserServiceImpl implements UserService {
 			return phoneDB;
 		}
 	}
+
 }

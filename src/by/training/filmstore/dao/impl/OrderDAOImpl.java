@@ -40,9 +40,9 @@ public class OrderDAOImpl implements OrderDAO {
 	private static final String SQL_FIND_BY_STATUS = "select `order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
 			+ "`order`.ord_kind_of_delivery,`order`.ord_kind_of_payment,`order`.ord_date_of_order,"
 			+ "`order`.ord_date_of_delivery,`order`.ord_address from `order` where `order`.ord_status = ?";
-	private static final String SQL_FIND_EMAIL_USER = "select `order`.ord_uid,`order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
+	private static final String SQL_FIND_EMAIL_USER_AND_STATUS = "select `order`.ord_uid,`order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
 			+ "`order`.ord_kind_of_delivery,`order`.ord_kind_of_payment,`order`.ord_date_of_order,"
-			+ "`order`.ord_date_of_delivery,`order`.ord_address from `order` where `order`.ord_email_user = ?";
+			+ "`order`.ord_date_of_delivery,`order`.ord_address from `order` where `order`.ord_email_user = ? and `order`.ord_status = ?";
 
 	@Override
 	public boolean create(Order entity) throws FilmStoreDAOException {
@@ -79,8 +79,11 @@ public class OrderDAOImpl implements OrderDAO {
 	}
 
 	@Override
-	public List<Order> findOrderByUserEmail(String userEmail) throws FilmStoreDAOException {
-		return findOrderByCriteria(userEmail, FindOrderCriteria.FIND_BY_USER_EMAIL);
+	public List<Order> findOrderByUserEmailAndStatus(String userEmail,String status) throws FilmStoreDAOException {
+		Order stub = new Order();
+		stub.setUserEmail(userEmail);
+		stub.setStatus(Status.getStatusByName(status));
+		return findOrderByCriteria(stub, FindOrderCriteria.FIND_BY_USER_EMAIL_AND_STATUS);
 	}
 
 	private <T> boolean updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException {
@@ -99,8 +102,9 @@ public class OrderDAOImpl implements OrderDAO {
 			if (affectedRows != 0) {
 				success = true;
 			}
-			
-			fillGeneratedIdIfInsert(commandDAO, prepStatement, (Order)parametr);
+			if(commandDAO == CommandDAO.INSERT){
+				fillGeneratedIdIfInsert(prepStatement, (Order)parametr);
+			}
 		} catch (SQLException | PoolConnectionException e) {
 			logger.error("Error creating of PreparedStatement.Operation failed ("+commandDAO.name()+")", e);
 			throw new FilmStoreDAOException(e);
@@ -154,13 +158,11 @@ public class OrderDAOImpl implements OrderDAO {
 		}
 	}
 	
-	private void fillGeneratedIdIfInsert(CommandDAO commandDAO,PreparedStatement prepStatement,Order order) throws SQLException{
-		if(commandDAO == CommandDAO.INSERT){
+	private void fillGeneratedIdIfInsert(PreparedStatement prepStatement,Order order) throws SQLException{
 			ResultSet resultset = prepStatement.getGeneratedKeys();
 			if (resultset != null && resultset.next()) {
 				order.setId(resultset.getInt(1));
 			}
-		}
 	}
 	
 	private <T> List<Order> findOrderByCriteria(T parametr, FindOrderCriteria criteria) throws FilmStoreDAOException {
@@ -214,9 +216,11 @@ public class OrderDAOImpl implements OrderDAO {
 			prepStatement.setString(1, (String) parametr);
 		}
 			break;
-		case FIND_BY_USER_EMAIL: {
-			prepStatement = connection.prepareStatement(SQL_FIND_EMAIL_USER);
-			prepStatement.setString(1, (String) parametr);
+		case FIND_BY_USER_EMAIL_AND_STATUS: {
+			prepStatement = connection.prepareStatement(SQL_FIND_EMAIL_USER_AND_STATUS);
+			Order stub = (Order)parametr;
+			prepStatement.setString(1,stub.getUserEmail());
+			prepStatement.setString(2, stub.getStatus().getNameStatus());
 		}
 			break;
 		}
@@ -238,7 +242,7 @@ public class OrderDAOImpl implements OrderDAO {
 	}
 
 	private enum FindOrderCriteria {
-		FIND_BY_ID, FIND_BY_USER_EMAIL, FIND_BY_STATUS, FIND_ALL
+		FIND_BY_ID, FIND_BY_USER_EMAIL_AND_STATUS, FIND_BY_STATUS, FIND_ALL
 	}
 
 }

@@ -1,7 +1,6 @@
 package by.training.filmstore.command.impl;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,54 +11,50 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
-import by.training.filmstore.command.util.QueryUtil;
 import by.training.filmstore.entity.Order;
-import by.training.filmstore.entity.Status;
 import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.OrderService;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
 import by.training.filmstore.service.exception.FilmStoreServiceIncorrectOrderParamException;
+import by.training.filmstore.service.exception.FilmStoreServiceInvalidOrderOperException;
 
-public class OrderForUserShowCommand implements Command {
+public final class AnnulOrderCommand implements Command {
 	
-	private final static Logger logger = LogManager.getLogger(OrderForUserShowCommand.class);
+	private final static Logger logger = LogManager.getLogger(AnnulOrderCommand.class);
 	
-	private final static String LIST_ORDER = "listOrder";
-	private final static String STATUS = "status";
+	private final static String ID = "id";
 
+	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
-		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||
-		(sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))) {
+		
+		HttpSession session = request.getSession(false);
+		if((session == null)||(session.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 			return;
 		}
-		
-		String query = QueryUtil.createHttpQueryString(request);
-		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);
+
+		String orderId = request.getParameter(ID);
+		Order order = null;
 		
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
 		OrderService orderService = filmStoreServiceFactory.getOrderService();
 		
-		String userEmail = (String)sessionCheckRole.getAttribute(CommandParamName.USER_EMAIL);
-		String status = request.getParameter(STATUS);
-		List<Order> listUserOrder = null;
-		
 		try {
-			listUserOrder = orderService.findOrderByUserEmailAndStatus(userEmail,Status.valueOf(status).getNameStatus());
-
-			request.setAttribute(LIST_ORDER, listUserOrder);
-			request.setAttribute(STATUS,Status.valueOf(status));
-			request.getRequestDispatcher(CommandParamName.PATH_PERSONAL_INFO).forward(request, response);
+			order = orderService.find(orderId);
+			orderService.update(order.getUserEmail(),order.getCommonPrice().toString(),order.getStatus().name(),order.getKindOfDelivery().name(), 
+					order.getKindOfPayment().name(),
+					order.getDateOfDelivery().toString(),
+					order.getDateOfOrder().toString(),order.getAddress());
 		} catch (FilmStoreServiceException e) {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectOrderParamException e) {
-			logger.error("Incorrect user email!",e);
+			logger.error("Incorrect order id!",e);
+			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
+		} catch (FilmStoreServiceInvalidOrderOperException e) {
+			logger.error("Invalid operation!Can't update order!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
-
 	}
 
 }

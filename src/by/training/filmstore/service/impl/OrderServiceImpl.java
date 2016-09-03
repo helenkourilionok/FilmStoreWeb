@@ -41,11 +41,62 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	@Override
-	public List<Order> findOrderByUserEmail(String userEmail)
+	public void update(String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
+			String dateOfDelivery, String dateOfOrder, String address) throws FilmStoreServiceException, FilmStoreServiceIncorrectOrderParamException,
+			FilmStoreServiceInvalidOrderOperException {
+		
+		LocalDate _dateOfDelivery = Validation.validateDate(dateOfOrder); 
+		if(_dateOfDelivery == null){
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect date of order!");
+		}
+		
+		Order order = validateOrder(userEmail, commonPrice, status, kindOfDelivery, kindOfPayment,
+				  dateOfDelivery, address);
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
+		
+		try {
+			if(!orderDAO.update(order)){
+				throw new FilmStoreServiceInvalidOrderOperException("Operation failed!Can't update film!");
+			}
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+	}
+
+	@Override
+	public Order find(String id) throws FilmStoreServiceException, FilmStoreServiceIncorrectOrderParamException {
+		
+		int _id = ValidationParamUtil.validateNumber(id);
+		if(_id == -1){
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect order id!");
+		}
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
+		
+		Order order = null;
+		
+		try {
+			order = orderDAO.find(_id);
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		
+		return order;
+	}
+	
+	@Override
+	public List<Order> findOrderByUserEmailAndStatus(String userEmail,String status)
 			throws FilmStoreServiceException, FilmStoreServiceIncorrectOrderParamException {
 		int permissibleEmailLength = 40;
 		if(!ValidationParamUtil.validateEmail(userEmail, permissibleEmailLength)){
 			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect user email!");
+		}
+		Status _status = Validation.validateStatus(status);
+		if(_status == null){
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect status of order!");
 		}
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
@@ -54,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
 		List<Order> listOrder = null;
 		
 		try {
-			listOrder = orderDAO.findOrderByUserEmail(userEmail);
+			listOrder = orderDAO.findOrderByUserEmailAndStatus(userEmail,status);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
 		}
@@ -85,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new FilmStoreServiceIncorrectOrderParamException("Invalid kind of payment!");
 		}
 		Date dateOfOrder = Date.valueOf(LocalDate.now());
-		LocalDate dateOfDel = Validation.validateDateOfDelivery(dateOfDelivery);
+		LocalDate dateOfDel = Validation.validateDate(dateOfDelivery);
 		if(dateOfDel == null){
 			throw new FilmStoreServiceIncorrectOrderParamException("Invalid date of delivery!");
 		}
@@ -137,7 +188,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 		
-		static LocalDate validateDateOfDelivery(String dateOfDelivery){
+		static LocalDate validateDate(String dateOfDelivery){
 			if (!ValidationParamUtil.notEmpty(dateOfDelivery)) {
 				return null;
 			}

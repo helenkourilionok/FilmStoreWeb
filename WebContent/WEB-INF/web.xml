@@ -68,7 +68,23 @@
     <context-param>
         <param-name>ORDER_FOR_USER_SHOW</param-name>
         <param-value>by.training.filmstore.command.impl.OrderForUserShowCommand</param-value>
-    </context-param>        
+    </context-param>    
+    <context-param>
+        <param-name>CHANGE_PASSWORD_SHOW_PAGE</param-name>
+        <param-value>by.training.filmstore.command.impl.ChangePasswordShowPageCommand</param-value>
+    </context-param>
+    <context-param>
+        <param-name>CHANGE_PASSWORD</param-name>
+        <param-value>by.training.filmstore.command.impl.ChangePasswordCommand</param-value>
+    </context-param>  
+    <context-param>
+        <param-name>PAY_ORDER</param-name>
+        <param-value>by.training.filmstore.command.impl.PayOrderCommand</param-value>
+    </context-param>     
+    <context-param>
+        <param-name>ANNUL_ORDER</param-name>
+        <param-value>by.training.filmstore.command.impl.AnnulOrderCommand</param-value>
+    </context-param> 
     <context-param>
         <param-name>A_CREATE_FILM_SHOW_PAGE</param-name>
         <param-value>by.training.filmstore.command.impl.AdminCreateFilmShowPageCommand</param-value>

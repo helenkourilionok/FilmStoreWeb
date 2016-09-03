@@ -8,5 +8,5 @@ import by.training.filmstore.entity.Status;
 
 public interface OrderDAO extends AbstractDAO<Order, Integer>{
 	List<Order> findOrderByStatus(Status status) throws FilmStoreDAOException;
-	List<Order> findOrderByUserEmail(String userEmail)throws FilmStoreDAOException;
+	List<Order> findOrderByUserEmailAndStatus(String userEmail,String status)throws FilmStoreDAOException;
 } 

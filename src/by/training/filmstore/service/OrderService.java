@@ -12,6 +12,12 @@ public interface OrderService {
 			String dateOfDelivery, String address) 
 			throws FilmStoreServiceIncorrectOrderParamException,
 			FilmStoreServiceInvalidOrderOperException, FilmStoreServiceException;
-	List<Order> findOrderByUserEmail(String userEmail) throws FilmStoreServiceException,
+	void update(String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
+			String dateOfDelivery, String dateOfOrder,String address) throws FilmStoreServiceException,
+						FilmStoreServiceIncorrectOrderParamException,
+						FilmStoreServiceInvalidOrderOperException;
+	Order find(String id) throws FilmStoreServiceException,
+									FilmStoreServiceIncorrectOrderParamException; 
+	List<Order> findOrderByUserEmailAndStatus(String userEmail,String status) throws FilmStoreServiceException,
 											FilmStoreServiceIncorrectOrderParamException;
 }

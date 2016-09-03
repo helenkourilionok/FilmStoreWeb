@@ -30,7 +30,9 @@ public interface FilmService {
 	void updateFilmActor(short filmId,List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreServiceException,
 													FilmStoreServiceIncorrectFilmParamException,
 													FilmStoreServiceInvalidFilmOperException;
-	void delete(short id) throws FilmStoreServiceException;
+	void delete(short id) throws FilmStoreServiceException,
+	FilmStoreServiceInvalidFilmOperException,
+	FilmStoreServiceIncorrectFilmParamException;
 	void deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreServiceException,
 												FilmStoreServiceIncorrectFilmParamException,
 												FilmStoreServiceInvalidFilmOperException;

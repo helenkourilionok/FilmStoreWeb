@@ -143,7 +143,7 @@ public class UserDAOImpl implements UserDAO {
 		return success;
 	}
 
-	public boolean changePassword(User user) throws FilmStoreDAOException {
+	public boolean changePassword(String email,String newPassword) throws FilmStoreDAOException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
@@ -152,8 +152,8 @@ public class UserDAOImpl implements UserDAO {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_CHANGE_PASSWORD);
-			prepStatement.setString(1, user.getPassword());
-			prepStatement.setString(2, user.getEmail());
+			prepStatement.setString(1,newPassword);
+			prepStatement.setString(2,email);
 			int affectedRows = prepStatement.executeUpdate();
 			if (affectedRows != 0) {
 				success = true;

@@ -79,7 +79,7 @@
 						    	<button type="submit" class="btn btn-primary">${login}</button>
 						    </div>
 						    <div style="margin-bottom:10px">
-						    	<a href="#">${forgotPass}</a>
+						    	<a href="Controller?command=change_password_show_page">${forgotPass}</a>
 						    </div>
 						</form>
 					</div>

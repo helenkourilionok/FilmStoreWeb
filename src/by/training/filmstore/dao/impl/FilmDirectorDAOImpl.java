@@ -87,8 +87,10 @@ public class FilmDirectorDAOImpl implements FilmDirectorDAO {
 			if (affectedRows != 0) {
 				success = true;
 			}
-
-			fillGeneratedIdIfInsert(commandDAO, prepStatement, (FilmDirector) parametr);
+			
+			if (commandDAO == CommandDAO.INSERT) {
+				fillGeneratedIdIfInsert(prepStatement, (FilmDirector) parametr);
+			}
 		} catch (SQLException | PoolConnectionException e) {
 			logger.error("Error creating of PreparedStatement.Operation failed (" + commandDAO.name() + ")", e);
 			throw new FilmStoreDAOException(e);
@@ -127,14 +129,12 @@ public class FilmDirectorDAOImpl implements FilmDirectorDAO {
 		return prepStatement;
 	}
 
-	private void fillGeneratedIdIfInsert(CommandDAO commandDAO, PreparedStatement prepStatement, FilmDirector filmDirector)
+	private void fillGeneratedIdIfInsert( PreparedStatement prepStatement, FilmDirector filmDirector)
 			throws SQLException {
-		if (commandDAO == CommandDAO.INSERT) {
 			ResultSet resultset = prepStatement.getGeneratedKeys();
 			if (resultset != null && resultset.next()) {
 				filmDirector.setId(resultset.getShort(1));
 			}
-		}
 	}
 	
 	private <T> List<FilmDirector> findFilmDirByCriteria(T parametr, FindFilmDirectorCriteria criteria) throws FilmStoreDAOException {

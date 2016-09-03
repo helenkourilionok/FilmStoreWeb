@@ -187,8 +187,23 @@ public class FilmServiceImpl implements FilmService {
 	}
 	
 	@Override
-	public void delete(short id) throws FilmStoreServiceException {
-		// TODO Auto-generated method stub
+	public void delete(short id) throws FilmStoreServiceException,
+	FilmStoreServiceInvalidFilmOperException,
+	FilmStoreServiceIncorrectFilmParamException{
+		if(id<=0){
+			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect film id!");
+		}
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
+		
+		try {
+			if(!filmDAO.delete(id)){
+				throw new FilmStoreServiceInvalidFilmOperException("Operation failed!Can't delete film!");
+			}
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
 	}
 
 	@Override

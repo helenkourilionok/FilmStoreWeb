@@ -14,12 +14,20 @@ public interface UserService {
 			String lastName, String firstName,
 			String patronimic, String mobilePhone, String balance) throws FilmStoreServiceException,
 											FilmStoreServiceIncorrectUserParamException;
+	User update(String email, String password, String copyPass,
+			String lastName, String firstName,
+			String patronimic, String mobilePhone, String balance) throws FilmStoreServiceException,
+											FilmStoreServiceIncorrectUserParamException,
+											FilmStoreServiceInvalidUserOperException;
 	User find(String id) throws FilmStoreServiceException,
 			FilmStoreServiceIncorrectUserParamException;
 	void makeDiscount(String sizeOfDiscount,String year,String month,
 			String countOrders) throws FilmStoreServiceIncorrectUserParamException,
 			FilmStoreServiceInvalidUserOperException,
 			FilmStoreServiceException;
+	void changePassword(String email,String newPassword,String newCopyPassword) throws FilmStoreServiceException,
+			FilmStoreServiceInvalidUserOperException,
+			FilmStoreServiceIncorrectUserParamException;
 	List<User> findUserForMakeDiscount(String year, String month, String countOrders) 
 			throws FilmStoreServiceException,FilmStoreServiceIncorrectUserParamException,
 			FilmStoreServiceInvalidUserOperException;

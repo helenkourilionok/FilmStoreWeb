@@ -45,6 +45,12 @@
 			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 			<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
 		<![endif]-->
+<fmt:setLocale value="${sessionScope.locale}" />
+<fmt:setBundle basename="localization.locale" var="locale" />
+<fmt:message bundle="${locale}" key="locale.errorPage.pageNotFound" var="pageNotFound" />
+<fmt:message bundle="${locale}" key="locale.errorPage.location" var="location" />
+<fmt:message bundle="${locale}" key="locale.nav.home" var="home" />
+<fmt:message bundle="${locale}" key="locale.errorPage.search" var="search" />
 </head>
 <body>
 	<div class="wrapper container">
@@ -57,12 +63,11 @@
 				<div class="pagenot">
 					<h2>404</h2>
 					<div class="pagenot-text">
-						<h3>Oops No template Found</h3>
+						<h3>${pageNotFound}</h3>
 					</div>
 					<p>
-						It looks like nothing was found at this location. Maybe try go to
-						<a href="index.html">home</a> page or use the search form above
-						this page?
+						${location}
+						<a href="Controller?command=show_list_film">${home}</a>${search} 
 					</p>
 				</div>
 			</section>

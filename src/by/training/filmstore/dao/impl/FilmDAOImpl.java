@@ -304,7 +304,9 @@ public class FilmDAOImpl implements FilmDAO {
 				success = true;
 			}
 
-			fillGeneratedIdIfInsert(commandDAO, prepStatement, (Film) parametr);
+			if (commandDAO == CommandDAO.INSERT) {
+				fillGeneratedIdIfInsert(prepStatement, (Film) parametr);
+			}
 		} catch (SQLException | PoolConnectionException e) {
 			logger.error("Error creating of PreparedStatement.Can't " + commandDAO.name() + " film", e);
 			throw new FilmStoreDAOException(e);
@@ -337,7 +339,7 @@ public class FilmDAOImpl implements FilmDAO {
 			break;
 		case DELETE: {
 			prepStatement = connection.prepareStatement(SQL_DELETE);
-			prepStatement.setString(1, (String) parametr);
+			prepStatement.setShort(1, (Short) parametr);
 		}
 			break;
 		}
@@ -457,14 +459,12 @@ public class FilmDAOImpl implements FilmDAO {
 		return success;
 	}
 
-	private void fillGeneratedIdIfInsert(CommandDAO commandDAO, PreparedStatement prepStatement, Film film)
+	private void fillGeneratedIdIfInsert(PreparedStatement prepStatement, Film film)
 			throws SQLException {
-		if (commandDAO == CommandDAO.INSERT) {
 			ResultSet resultset = prepStatement.getGeneratedKeys();
 			if (resultset != null && resultset.next()) {
 				film.setId(resultset.getShort(1));
 			}
-		}
 	}
 
 	private List<Actor> fillListActor(ResultSet resultSet) throws SQLException {

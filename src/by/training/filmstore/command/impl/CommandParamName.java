@@ -18,13 +18,14 @@ public final class CommandParamName {
 	final static String PATH_FILM_WITH_COMMENT_PAGE="jsp/film.jsp";
 	final static String PATH_MAKE_ORDER_PAGE = "jsp/order.jsp";
 	final static String PATH_MAKE_DISCOUNT_PAGE = "jsp/makeDiscount.jsp";
+	final static String PATH_CHANGE_PASSWORD = "jsp/changePassword.jsp";
+	final static String PATH_PERSONAL_INFO = "jsp/personalInfo.jsp";
 		/******Path to admin jsp pages*****/
 		final static String PATH_CREATE_FILM_PAGE = "jsp/filmCreate.jsp";
 		final static String PATH_UPDATE_FILM_PAGE = "jsp/filmUpdate.jsp";
 		final static String PATH_LIST_FILM_PAGE = "jsp/listFilm.jsp";
 		final static String PATH_SUCCESS_PAGE = "jsp/successfulOp.jsp";
 		final static String PATH_ACESS_DENIED_PAGE = "jsp/accessDenied.jsp";
-		final static String PATH_PERSONAL_INFO = "jsp/personalInfo.jsp";
 		/******Path to admin jsp pages*****/
 	/*****Path to jsp pages************/
 	final static String[] listCountries = {"США","Англия","Япония",
