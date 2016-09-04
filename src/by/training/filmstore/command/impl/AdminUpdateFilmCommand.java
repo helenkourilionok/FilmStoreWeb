@@ -27,8 +27,6 @@ public class AdminUpdateFilmCommand implements Command {
 
 	private final static Logger logger = LogManager.getLogger(AdminUpdateFilmCommand.class);
 
-	private final static String PATH_TO_IMAGE_FOLDER = "images/";
-
 	private final static String UPDATING_FAILED = "updatingFilmFailed";
 	private final static String INCORRECT_PARAMS = "incorrectParams";
 
@@ -80,7 +78,7 @@ public class AdminUpdateFilmCommand implements Command {
 			String filmDirId = listParamValue.get(FILM_DIRECTOR);
 			String listActors = listParamValue.get(LIST_ACTORS);
 			String description = listParamValue.get(DESCRIPTION);
-			String image = PATH_TO_IMAGE_FOLDER+listParamValue.get(IMAGE);
+			String image = listParamValue.get(IMAGE);
 			idNewActors = EditFilmUtil.strToListShort(listActors);
 			filmService.update(filmId,name, genres, countries, yearOfRel, quality,
 								filmDirId, description, price, countFilms, image);

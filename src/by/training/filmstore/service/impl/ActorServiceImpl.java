@@ -8,6 +8,8 @@ import by.training.filmstore.dao.exception.FilmStoreDAOException;
 import by.training.filmstore.entity.Actor;
 import by.training.filmstore.service.ActorService;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
+import by.training.filmstore.service.exception.FilmStoreServiceIncorrectActorParamException;
+import by.training.filmstore.service.exception.FilmStoreServiceInvalidActorOperException;
 
 public class ActorServiceImpl implements ActorService {
 
@@ -26,6 +28,41 @@ public class ActorServiceImpl implements ActorService {
 		}
 		
 		return listActor;
+	}
+
+	@Override
+	public void create(String fio) throws FilmStoreServiceException, FilmStoreServiceInvalidActorOperException,
+			FilmStoreServiceIncorrectActorParamException {
+		if(!Validation.validateCharacterField(fio)){
+			throw new FilmStoreServiceIncorrectActorParamException("Incorrect actor last name/name!");
+		}
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		ActorDAO actorDAO = filmStoreDAOFactory.getActorDAO();
+		
+		Actor actor = new Actor();
+		actor.setFio(fio);
+		
+		try {
+			if(!actorDAO.create(actor)){
+				throw new FilmStoreServiceInvalidActorOperException("Operation failed!Can't create actor!");
+			}
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+	}
+
+	static class Validation {
+
+		private static final String LETTERS_PATTERN = "^\\A[Р-пр-џ\\-\\s]\\P{Alpha}{4,45}$";
+
+		static boolean validateCharacterField(String value) {
+			if (!ValidationParamUtil.notEmpty(value)) {
+				return false;
+			}
+			return ValidationParamUtil.checkField(LETTERS_PATTERN, value);
+		}
+
 	}
 
 }

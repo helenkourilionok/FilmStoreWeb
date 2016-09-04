@@ -120,7 +120,19 @@
     <context-param>
         <param-name>A_DELETE_FILM</param-name>
         <param-value>by.training.filmstore.command.impl.AdminDeleteFilmCommand</param-value>
-    </context-param>                     
+    </context-param>   
+    <context-param>
+        <param-name>A_SHOW_LIST_ACTOR</param-name>
+        <param-value>by.training.filmstore.command.impl.AdminShowListActorCommand</param-value>
+    </context-param>   
+    <context-param>
+        <param-name>A_CREATE_ACTOR_SHOW_PAGE</param-name>
+        <param-value>by.training.filmstore.command.impl.AdminCreateActorShowPageCommand</param-value>
+    </context-param>
+    <context-param>
+        <param-name>A_CREATE_ACTOR</param-name>
+        <param-value>by.training.filmstore.command.impl.AdminCreateActorCommand</param-value>
+    </context-param>                       
   <welcome-file-list>
     <welcome-file>index_redirect.jsp</welcome-file>
   </welcome-file-list>

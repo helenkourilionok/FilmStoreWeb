@@ -32,7 +32,7 @@
 				<li><a href="#">${takeAwayDiscount}</a></li>
 				<li><a href="#">${listUsers}</a></li>
 			</ul></li>
-		<li class="dropdown"><a href="/about/">${order}</a>
+		<li class="dropdown"><a href="#">${order}</a>
 			<ul class="dropdown-menu">
 				<li><a href="#">${update}</a></li>
 				<li><a href="#">${delete}</a></li>
@@ -45,14 +45,14 @@
 				<li><a href="#">${delete}</a></li>
 				<li><a href="Controller?command=a_show_list_film">${listFilms}</a></li>
 			</ul></li>
-		<li class="dropdown"><a href="/payment/">${actor}</a>
+		<li class="dropdown"><a href="#">${actor}</a>
 			<ul class="dropdown-menu">
-				<li><a href="#">${create}</a></li>
+				<li><a href="Controller?command=a_create_actor_show_page">${create}</a></li>
 				<li><a href="#">${update}</a></li>
 				<li><a href="#">${delete}</a></li>
-				<li><a href="#">${listActors}</a></li>
+				<li><a href="Controller?command=a_show_list_actor">${listActors}</a></li>
 			</ul></li>
-		<li class="dropdown"><a href="/delivery/">${filmDirector}</a>
+		<li class="dropdown"><a href="#">${filmDirector}</a>
 			<ul class="dropdown-menu">
 				<li><a href="#">${create}</a></li>
 				<li><a href="#">${update}</a></li>
