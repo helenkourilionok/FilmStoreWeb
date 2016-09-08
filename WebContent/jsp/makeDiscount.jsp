@@ -39,7 +39,8 @@
 			scroll : 1000,
 			pauseOnHover : true
 		});
-		$('#myInput').datepicker( {format: 'dd/mm/yyyy',defaultDate: "+5y"});
+		
+		$('#myInput').datepicker( {format: 'dd/mm/yyyy',defaultDate: "+5y",language: 'ru'});
 	});
 	jQuery(function($) {
 		$('.bar').mosaic({

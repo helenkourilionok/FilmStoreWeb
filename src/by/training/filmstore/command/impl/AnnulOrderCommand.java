@@ -1,6 +1,8 @@
 package by.training.filmstore.command.impl;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
 import by.training.filmstore.entity.Order;
+import by.training.filmstore.entity.Status;
 import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.OrderService;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
@@ -35,6 +38,8 @@ public final class AnnulOrderCommand implements Command {
 		}
 
 		String orderId = request.getParameter(ID);
+		String dateOfOrder = null;
+		String dateOfDelivery = null;
 		Order order = null;
 		
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
@@ -42,10 +47,14 @@ public final class AnnulOrderCommand implements Command {
 		
 		try {
 			order = orderService.find(orderId);
-			orderService.update(order.getUserEmail(),order.getCommonPrice().toString(),order.getStatus().name(),order.getKindOfDelivery().name(), 
-					order.getKindOfPayment().name(),
-					order.getDateOfDelivery().toString(),
-					order.getDateOfOrder().toString(),order.getAddress());
+			order.setStatus(Status.ANNULED);
+			dateOfDelivery = formatDate(order.getDateOfDelivery().toLocalDate());
+			dateOfOrder = formatDate(order.getDateOfOrder().toLocalDate());
+			orderService.update(orderId,order.getUserEmail(),order.getCommonPrice().toString(),
+					order.getStatus().getNameStatus(),order.getKindOfDelivery().name(), 
+					order.getKindOfPayment().name(),dateOfDelivery,
+					dateOfOrder,order.getAddress());
+			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectOrderParamException e) {
@@ -57,4 +66,8 @@ public final class AnnulOrderCommand implements Command {
 		}
 	}
 
+	private String formatDate(LocalDate date){
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommandParamName.DATE_FORMAT);
+		return date.format(dateTimeFormatter);
+	}
 }

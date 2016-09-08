@@ -42,11 +42,12 @@
 				<li><a href="Controller?command=logout">${logout}</a></li>
 			</c:if>
 		</ul>
-		<form name="search" action="#" method="get"
+		<form name="search" action="Controller" method="post"
 			class="form-inline form-search pull-right">
 			<div class="input-group">
-				<input class="form-control" type="text" id="search" name="search"
+				<input class="form-control" type="text" id="search" name="filmName"
 					placeholder="${search}">
+				<input type="hidden" name="command" value="find_film_by_name" />
 				<div class="input-group-btn">
 					<button type="submit" class="btn btn-primary">
 						<span class="glyphicon glyphicon-search"></span>

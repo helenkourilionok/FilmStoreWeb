@@ -39,4 +39,5 @@ public final class CommandParamName {
 	final static String[] listQuality = {"DVDRip","CAMPRip","WEB-DL","WEB-DLRip"};
 	final static int MAX_AGE_COOKIE = 3600 * 24 * 30;
 	final static String DEFAULT_ADDRESS_OF_DELIVERY = "ул. Сурганова дом 35";
+	final static String DATE_FORMAT = "dd/MM/uuuu";
 }

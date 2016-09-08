@@ -22,6 +22,8 @@ public enum CommandName {
 	CHANGE_PASSWORD,
 	PAY_ORDER,
 	ANNUL_ORDER,
+	UPDATE_USER,
+	FIND_FILM_BY_NAME,
 	/*admin commands*/
 	A_CREATE_FILM_SHOW_PAGE, 
 	A_CREATE_FILM,

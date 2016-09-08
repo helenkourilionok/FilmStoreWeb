@@ -16,7 +16,7 @@ public interface UserService {
 											FilmStoreServiceIncorrectUserParamException;
 	User update(String email, String password, String copyPass,
 			String lastName, String firstName,
-			String patronimic, String mobilePhone, String balance) throws FilmStoreServiceException,
+			String patronymic, String mobilePhone, String balance) throws FilmStoreServiceException,
 											FilmStoreServiceIncorrectUserParamException,
 											FilmStoreServiceInvalidUserOperException;
 	User find(String id) throws FilmStoreServiceException,

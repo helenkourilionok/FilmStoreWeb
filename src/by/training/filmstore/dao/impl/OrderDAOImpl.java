@@ -31,7 +31,7 @@ public class OrderDAOImpl implements OrderDAO {
 			+ "`order`.ord_kind_of_payment = ?,`order`.ord_date_of_order = ?,"
 			+ "`order`.ord_date_of_delivery = ?,`order`.ord_address = ? where `order`.ord_uid = ?";
 	private static final String SQL_DELETE = "DELETE FROM `order` WHERE `order`.ord_uid = ?";
-	private static final String SQL_FIND_BY_ID = "select `order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
+	private static final String SQL_FIND_BY_ID = "select `order`.ord_uid,`order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
 			+ "`order`.ord_kind_of_delivery,`order`.ord_kind_of_payment,`order`.ord_date_of_order,"
 			+ "`order`.ord_date_of_delivery,`order`.ord_address from `order` where `order`.ord_uid = ?";
 	private static final String SQL_FIND_ALL = "select `order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
@@ -98,7 +98,7 @@ public class OrderDAOImpl implements OrderDAO {
 			prepStatement = createPrepStatementByCommandCriteria(connection, parametr, commandDAO);
 
 			int affectedRows = prepStatement.executeUpdate();
-			
+
 			if (affectedRows != 0) {
 				success = true;
 			}
@@ -122,15 +122,15 @@ public class OrderDAOImpl implements OrderDAO {
 	private <T> PreparedStatement createPrepStatementByCommandCriteria(Connection connection, T parametr,
 			CommandDAO commandDAO) throws SQLException {
 		PreparedStatement prepStatement = null;
-		boolean insert = true;
 		switch (commandDAO) {
 		case INSERT: {
+			boolean insert = true;
 			prepStatement = connection.prepareStatement(SQL_INSERT,PreparedStatement.RETURN_GENERATED_KEYS);
 			fillPreparedStatementForOrder(prepStatement,(Order) parametr, insert);
 		}
 			break;
 		case UPDATE: {
-			insert = false;
+			boolean insert = false;
 			prepStatement = connection.prepareStatement(SQL_UPDATE);
 			fillPreparedStatementForOrder(prepStatement, (Order) parametr, insert);
 		}
@@ -143,7 +143,7 @@ public class OrderDAOImpl implements OrderDAO {
 		}
 		return prepStatement;
 	}
-	
+
 	private void fillPreparedStatementForOrder(PreparedStatement preparedStatement,Order entity,boolean insert) throws SQLException{
 		preparedStatement.setString(1, entity.getUserEmail());
 		preparedStatement.setBigDecimal(2, entity.getCommonPrice());

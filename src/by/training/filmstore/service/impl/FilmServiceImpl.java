@@ -227,6 +227,32 @@ public class FilmServiceImpl implements FilmService {
 		}
 	}
 	
+	@Override
+	public List<Film> findFilmByName(String name)
+			throws FilmStoreServiceException, FilmStoreServiceIncorrectFilmParamException,
+					FilmStoreServiceListFilmNotFoundException{
+		int permissibleNameLength = 50;
+		if(!ValidationParamUtil.checkLength(name, permissibleNameLength)){
+			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect film name!Check length!");
+		}
+		
+		List<Film> listFilm = null;
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
+		
+		try {
+			listFilm = filmDAO.findFilmByName(name);
+			if(listFilm.isEmpty()){
+				throw new FilmStoreServiceListFilmNotFoundException("Can't find films by this name!");
+			}
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		}
+		
+		return listFilm;
+	}
+	
 	private Film validateFilm(String name, String genre, String country, String yearOfRelease, String quality,
 			String filmDirId, String description, String price, String countFilms, String image) 
 					throws FilmStoreServiceIncorrectFilmParamException{
@@ -241,7 +267,6 @@ public class FilmServiceImpl implements FilmService {
 			throw new FilmStoreServiceIncorrectFilmParamException("Film name is wrong length");
 		}
 		if (!Validation.validateCharacterField(genre)) {
-			System.out.println(genre);
 			throw new FilmStoreServiceIncorrectFilmParamException("Invalid genre of film!");
 		}
 		if (!Validation.validateCharacterField(country)) {
@@ -282,7 +307,7 @@ public class FilmServiceImpl implements FilmService {
 	
 	static class Validation {
 		private final static String LETTERS_PATTERN_RU = "^\\A[Р-пр-џ\\,]\\P{Alpha}+$";
-		private static final String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
+		private final static String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
 
 		static boolean validateCharacterField(String value) {
 			if (!ValidationParamUtil.notEmpty(value)) {

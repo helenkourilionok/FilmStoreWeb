@@ -28,6 +28,7 @@
 	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js"></script>
 
 <script src="js/jquery.carouFredSel-5.2.3-packed.js"></script>
+<script src="js/validation.js"></script>
 <script src="js/mosaic.1.0.1.js"></script>
 <script type="text/javascript">
 	$(function() {
@@ -40,6 +41,13 @@
 			scroll : 1000,
 			pauseOnHover : true
 		});
+		 $('#edit').change(function() {
+				document.getElementById("last_name").readOnly = !$(this).is(':checked');
+				document.getElementById("first_name").readOnly = !$(this).is(':checked');
+				document.getElementById("patronymic").readOnly = !$(this).is(':checked');
+				document.getElementById("phone").readOnly = !$(this).is(':checked');
+				document.getElementById("balance").readOnly = !$(this).is(':checked');
+		    });
 	});
 	jQuery(function($) {
 		$('.bar').mosaic({
@@ -58,7 +66,7 @@
 <fmt:message bundle="${locale}" key="locale.signup.firstName"
 	var="firstName" />
 <fmt:message bundle="${locale}" key="locale.signup.patronimic"
-	var="patronimic" />
+	var="patronymic" />
 <fmt:message bundle="${locale}" key="locale.signup.phone" var="phone" />
 <fmt:message bundle="${locale}" key="locale.signup.balance"
 	var="balance" />
@@ -88,10 +96,14 @@
 <fmt:message bundle="${locale}" key="locale.order.paid" var="paid" />
 <fmt:message bundle="${locale}" key="locale.order.unpaid" var="unpaid" />
 <fmt:message bundle="${locale}" key="locale.order.annuled" var="annuled" />
-<fmt:message bundle="${locale}" key="locale.listFilm.operation" var="operation" />
-<fmt:message bundle="${locale}" key="locale.personalInfo.changePassword" var="changePassword" />
+<fmt:message bundle="${locale}" key="locale.listFilm.operation"
+	var="operation" />
+<fmt:message bundle="${locale}" key="locale.personalInfo.changePassword"
+	var="changePassword" />
 <fmt:message bundle="${locale}" key="locale.order.annul" var="annul" />
 <fmt:message bundle="${locale}" key="locale.order.pay" var="pay" />
+<fmt:message bundle="${locale}" key="locale.createActor.notEnoughMoney"
+	var="notEnoughMoney" />
 </head>
 <body>
 	<div class="wrapper container">
@@ -104,44 +116,54 @@
 				<c:if test="${not empty requestScope.user}">
 					<div class="row">
 						<h1>${personalInfo}</h1>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="last_name">${lastName}:</label> <input type="text"
-									class="form-control" id="last_name" name="last_name"
-									maxlength="15" value="${requestScope.user.lastName}" readonly />
+						<form action="Controller" id="userForm" method="post"
+							onsubmit="return updateUserValidation(${sessionScope.locale});">
+							<input type="hidden" name="command" value="update_user" />
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="last_name">${lastName}:</label> <input type="text"
+										class="form-control" id="last_name" name="last_name"
+										maxlength="15" value="${requestScope.user.lastName}" readonly />
+										<span id="lastname_error" class="error"></span>
+								</div>
+								<div class="form-group">
+									<label for="first_name">${firstName}:</label> <input
+										type="text" class="form-control" id="first_name"
+										name="first_name" value="${requestScope.user.firstName}"
+										maxlength="10" readonly />
+										<span id="firstname_error" class="error"></span>
+								</div>
+								<div class="form-group">
+									<label for="patronymic">${patronymic}:</label> <input
+										type="text" class="form-control" id="patronymic"
+										name="patronymic" value="${requestScope.user.patronymic}"
+										maxlength="15" readonly />
+										<span id="patronimic_error" class="error"></span>
+								</div>
 							</div>
-							<div class="form-group">
-								<label for="first_name">${firstName}:</label> <input type="text"
-									class="form-control" id="first_name" name="first_name"
-									value="${requestScope.user.firstName}" maxlength="10" readonly />
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="phone">${phone}:</label> <input type="text"
+										class="form-control" id="phone" name="phone"
+										value="${requestScope.user.phone}" readonly />
+									<span id="phone_error" class="error"></span>
+								</div>
+								<div class="form-group">
+									<label for="balance">${balance}:</label> <input type="text"
+										class="form-control" id="balance" name="balance"
+										value="${requestScope.user.balance}" readonly />
+									<span id="balance_error" class="error"></span>
+								</div>
+								<div class="form-group">
+									<label for="balance">${discount}:</label> <input type="text"
+										class="form-control" id="balance" name="balance"
+										value="${requestScope.user.discount}" readonly />
+								</div>
 							</div>
-							<div class="form-group">
-								<label for="patronimic">${patronimic}:</label> <input
-									type="text" class="form-control" id="patronimic"
-									name="patronimic" value="${requestScope.user.patronymic}"
-									maxlength="15" readonly />
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="phone">${phone}:</label> <input type="text"
-									class="form-control" id="phone" name="phone"
-									value="${requestScope.user.phone}" readonly />
-							</div>
-							<div class="form-group">
-								<label for="balance">${balance}:</label> <input type="text"
-									class="form-control" id="balance" name="balance"
-									value="${requestScope.user.balance}" readonly />
-							</div>
-							<div class="form-group">
-								<label for="balance">${discount}:</label> <input type="text"
-									class="form-control" id="balance" name="balance"
-									value="${requestScope.user.discount}" readonly />
-							</div>
-						</div>
+						</form>
 					</div>
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<form method="get">
 								<input type="hidden" name="command" value="order_for_user_show" />
 								<div class="form-group">
@@ -152,14 +174,27 @@
 										<option value='ANNULED'>${annuled}</option>
 									</select>
 								</div>
-								<button type="submit" class="btn btn-primary"> ${listOrders}</button>
+								<button type="submit" class="btn btn-primary">
+									${listOrders}</button>
 							</form>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<form method="get">
-								<input type="hidden" name="command" value="change_password_show_page" />
-								<button type="submit" class="btn btn-primary"> ${changePassword}</button>
+								<input type="hidden" name="command"
+									value="change_password_show_page" />
+								<button type="submit" class="btn btn-primary">
+									${changePassword}</button>
 							</form>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<button type="submit" formaction="Controller" form="userForm"
+									class="btn btn-primary">Update profile</button>
+							</div>
+							<div class="form-group">
+								<label class="checkbox-inline"><input type="checkbox"
+									id="edit" value="">Edit</label>
+							</div>
 						</div>
 					</div>
 				</c:if>
@@ -168,7 +203,9 @@
 						<c:if test="${!(fn:length(requestScope.listOrder) > 0)}">
 							<span>${noneOrder}</span>
 						</c:if>
-						<span>${notEnoughMoney}</span>
+						<c:if test="${requestScope.notEnoughMoney.equals('true')}">
+							<span style="color: #eb6a5a;">${notEnoughMoney}</span>
+						</c:if>
 						<table class="table table-bordered">
 							<thead>
 								<tr>
@@ -179,8 +216,9 @@
 									<th>${dateOfOrder}</th>
 									<th>${dateOfDelivery}</th>
 									<th>${address}</th>
-									<c:if test="${requestScope.status.getNameStatus().equals('не оплачено')}">
-									<th>${operation}</th>
+									<c:if
+										test="${requestScope.status.getNameStatus().equals('не оплачено')}">
+										<th>${operation}</th>
 									</c:if>
 								</tr>
 							</thead>
@@ -194,12 +232,12 @@
 										<td>${order.dateOfOrder}</td>
 										<td>${order.dateOfDelivery}</td>
 										<td>${order.address}</td>
-										<c:if test="${requestScope.status.getNameStatus().equals('не оплачено')}">
-											<th>
-												<c:if test="${order.kindOfPayment.getNameKindOfPayment().equals('банковская карта')}">
+										<c:if
+											test="${requestScope.status.getNameStatus().equals('не оплачено')}">
+											<th><c:if
+													test="${order.kindOfPayment.getNameKindOfPayment().equals('банковская карта')}">
 													<a href="Controller?command=pay_order&id=${order.id}">${pay}</a>
-												</c:if>
-												<a href="Controller?command=annul_order&id=${order.id}">${annul}</a>
+												</c:if> <a href="Controller?command=annul_order&id=${order.id}">${annul}</a>
 											</th>
 										</c:if>
 									</tr>

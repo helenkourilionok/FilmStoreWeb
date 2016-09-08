@@ -2,6 +2,8 @@ package by.training.filmstore.command.impl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -47,6 +49,8 @@ public final class PayOrderCommand implements Command {
 		String orderID = request.getParameter(ID);
 		User user = null;
 		Order order = null;
+		String dateOfOrder = null;
+		String dateOfDelivery = null;
 
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
 		UserService userService = filmStoreServiceFactory.getUserService();
@@ -55,23 +59,29 @@ public final class PayOrderCommand implements Command {
 		try {
 			user = userService.find(userEmail);
 			order = orderService.find(orderID);
-			
+
 			if(user.getBalance().compareTo(order.getCommonPrice())==-1){
 				List<Order> listUserOrder = orderService.findOrderByUserEmailAndStatus(userEmail,Status.PAID.getNameStatus());
 				request.setAttribute(LIST_ORDER, listUserOrder);
 				request.setAttribute(STATUS,Status.PAID);
-				request.setAttribute(NOT_ENOUGH_MONEY, "Not enougn money for pay order!");
+				request.setAttribute(NOT_ENOUGH_MONEY, "true");
 				request.getRequestDispatcher(CommandParamName.PATH_PERSONAL_INFO).forward(request, response);
 				return;
 			}
+			
+			
 			
 			BigDecimal newBalance = user.getBalance().subtract(order.getCommonPrice());
 			user.setBalance(newBalance);
 			order.setStatus(Status.PAID);
 			userService.update(user.getEmail(), user.getPassword(), user.getPassword(), user.getLastName(), 
 							user.getFirstName(), user.getPatronymic(), user.getPhone(), user.getBalance().toString());
-			orderService.update(order.getUserEmail(), order.getCommonPrice().toString(), order.getStatus().name(),order.getKindOfDelivery().name(),
-					order.getKindOfPayment().name(), order.getDateOfDelivery().toString(),order.getDateOfOrder().toString(), order.getAddress());
+			
+			dateOfDelivery = formatDate(order.getDateOfDelivery().toLocalDate());
+			dateOfOrder = formatDate(order.getDateOfOrder().toLocalDate());
+			
+			orderService.update(orderID,order.getUserEmail(), order.getCommonPrice().toString(), order.getStatus().getNameStatus(),order.getKindOfDelivery().name(),
+					order.getKindOfPayment().name(),dateOfDelivery,dateOfOrder, order.getAddress());
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
@@ -90,4 +100,8 @@ public final class PayOrderCommand implements Command {
 		}
 	}
 
+	private String formatDate(LocalDate date){
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommandParamName.DATE_FORMAT);
+		return date.format(dateTimeFormatter);
+	}
 }

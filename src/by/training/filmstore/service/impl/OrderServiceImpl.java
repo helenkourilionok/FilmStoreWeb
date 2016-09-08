@@ -41,10 +41,13 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	@Override
-	public void update(String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
+	public void update(String orderId,String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
 			String dateOfDelivery, String dateOfOrder, String address) throws FilmStoreServiceException, FilmStoreServiceIncorrectOrderParamException,
 			FilmStoreServiceInvalidOrderOperException {
-		
+		int _orderId = ValidationParamUtil.validateNumber(orderId);
+		if(_orderId==-1){
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect order id!");
+		}
 		LocalDate _dateOfDelivery = Validation.validateDate(dateOfOrder); 
 		if(_dateOfDelivery == null){
 			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect date of order!");
@@ -52,13 +55,14 @@ public class OrderServiceImpl implements OrderService {
 		
 		Order order = validateOrder(userEmail, commonPrice, status, kindOfDelivery, kindOfPayment,
 				  dateOfDelivery, address);
+		order.setId(_orderId);
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
 		
 		try {
 			if(!orderDAO.update(order)){
-				throw new FilmStoreServiceInvalidOrderOperException("Operation failed!Can't update film!");
+				throw new FilmStoreServiceInvalidOrderOperException("Operation failed!Can't update order!");
 			}
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);

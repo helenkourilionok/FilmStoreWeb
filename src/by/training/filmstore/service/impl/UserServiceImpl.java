@@ -80,11 +80,11 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public User update(String email, String password, String copyPass, String lastName, String firstName,
-			String patronimic, String mobilePhone, String balance) throws FilmStoreServiceException,
+			String patronymic, String mobilePhone, String balance) throws FilmStoreServiceException,
 			FilmStoreServiceIncorrectUserParamException, FilmStoreServiceInvalidUserOperException {
 		
 		User user = validateUser(email, password, copyPass, lastName, 
-				firstName, patronimic, mobilePhone, balance);
+				firstName, patronymic, mobilePhone, balance);
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		UserDAO userDAO = filmStoreDAOFactory.getUserDao();

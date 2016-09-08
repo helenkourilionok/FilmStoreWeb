@@ -12,7 +12,7 @@ public interface OrderService {
 			String dateOfDelivery, String address) 
 			throws FilmStoreServiceIncorrectOrderParamException,
 			FilmStoreServiceInvalidOrderOperException, FilmStoreServiceException;
-	void update(String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
+	void update(String orderId,String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
 			String dateOfDelivery, String dateOfOrder,String address) throws FilmStoreServiceException,
 						FilmStoreServiceIncorrectOrderParamException,
 						FilmStoreServiceInvalidOrderOperException;

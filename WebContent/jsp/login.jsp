@@ -13,6 +13,7 @@
 	  	<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<link href="css/styles.css" rel="stylesheet">
+		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 	    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/jquery.carouFredSel-5.2.3-packed.js"></script>
@@ -58,7 +59,7 @@
 			<div class="wrapper row">
 				<c:import url="notContent/aside.jsp"/>
 				<section class="col-md-9">
-					<div class="col-md-6 col-md-offset-3">				
+					<div class="col-md-6 col-md-offset-3">
 						<h2>${login}</h2>
 						<form role="form" action="Controller" method="post">
 						<input type="hidden" name="command" value="logination" /> 

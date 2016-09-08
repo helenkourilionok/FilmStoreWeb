@@ -86,6 +86,14 @@
         <param-value>by.training.filmstore.command.impl.AnnulOrderCommand</param-value>
     </context-param> 
     <context-param>
+        <param-name>UPDATE_USER</param-name>
+        <param-value>by.training.filmstore.command.impl.UpdateUserCommand</param-value>
+    </context-param>
+    <context-param>
+        <param-name>FIND_FILM_BY_NAME</param-name>
+        <param-value>by.training.filmstore.command.impl.FindFilmByNameCommand</param-value>
+    </context-param>     
+    <context-param>
         <param-name>A_CREATE_FILM_SHOW_PAGE</param-name>
         <param-value>by.training.filmstore.command.impl.AdminCreateFilmShowPageCommand</param-value>
     </context-param>     
