@@ -199,14 +199,14 @@
 					</div>
 				</c:if>
 				<c:if test="${requestScope.listOrder != null}">
-					<div class="col-md-12">
+					<div class="col-md-12" style="padding-left:0px">
 						<c:if test="${!(fn:length(requestScope.listOrder) > 0)}">
 							<span>${noneOrder}</span>
 						</c:if>
 						<c:if test="${requestScope.notEnoughMoney.equals('true')}">
 							<span style="color: #eb6a5a;">${notEnoughMoney}</span>
 						</c:if>
-						<table class="table table-bordered">
+						<table class="table table-bordered" style="width:700px">
 							<thead>
 								<tr>
 									<th>${commonPrice}</th>
@@ -232,12 +232,14 @@
 										<td>${order.dateOfOrder}</td>
 										<td>${order.dateOfDelivery}</td>
 										<td>${order.address}</td>
-										<c:if
-											test="${requestScope.status.getNameStatus().equals('не оплачено')}">
-											<th><c:if
-													test="${order.kindOfPayment.getNameKindOfPayment().equals('банковская карта')}">
-													<a href="Controller?command=pay_order&id=${order.id}">${pay}</a>
-												</c:if> <a href="Controller?command=annul_order&id=${order.id}">${annul}</a>
+										<c:if test="${requestScope.status.getNameStatus().equals('не оплачено')}">
+											<th>
+											<form method="post">
+												<c:if	test="${order.kindOfPayment.getNameKindOfPayment().equals('банковская карта')}">
+														<button type="submit" formaction="Controller?command=pay_order&id=${order.id}" class="btn btn-primary">${pay}</button>
+												</c:if> 
+								        	 		<button type="submit" formaction="Controller?command=annul_order&id=${order.id}" class="btn btn-primary" style="margin-top:10px">${annul}</button>
+								        	 </form>
 											</th>
 										</c:if>
 									</tr>

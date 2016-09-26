@@ -52,6 +52,7 @@ public final class ChangePasswordCommand implements Command {
 			
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't change password!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectUserParamException e) {
 			logger.error("Incorrect user email or password!",e);

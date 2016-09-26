@@ -10,6 +10,7 @@ import java.util.List;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.OrderDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.entity.KindOfDelivery;
 import by.training.filmstore.entity.KindOfPayment;
 import by.training.filmstore.entity.Order;
@@ -31,11 +32,11 @@ public class OrderServiceImpl implements OrderService {
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
 		try {
-			if(!orderDAO.create(order)){
-				throw new FilmStoreServiceInvalidOrderOperException("Operation failed!Can't create order!");
-			}
+			orderDAO.create(order);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidOrderOperException(e);
 		}
 		return order;
 	}
@@ -61,11 +62,11 @@ public class OrderServiceImpl implements OrderService {
 		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
 		
 		try {
-			if(!orderDAO.update(order)){
-				throw new FilmStoreServiceInvalidOrderOperException("Operation failed!Can't update order!");
-			}
+			orderDAO.update(order);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidOrderOperException(e);
 		}
 	}
 

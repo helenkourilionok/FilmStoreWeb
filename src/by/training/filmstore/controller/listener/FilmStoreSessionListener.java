@@ -1,4 +1,4 @@
-package by.training.filmstore.controller;
+package by.training.filmstore.controller.listener;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;

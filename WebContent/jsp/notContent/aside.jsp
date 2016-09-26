@@ -29,7 +29,7 @@
 	<div class="panel panel-primary">
 		<div class="panel-heading">${ourOffices}</div>
 		<div class="panel-body">
-			<img src="images/map.png" class="img-responsive" alt="${ourOffices}">
+			<img src="images/map.jpg" class="img-responsive" alt="${ourOffices}">
 		</div>
 	</div>
 </aside>

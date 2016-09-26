@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.dao.CommentDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.dao.pool.PoolConnection;
 import by.training.filmstore.dao.pool.PoolConnectionException;
 import by.training.filmstore.entity.Comment;
@@ -43,11 +44,10 @@ public class CommentDAOImpl implements CommentDAO{
 			"from comment where comment.cm_film = ?";
 	
 	@Override
-	public boolean create(Comment entity) throws FilmStoreDAOException {
+	public void create(Comment entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		PoolConnection poolConnection = null;
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
-		boolean success = false;
 		try{
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -57,31 +57,32 @@ public class CommentDAOImpl implements CommentDAO{
 			prepStatement.setString(3, entity.getContent());
 			prepStatement.setTimestamp(4, entity.getDate());
 			int affectedRows = prepStatement.executeUpdate();
-			if (affectedRows != 0) {
-                success = true;
+			if (affectedRows == 0) {
+                throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't create comment!");
             }
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't create comment",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection",e);
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	@Override
-	public boolean update(Comment entity) throws FilmStoreDAOException {
+	public void update(Comment entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		PoolConnection poolConnection = null;
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
-		boolean success = false;
 		try{
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -90,31 +91,32 @@ public class CommentDAOImpl implements CommentDAO{
 			prepStatement.setShort(2, entity.getId().getFilmId());
 			prepStatement.setString(3, entity.getContent());
 			int affectedRows = prepStatement.executeUpdate();
-            if (affectedRows != 0) {
-                success = true;
+            if (affectedRows == 0) {
+            	 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't update comment!");
             }
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't update comment fields");
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection");
+				logger.error("Error closing of PreparedStatement");
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	@Override
-	public boolean delete(CommentPK id) throws FilmStoreDAOException {
+	public void delete(CommentPK id) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		PoolConnection poolConnection = null;
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
-		boolean success = false;
 		try{
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -122,23 +124,25 @@ public class CommentDAOImpl implements CommentDAO{
 			prepStatement.setString(1, id.getUserEmail());
 			prepStatement.setShort(2, id.getFilmId());
 			int affectedRows = prepStatement.executeUpdate();
-            if (affectedRows != 0) {
-                success = true;
+            if (affectedRows == 0) {
+            	 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't delete comment!");
             }
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't delete comment",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
 				logger.error("Error closing of PreparedStatement or Connection",e);
 			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
+			}
 		}
-		return success;
 	}
 
 	@Override
@@ -153,27 +157,32 @@ public class CommentDAOImpl implements CommentDAO{
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement =  connection.prepareStatement(SQL_FIND_BY_ID);
-			prepStatement.setString(1, id.getUserEmail());
-			prepStatement.setShort(2, id.getFilmId());
+			
+			prepStatement.setShort(1, id.getFilmId());
+			prepStatement.setString(2, id.getUserEmail());
+			
 			resultSet = prepStatement.executeQuery();
-			comment = new Comment();
+			
 			if(resultSet.next())
 			{
+				comment = new Comment();
 				fillComment(comment, resultSet);
 			}
 		}
 		catch(PoolConnectionException|SQLException e)
 		{
-			logger.error("Error creating of PreparedStatement.Can't find comment",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
-				resultSet.close();
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection",e);
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
 		return comment;
@@ -226,15 +235,18 @@ public class CommentDAOImpl implements CommentDAO{
 			}
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't find comment("+criteria.name()+")",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection",e);
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
 		return listComment;

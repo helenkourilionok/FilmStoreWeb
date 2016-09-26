@@ -59,6 +59,7 @@ public final class FindFilmByNameCommand implements Command {
 			
 			request.getRequestDispatcher(CommandParamName.PATH_FILM_WITH_COMMENT_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Can't find film by this name!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceListFilmNotFoundException|	
 				FilmStoreServiceIncorrectFilmParamException |

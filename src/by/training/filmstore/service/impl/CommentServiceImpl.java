@@ -7,6 +7,7 @@ import java.util.List;
 import by.training.filmstore.dao.CommentDAO;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.entity.Comment;
 import by.training.filmstore.entity.CommentPK;
 import by.training.filmstore.service.CommentService;
@@ -56,7 +57,6 @@ public class CommentServiceImpl implements CommentService {
 		if(!ValidationParamUtil.validateEmail(userEmail, permissibleEmailLength)){
 			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect user email!");
 		}
-		System.out.println(filmId);
 		if(!ValidationParamUtil.notEmpty(filmId)){
 			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect film id!");
 		}
@@ -64,12 +64,10 @@ public class CommentServiceImpl implements CommentService {
 		if(numFilmId == -1){
 			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect film id!");
 		}
-		System.out.println("Content"+content);
 		if(!Validation.validateCharacterField(content)){
 			throw new FilmStoreServiceIncorrectCommentParamException("Incorrect content!");
 		}
 		
-		boolean succes = false;
 		Timestamp dateComment = new Timestamp(new Date().getTime());
 		CommentPK commentPK  = new CommentPK(userEmail,numFilmId);
 		Comment entity = new Comment(commentPK,content,dateComment);
@@ -79,12 +77,11 @@ public class CommentServiceImpl implements CommentService {
 		CommentDAO commentDAO = filmStoreDAOFactory.getCommentDAO(); 
 		
 		try {
-			succes = commentDAO.create(entity);
-			if(!succes){
-				throw new FilmStoreServiceInvalidCommentOperException("Can't create comment!");
-			}
+			commentDAO.create(entity);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidCommentOperException(e);
 		}
 		
 	}

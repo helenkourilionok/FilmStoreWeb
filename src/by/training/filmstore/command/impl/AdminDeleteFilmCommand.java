@@ -60,6 +60,7 @@ public final class AdminDeleteFilmCommand implements Command {
 				request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
 			}
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't delete film!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectFilmParamException e) {
 			logger.error("Incorrect params!Can't delete film!",e);

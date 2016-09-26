@@ -5,6 +5,7 @@ import java.util.List;
 import by.training.filmstore.dao.ActorDAO;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.entity.Actor;
 import by.training.filmstore.service.ActorService;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
@@ -44,11 +45,11 @@ public class ActorServiceImpl implements ActorService {
 		actor.setFio(fio);
 		
 		try {
-			if(!actorDAO.create(actor)){
-				throw new FilmStoreServiceInvalidActorOperException("Operation failed!Can't create actor!");
-			}
+			actorDAO.create(actor);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidActorOperException(e);
 		}
 	}
 

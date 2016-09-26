@@ -90,11 +90,11 @@ public final class EditFilmUtil {
 	
 	private static boolean processUploadedFile(HttpServletRequest request,FileItem item, String uploadPath) throws Exception {
 		if(isFileExist(request, item.getName())){
-			return false;//because file isn't uploaded
+			return false;
 		}
 		File uploadedFile = new File(uploadPath);
 		item.write(uploadedFile);
-		return true;//if file is uploaded
+		return true;
 	}
 
 	private static boolean isFileExist(HttpServletRequest request,String filename){

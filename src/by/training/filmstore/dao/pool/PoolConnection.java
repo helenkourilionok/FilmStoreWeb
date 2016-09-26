@@ -7,12 +7,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class PoolConnection {
 	
-	private static final Logger logger = LogManager.getLogger(PoolConnection.class);
 	private BlockingQueue<Connection> availableConnections;
 	private BlockingQueue<Connection> usedConnections;
 	private static PoolConnection poolConnection;
@@ -42,10 +38,8 @@ public class PoolConnection {
 				availableConnections.add(connection);
 			}
 		} catch (ClassNotFoundException e) {
-			logger.error("Can't find database driver class",e);
 			throw new PoolConnectionException("Can't find database driver class",e);
 		} catch (SQLException e) {
-			logger.error("Error creating database connection",e);
 			throw new PoolConnectionException("Error creating database connection",e);
 		}
 	}
@@ -64,7 +58,6 @@ public class PoolConnection {
 			connection = availableConnections.take();
 			usedConnections.offer(connection);
 		} catch (InterruptedException e) {
-			logger.error("Can't take connection(InterruptedException)",e);
 			throw new PoolConnectionException(e);
 		}
 		return connection;
@@ -82,7 +75,6 @@ public class PoolConnection {
 			if(!connection.getAutoCommit()){
 				connection.commit();
 				connection.setAutoCommit(true);
-				//this code were corrected
 			}
 			if (!usedConnections.remove(connection)){
 				throw new SQLException("Error deleting connection from the given away connections pool");
@@ -95,7 +87,7 @@ public class PoolConnection {
 		return success;
 	}
 
-	public void disposePoolConnection()
+	public void disposePoolConnection() throws PoolConnectionException
 	{
 		closeConnectionPool(availableConnections);
 		closeConnectionPool(usedConnections);
@@ -103,7 +95,7 @@ public class PoolConnection {
 		usedConnections.clear();
 	}
 
-	private void closeConnectionPool(BlockingQueue<Connection> connections)
+	private void closeConnectionPool(BlockingQueue<Connection> connections) throws PoolConnectionException
 	{
 		Connection connection = null;
 		while((connection = connections.poll())!=null)
@@ -115,7 +107,7 @@ public class PoolConnection {
 				}
 				connection.close();
 			} catch (SQLException e) {
-				logger.error("Error closing database connection",e);
+				throw new PoolConnectionException(e);
 			}
 		}
 		

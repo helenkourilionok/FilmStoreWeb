@@ -92,6 +92,7 @@ public class MakeOrderCommand implements Command {
 			logger.error("Invalid operation!Can't create good!", e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't make order!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
 	}

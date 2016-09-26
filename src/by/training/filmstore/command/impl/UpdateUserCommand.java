@@ -60,6 +60,7 @@ public final class UpdateUserCommand implements Command {
 					lastName, firstName, patronymic,phone, balance);
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't update user!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceInvalidUserOperException e) {
 			logger.error("Operation failed!Can't update user!",e);

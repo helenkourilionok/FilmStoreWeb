@@ -63,6 +63,7 @@ public class CommentShowPageCommand implements Command {
 			request.getRequestDispatcher(CommandParamName.PATH_FILM_WITH_COMMENT_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			
+			logger.error("Can't find film or film comments in database!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 			
 		}catch (FilmStoreServiceFilmNotFoundException |

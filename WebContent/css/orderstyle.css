@@ -1,0 +1,58 @@
+/*****************************order page***********************************/
+.i-button_primary{
+	color: #fff;
+	background-color: #337ab7;
+	border-color: #2e6da4;
+}
+.i-button_primary:hover, .i-button_primary:focus {
+	color: #fff;
+	background-color: #2e6da4;
+	border-color: #2a14a8;
+}
+.form-order-commoninfo {
+    padding-right: 10px;
+    padding-top: 10px;
+    background: #f2f2f2;
+    cursor: default;
+}
+.form-order {
+    min-height: 17px;
+    margin: -1px;
+    padding: 9px 11px;
+    border: 1px solid #e5e5e5;
+    display: block;
+    position: relative;
+    cursor: pointer;
+}
+.form-order-input{
+    margin: -1px;
+    border: 1px solid #e5e5e5;
+    cursor: pointer;
+}
+.form-order-input input,.form-order-input time{
+	border-radius: 0px;
+	border:0;
+	cursor: pointer;
+}
+.form-order-input input[type="radio"]{
+	margin:8px 0 8px 8px;
+}
+.form-order-input select{
+	border:0;
+	width:190px;
+	margin:7px 0 8px 7px;
+}
+.form-button-style{
+	padding: 0
+}
+.form-button-style button{
+	width:100%;
+	border:0;
+	padding:9px 0 9px 0;
+}
+.table-condensed button{
+	border:none;
+	width:40px;
+	height:40px;
+}
+/*****************************order page***********************************/

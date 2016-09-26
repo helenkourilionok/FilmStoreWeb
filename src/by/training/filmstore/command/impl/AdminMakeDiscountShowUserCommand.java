@@ -63,6 +63,7 @@ public final class AdminMakeDiscountShowUserCommand implements Command {
 			request.setAttribute(CURRENT_DATE,Date.valueOf(discountDate));
 			request.getRequestDispatcher(CommandParamName.PATH_MAKE_DISCOUNT_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't make discount!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectUserParamException e) {
 			logger.error("Incorrect params!Can't make discount!",e);

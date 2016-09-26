@@ -21,6 +21,7 @@ import by.training.filmstore.service.exception.FilmStoreServiceException;
 public class LoginationCommand implements Command {
 
 	private final static Logger logger = LogManager.getLogger(LoginationCommand.class);
+	
 	private final static String EMAIL = "email";
 	private final static String PASSWORD = "password";
 	private final static String ERROR_ATTRIBUTE = "incorrectEmailOrPassword";
@@ -52,7 +53,7 @@ public class LoginationCommand implements Command {
 
 			}
 		} catch (FilmStoreServiceException e) {
-
+			logger.error("Can't find user in database!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 
 		} catch (FilmStoreServiceAuthException e) {

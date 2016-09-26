@@ -1,4 +1,4 @@
-package by.training.filmstore.controller;
+package by.training.filmstore.controller.filter;
 
 import java.io.IOException;
 

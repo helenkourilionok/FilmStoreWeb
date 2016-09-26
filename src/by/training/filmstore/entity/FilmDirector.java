@@ -1,7 +1,6 @@
 package by.training.filmstore.entity;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class FilmDirector implements Serializable{
 
@@ -9,10 +8,9 @@ public class FilmDirector implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4268762628228940219L;
+	private static final long serialVersionUID = 1700132050616355594L;
 	private short id;
 	private String fio;
-	private List<Film> films;
 	public short getId() {
 		return id;
 	}
@@ -24,18 +22,6 @@ public class FilmDirector implements Serializable{
 	}
 	public void setFio(String fio) {
 		this.fio = fio;
-	}
-	public void setFilms(int index,Film film){
-		films.add(index, film);
-	}
-	public Film getFilms(int index) {
-		return films.get(index);
-	}
-	public List<Film> getFilms() {
-		return films;
-	}
-	public void setFilms(List<Film> films) {
-		this.films = films;
 	}
 	public FilmDirector() {
 		super();

@@ -100,7 +100,7 @@ public class MakeOrderShowPageCommand implements Command {
 		order.setDateOfDelivery(java.sql.Date.valueOf(dateOfDelivery));
 		return order;
 	}
-	//!!!!!
+
 	private BigDecimal calculateCommonPriceForOrder(Map<Short,Short> mapIdFilmCountFilm,List<Film> listFilm,Long discount){
 		BigDecimal commonPrice = new BigDecimal(0);
 		BigDecimal _discount = new BigDecimal(discount);

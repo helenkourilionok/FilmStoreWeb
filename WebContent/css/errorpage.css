@@ -1,0 +1,29 @@
+.pagenot {
+    margin: 0px auto;
+    text-align: center;
+    position: relative;
+}
+.pagenot h2 {
+    font-size: 15em;
+    color: #314D68;
+    font-weight: bold;
+    padding: 0;
+}
+.pagenot h3{
+	margin: 10px 0 10px 0;
+}
+.pagenot-text {
+    position: absolute;
+    top: 65px;
+    background: #FFF;
+    width: 100%;
+}
+.pagenot p {
+    font-size: 1.5em;
+    color: #858585;
+    line-height: 1.6em;
+    padding: 0;
+    font-weight: 400;
+    width: 60%;
+    margin: 0 auto;
+}

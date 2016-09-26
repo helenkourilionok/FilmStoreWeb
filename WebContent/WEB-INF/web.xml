@@ -157,10 +157,10 @@
     <location>/error-page.jsp</location>
   </error-page>
   <listener>
-    <listener-class>by.training.filmstore.controller.FilmStoreContextListener</listener-class>
+    <listener-class>by.training.filmstore.controller.listener.FilmStoreContextListener</listener-class>
   </listener>
   <listener>
-  	<listener-class>by.training.filmstore.controller.FilmStoreSessionListener</listener-class>
+  	<listener-class>by.training.filmstore.controller.listener.FilmStoreSessionListener</listener-class>
   </listener>
   <servlet>
     <description></description>
@@ -174,7 +174,7 @@
   </servlet-mapping>
     <filter>
     <filter-name>encodingFilter</filter-name>
-    <filter-class>by.training.filmstore.controller.EncodingFilter</filter-class>
+    <filter-class>by.training.filmstore.controller.filter.EncodingFilter</filter-class>
     <init-param>
       <param-name>encoding</param-name>
       <param-value>UTF-8</param-value>

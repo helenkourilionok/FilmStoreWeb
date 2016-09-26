@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.dao.ActorDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.dao.pool.PoolConnection;
 import by.training.filmstore.dao.pool.PoolConnectionException;
 import by.training.filmstore.entity.Actor;
@@ -34,18 +35,18 @@ public class ActorDAOImpl implements ActorDAO {
 			"select actor.act_uid,actor.act_fio from actor";
 
 	@Override
-	public boolean create(Actor entity) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.INSERT, entity);
+	public void create(Actor entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.INSERT, entity);
 	}
 
 	@Override
-	public boolean update(Actor entity) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.UPDATE, entity);
+	public void update(Actor entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.UPDATE, entity);
 	}
 
 	@Override
-	public boolean delete(Short id) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.DELETE, id);
+	public void delete(Short id) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.DELETE, id);
 	}
 
 	@Override
@@ -79,11 +80,10 @@ public class ActorDAOImpl implements ActorDAO {
 			}
 	}
 
-	private <T> boolean updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException {
+	private <T> void updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
-		boolean success = false;
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -92,24 +92,26 @@ public class ActorDAOImpl implements ActorDAO {
 
 			int affectedRows = prepStatement.executeUpdate();
 
-			if (affectedRows != 0) {
-				success = true;
+			if (affectedRows == 0) {
+				throw new FilmStoreDAOInvalidOperationException("Operation with actor failed (" + commandDAO.name() + ")");
 			}
 			if (commandDAO == CommandDAO.INSERT) {
 				fillGeneratedIdIfInsert(prepStatement, (Actor) parametr);
 			}
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Operation failed (" + commandDAO.name() + ")", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	private <T> PreparedStatement createPrepStatementByCommandCriteria(Connection connection, T parametr,
@@ -152,14 +154,17 @@ public class ActorDAOImpl implements ActorDAO {
 
 			listActor = fillListActorFromResultSet(resultSet);
 		} catch (PoolConnectionException | SQLException e) {
-			logger.error("Error creating of PreparedStatement.Can't find order(" + criteria.name() + ")", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
 		return listActor;

@@ -49,6 +49,7 @@ public final class PersonalInformationShowCommand implements Command {
 			request.setAttribute(USER, user);
 			request.getRequestDispatcher(CommandParamName.PATH_PERSONAL_INFO).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Can't find user in database!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectUserParamException e) {
 			logger.error("Can't find user!Incorrect email!",e);

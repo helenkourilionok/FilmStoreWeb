@@ -88,6 +88,7 @@ public class AdminCreateFilmCommand implements Command {
 			response.sendRedirect(prev_query+"&"+CREATION_FAILED+"=true");
 		}
 		catch(FilmStoreServiceException e){
+			logger.error("Operation failed!Can't create film!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
 	}

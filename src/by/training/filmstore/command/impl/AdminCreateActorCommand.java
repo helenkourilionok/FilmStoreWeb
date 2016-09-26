@@ -41,6 +41,7 @@ public final class AdminCreateActorCommand implements Command {
 			actorService.create(fio);
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't create actor!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceInvalidActorOperException e) {
 			logger.error("Operation failed!Can't create actor!",e);

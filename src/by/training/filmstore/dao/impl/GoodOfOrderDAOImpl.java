@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.dao.GoodOfOrderDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.dao.pool.PoolConnection;
 import by.training.filmstore.dao.pool.PoolConnectionException;
 import by.training.filmstore.entity.GoodOfOrder;
@@ -57,35 +58,38 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 			prepStatement.setInt(1, id.getIdOrder());
 			prepStatement.setShort(2, id.getIdFilm());
 			resultSet = prepStatement.executeQuery();
-			goodOfOrder = new GoodOfOrder();
+			
 			if(resultSet.next())
 			{
+				goodOfOrder = new GoodOfOrder();
 				fillGoodOfOrder(goodOfOrder, resultSet);
 			}
 		}
 		catch(PoolConnectionException|SQLException e)
 		{
-			logger.error("Error creating of PreparedStatement.Can't find good of order",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
-				resultSet.close();
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection",e);
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection",e);
 			}
 		}
 		return goodOfOrder;
 	}
 
 	@Override
-	public boolean create(GoodOfOrder entity) throws FilmStoreDAOException {
+	public void create(GoodOfOrder entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		PoolConnection poolConnection = null;
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
-		boolean success = false;
+
 		try{
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -94,62 +98,70 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 			prepStatement.setInt(2, entity.getId().getIdFilm());
 			prepStatement.setByte(3, entity.getCountFilms());
 			int affectedRows = prepStatement.executeUpdate();
-			if (affectedRows != 0) {
-                success = true;
+			if (affectedRows == 0) {
+                throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't create good of order!");
             }
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't create good of order",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
 				prepStatement.close();
-				poolConnection.putbackConnection(connection);
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection",e);
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection",e);
 			}
 		}
-		return success;
 	}
 
 	@Override
-	public boolean update(GoodOfOrder entity) throws FilmStoreDAOException {
+	public void update(GoodOfOrder entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		PoolConnection poolConnection = null;
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
-		boolean success = false;
+
 		try{
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_UPDATE);
+			
 			prepStatement.setByte(1, entity.getCountFilms());
+			prepStatement.setInt(2, entity.getId().getIdOrder());
+			prepStatement.setShort(3, entity.getId().getIdFilm());
+			
 			int affectedRows = prepStatement.executeUpdate();
-            if (affectedRows != 0) {
-                success = true;
+			if (affectedRows == 0) {
+                throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't update good of order!");
             }
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't update good of order fields",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection",e);
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection",e);
 			}
 		}
-		return success;
 	}
 
 	@Override
-	public boolean delete(GoodOfOrderPK id) throws FilmStoreDAOException {
+	public void delete(GoodOfOrderPK id) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		PoolConnection poolConnection = null;
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
-		boolean success = false;
+
 		try{
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -157,23 +169,25 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 			prepStatement.setInt(1,id.getIdOrder());
 			prepStatement.setShort(2, id.getIdFilm());
 			int affectedRows = prepStatement.executeUpdate();
-            if (affectedRows != 0) {
-                success = true;
+			if (affectedRows == 0) {
+                throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't delete good of order!");
             }
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't delete good of order",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
 				logger.error("Error closing of PreparedStatement or Connection");
 			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection",e);
+			}
 		}
-		return success;
 	}
 
 	@Override
@@ -223,15 +237,18 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 			}
 		}
 		catch(PoolConnectionException|SQLException e){
-			logger.error("Error creating of PreparedStatement.Can't find good of order("+criteria.name()+")",e);
 			throw new FilmStoreDAOException(e);
 		}
 		finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection",e);
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection",e);
 			}
 		}
 		return listGoodOfOrder;

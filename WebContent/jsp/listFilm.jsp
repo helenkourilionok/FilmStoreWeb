@@ -110,8 +110,11 @@
 								        <td>${film.name}(${film.yearOfRelease})</td>
 								        <td>${film.price}</td>
 								        <td>${film.quality.getNameQuality()}</td>
-								        <td>  <a href="Controller?command=a_update_film_show_page&id=${film.id}">${update}</a>
-								        	  <a href="Controller?command=a_delete_film&id=${film.id}">${delete}</a>
+								        <td> 
+								        	 <form method="post">
+								        	 		<button type="submit" formaction="Controller?command=a_update_film_show_page&id=${film.id}" class="btn btn-primary">${update}</button>
+								        	 		<button type="submit" formaction="Controller?command=a_delete_film&id=${film.id}" class="btn btn-primary">${delete}</button>
+								        	 </form>								        	 	 
 								        </td>
 								      </tr>
 							</c:forEach>

@@ -56,6 +56,7 @@ public final class AnnulOrderCommand implements Command {
 					dateOfOrder,order.getAddress());
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't annul order!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectOrderParamException e) {
 			logger.error("Incorrect order id!",e);

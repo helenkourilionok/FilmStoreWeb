@@ -68,7 +68,7 @@
 					<div class="col-md-9 col-md-offset-3">
 						<h3>${operSuccess}</h3>
 					</div>
-					<div class="col-md-9 col-md-offset-4">
+					<div class="col-md-9 col-md-offset-3">
 						<h3>
 							${goTo} <a href="Controller?command=show_list_film">${home}</a>${page}
 						</h3>

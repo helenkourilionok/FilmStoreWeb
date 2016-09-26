@@ -7,6 +7,7 @@ import java.util.List;
 import by.training.filmstore.dao.FilmDAO;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.entity.Film;
 import by.training.filmstore.entity.FilmDirector;
 import by.training.filmstore.entity.Quality;
@@ -103,12 +104,12 @@ public class FilmServiceImpl implements FilmService {
 	
 		try {
 
-			if (!filmDAO.create(film)) {
-				throw new FilmStoreServiceInvalidFilmOperException("Operation failed!Film isn't created!");
-			}
+			filmDAO.create(film);
 
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidFilmOperException(e);
 		}
 
 		return film;
@@ -127,11 +128,11 @@ public class FilmServiceImpl implements FilmService {
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
 		try {
-			if (!filmDAO.createFilmActor(filmId, idActors)) {
-				throw new FilmStoreServiceInvalidFilmOperException("Can't write in film_actor table!");
-			}
+			filmDAO.createFilmActor(filmId, idActors);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidFilmOperException(e);
 		}
 	}
 
@@ -155,11 +156,11 @@ public class FilmServiceImpl implements FilmService {
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
 		
 		try{
-			if(!filmDAO.update(film)){
-				throw new FilmStoreServiceInvalidFilmOperException("Film updating failed!");
-			}
+			filmDAO.update(film);
 		}catch(FilmStoreDAOException e){
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidFilmOperException(e);
 		}
 	}
 
@@ -178,11 +179,11 @@ public class FilmServiceImpl implements FilmService {
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
 		try {
-			if (!filmDAO.updateFilmActor(filmId, idNewActors,idOldActors)) {
-				throw new FilmStoreServiceInvalidFilmOperException("Can't update film_actor table!");
-			}
+			filmDAO.updateFilmActor(filmId, idNewActors,idOldActors);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidFilmOperException(e);
 		}
 	}
 	
@@ -198,11 +199,11 @@ public class FilmServiceImpl implements FilmService {
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
 		
 		try {
-			if(!filmDAO.delete(id)){
-				throw new FilmStoreServiceInvalidFilmOperException("Operation failed!Can't delete film!");
-			}
+			filmDAO.delete(id);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidFilmOperException(e);
 		}
 	}
 
@@ -219,10 +220,10 @@ public class FilmServiceImpl implements FilmService {
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
 		
 		try {
-			if(!filmDAO.deleteFilmActor(filmId,idActors)){
-				throw new FilmStoreServiceException("Deleting records in film_actor table failed!");
-			}
+			filmDAO.deleteFilmActor(filmId,idActors);
 		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
 			throw new FilmStoreServiceException(e);
 		}
 	}

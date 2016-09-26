@@ -6,6 +6,7 @@ import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.GoodOfOrderDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.entity.GoodOfOrder;
 import by.training.filmstore.entity.GoodOfOrderPK;
 import by.training.filmstore.service.GoodOfOrderService;
@@ -24,11 +25,11 @@ public class GoodOfOrderServiceImpl implements GoodOfOrderService {
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		GoodOfOrderDAO goodOfOrderDAO = filmStoreDAOFactory.getGoodOfOrderDAO();
 		try {
-			if(!goodOfOrderDAO.create(goodOfOrder)){
-				throw new FilmStoreServiceInvalidGoodOperException("Operation failed!Can't create good of order!");
-			}
+			goodOfOrderDAO.create(goodOfOrder);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidGoodOperException(e);
 		}
 	}
 

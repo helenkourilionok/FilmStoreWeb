@@ -71,6 +71,7 @@ public class AdminUpdateFilmShowPageCommand implements Command {
 		    sessionCheckRole.setAttribute(FILM, film);
 			request.getRequestDispatcher(CommandParamName.PATH_UPDATE_FILM_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Can't find actors/film director in database!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch(FilmStoreServiceFilmNotFoundException e){
 			logger.error("Film wasn't found!",e);

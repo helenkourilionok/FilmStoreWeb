@@ -55,6 +55,7 @@ public final class AdminMakeDiscountCommand implements Command {
 			logger.error("Operation failed!Can't make discount!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't make discount!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
 	}

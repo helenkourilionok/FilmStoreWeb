@@ -58,6 +58,7 @@ public class MakeCommentCommand implements Command {
 			session.setAttribute(LIST_COMMENT_ATTR, listComment);
 			request.getRequestDispatcher(CommandParamName.PATH_FILM_WITH_COMMENT_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't make order!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}catch (FilmStoreServiceIncorrectCommentParamException | 
 				FilmStoreServiceListCommentNotFoundException e) {

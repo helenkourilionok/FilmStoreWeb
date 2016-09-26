@@ -6,11 +6,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import by.training.filmstore.command.Command;
 
 public class Controller extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private final static Logger logger = LogManager.getLogger(Controller.class);
+	
+	private static final String PATH_ERROR_PAGE = "error-page.jsp";
 	private static final String COMMAND = "command";
 	
     public Controller() {
@@ -22,13 +29,14 @@ public class Controller extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String commandName = request.getParameter(COMMAND);
-		System.out.println("Command"+commandName);
-		Command command  = CommandHelper.getInstance().getCommand(commandName);
-		command.execute(request, response);
-//		request.getSession(true).setAttribute("local", request.getParameter("language"));
-//		System.out.println(request.getParameter("language"));
-//		request.getRequestDispatcher("jsp/login.jsp").forward(request, response);
+		try{
+			String commandName = request.getParameter(COMMAND);
+			Command command  = CommandHelper.getInstance().getCommand(commandName);
+			command.execute(request, response);
+		}catch(RuntimeException e){
+			logger.error("Error creating/destroy connection with database!",e);
+			request.getRequestDispatcher(PATH_ERROR_PAGE).forward(request, response);
+		}
 	}
 
 }

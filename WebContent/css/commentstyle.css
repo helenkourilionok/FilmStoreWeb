@@ -1,0 +1,27 @@
+/*****************************comment styles*******************************/
+.commennts {
+    border: 8px solid #7e7e7e;
+    padding: 1.5em;
+    margin-bottom: 1.5em;
+}
+.comment-avatar {
+    float: left;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 50%;
+}
+.avatar-indent {
+    margin-left: 101px;
+}
+.comment-author {
+    margin-right: 2em;
+    font-weight: 700;
+}
+.comment-date {
+    color: #979797;
+}
+.comment-body {
+    margin: .5em 0;
+}
+/*****************************comment styles*******************************/

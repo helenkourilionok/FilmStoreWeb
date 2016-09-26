@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.dao.UserDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.dao.pool.PoolConnection;
 import by.training.filmstore.dao.pool.PoolConnectionException;
 import by.training.filmstore.entity.Role;
@@ -57,24 +58,23 @@ public class UserDAOImpl implements UserDAO {
 	private static final String SQL_TAKE_AWAY_DISCOUNT = "update user  SET user.us_discount = 0 where user.us_email = ? ";
 
 	@Override
-	public boolean create(User entity) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.INSERT, entity);
+	public void create(User entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.INSERT, entity);
 	}
 
 	@Override
-	public boolean update(User entity) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.UPDATE, entity);
+	public void update(User entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.UPDATE, entity);
 	}
 
 	@Override
-	public boolean delete(String id) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.DELETE, id);
+	public void delete(String id) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.DELETE, id);
 	}
 
 	@Override
-	public boolean makeDiscount(byte sizeOfDiscount, int year, int month, byte countOrders)
-			throws FilmStoreDAOException {
-		boolean success = false;
+	public void makeDiscount(byte sizeOfDiscount, int year, int month, byte countOrders)
+			throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
@@ -87,27 +87,28 @@ public class UserDAOImpl implements UserDAO {
 			prepStatement.setInt(3, month);
 			prepStatement.setByte(4, countOrders);
 			int affectedRows = prepStatement.executeUpdate();
-			if (affectedRows != 0) {
-				success = true;
+			if (affectedRows == 0) {
+				throw new FilmStoreDAOInvalidOperationException("Can't make discount!");
 			}
 		} catch (PoolConnectionException | SQLException e) {
-			logger.error("Error creating of PreparedStatement.Can't update user discount.", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	@Override
-	public boolean takeAwayDiscount(int year, int month) throws FilmStoreDAOException {
+	public void takeAwayDiscount(int year, int month) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		PoolConnection poolConnection = null;
-		boolean success = false;
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		List<String> emails = null;
@@ -116,38 +117,44 @@ public class UserDAOImpl implements UserDAO {
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_FIND_USER_FOR_DISCOUNT);
 			emails = findEmailsOfUser(prepStatement, year, month);
-
+            
+			if(emails.isEmpty()){
+				throw new FilmStoreDAOInvalidOperationException("Can't take away user discount!");
+			}
+			
 			connection.setAutoCommit(false);
 			prepStatement = connection.prepareStatement(SQL_TAKE_AWAY_DISCOUNT);
 			int affectedRows = updateDiscountByEmails(prepStatement, emails);
 			connection.commit();
-			if (affectedRows == emails.size()) {
-				success = true;
+			
+			if (affectedRows != emails.size()) {
+				throw new FilmStoreDAOInvalidOperationException("Can't take away user discount!");
 			}
 		} catch (PoolConnectionException | SQLException e) {
 			try {
 				connection.rollback();
 			} catch (SQLException e1) {
-				logger.error("Can't rollback update operations(SQLException)", e);
+				throw new FilmStoreDAOException(e);
 			}
-			logger.error("Can't update user discount(SQLException)", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of ResultSet or PreparedStatement", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
-	public boolean changePassword(String email,String newPassword) throws FilmStoreDAOException {
+	public void changePassword(String email,String newPassword) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
-		boolean success = false;
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -155,69 +162,23 @@ public class UserDAOImpl implements UserDAO {
 			prepStatement.setString(1,newPassword);
 			prepStatement.setString(2,email);
 			int affectedRows = prepStatement.executeUpdate();
-			if (affectedRows != 0) {
-				success = true;
+			if (affectedRows == 0) {
+				throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't change password!");
 			}
 		} catch (PoolConnectionException | SQLException e) {
-			logger.error("Error updating of user information", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing PreparedStatement", e);
+				logger.error("Error closing of PreparedStatement", e);
 			}
-		}
-		return success;
-	}
-
-	@Override
-	public boolean changeEmail(String oldEmail, String newEmail) throws FilmStoreDAOException {
-		Connection connection = null;
-		PreparedStatement prepStatementDelete = null;
-		PreparedStatement prepStatementInsert = null;
-		PoolConnection poolConnection = null;
-		User foundedUser = null;
-		boolean success = false;
-
-		try {
-			poolConnection = PoolConnection.getInstance();
-			connection = poolConnection.takeConnection();
-			prepStatementDelete = connection.prepareStatement(SQL_DELETE);
-			prepStatementInsert = connection.prepareStatement(SQL_INSERT);
-
-			foundedUser = find(oldEmail);
-			if (foundedUser == null) {
-				logger.error("Can't change user email!Incorrect email!");
-				throw new FilmStoreDAOException("User wasn't found!Incorrect email!");
-			}
-
-			connection.setAutoCommit(false);
-
-			deleteInsertUser(prepStatementDelete, prepStatementInsert, foundedUser, newEmail);
-
-			connection.commit();
-			success = true;
-
-		} catch (PoolConnectionException | SQLException e) {
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				logger.error("Can't rollback update and delete operation with user table!", e);
-			}
-			logger.error("Error updating of user information", e);
-			throw new FilmStoreDAOException(e);
-		} finally {
-			try {
+			try{
 				poolConnection.putbackConnection(connection);
-				prepStatementDelete.close();
-				prepStatementInsert.close();
-			} catch (SQLException e) {
-				logger.error("Error closing PreparedStatement", e);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	@Override
@@ -253,11 +214,10 @@ public class UserDAOImpl implements UserDAO {
 		return listUser;
 	}
 
-	private <T> boolean updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException {
+	private <T> void updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
-		boolean success = false;
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -265,21 +225,23 @@ public class UserDAOImpl implements UserDAO {
 			prepStatement = createPrepStatementByCommandCriteria(connection, parametr, commandDAO);
 
 			int affectedRows = prepStatement.executeUpdate();
-			if (affectedRows != 0) {
-				success = true;
+			if (affectedRows == 0) {
+				throw new FilmStoreDAOException("Can't "+commandDAO.name()+" user");
 			}
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Can't "+commandDAO.name()+" user", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	private <T> PreparedStatement createPrepStatementByCommandCriteria(Connection connection, T parametr,
@@ -305,25 +267,6 @@ public class UserDAOImpl implements UserDAO {
 			break;
 		}
 		return prepStatement;
-	}
-
-	private void deleteInsertUser(PreparedStatement prepStatementDelete,
-			PreparedStatement prepStatementInsert,User foundedUser,String newEmail) throws SQLException, FilmStoreDAOException{
-		boolean insertOperation = true;
-		prepStatementDelete.setString(1, foundedUser.getEmail());
-		int affectedRows = prepStatementDelete.executeUpdate();
-		if (affectedRows == 0) {
-			logger.error("Can't change user email!Incorrect email!");
-			throw new FilmStoreDAOException("User wasn't found!Incorrect email!");
-		}
-		
-		foundedUser.setEmail(newEmail);
-		fillPreparedStatementForUser(prepStatementInsert, foundedUser, insertOperation);
-		affectedRows = prepStatementInsert.executeUpdate();
-		if (affectedRows == 0) {
-			logger.error("Can't change user email!Incorrect email!");
-			throw new FilmStoreDAOException("User wasn't found!Incorrect email!");
-		}
 	}
 	
 	private List<String> findEmailsOfUser(PreparedStatement prepStatement, int year, int month) throws SQLException {
@@ -367,14 +310,17 @@ public class UserDAOImpl implements UserDAO {
 				listUser.add(user);
 			}
 		} catch (PoolConnectionException | SQLException e) {
-			logger.error("Error creating of PreparedStatement.Can't find user(" + criteria.name() + ")", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
 				logger.error("Error closing of PreparedStatement or Connection", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);				
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
 		return listUser;

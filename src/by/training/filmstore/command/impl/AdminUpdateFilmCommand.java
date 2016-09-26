@@ -79,6 +79,8 @@ public class AdminUpdateFilmCommand implements Command {
 			String listActors = listParamValue.get(LIST_ACTORS);
 			String description = listParamValue.get(DESCRIPTION);
 			String image = listParamValue.get(IMAGE);
+			image = checkImage(image);
+			
 			idNewActors = EditFilmUtil.strToListShort(listActors);
 			filmService.update(filmId,name, genres, countries, yearOfRel, quality,
 								filmDirId, description, price, countFilms, image);
@@ -103,9 +105,19 @@ public class AdminUpdateFilmCommand implements Command {
 			request.getRequestDispatcher(CommandParamName.PATH_UPDATE_FILM_PAGE).forward(request, response);
 		}
 		catch(FilmStoreServiceException e){
+			logger.error("Operation failed!Can't update film!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
 
+	}
+	
+	private String checkImage(String image){
+		String pathToImageFolder = "images/";
+		String result = image;
+		if(!image.contains(pathToImageFolder)){
+			result = pathToImageFolder+image;
+		}
+		return result;
 	}
 	
 	private List<Short> getListIdActorsFromListActors(List<Actor> listActor) {

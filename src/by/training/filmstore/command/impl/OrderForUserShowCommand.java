@@ -54,6 +54,7 @@ public class OrderForUserShowCommand implements Command {
 			request.setAttribute(STATUS,Status.valueOf(status));
 			request.getRequestDispatcher(CommandParamName.PATH_PERSONAL_INFO).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Can't find orders for this user!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectOrderParamException e) {
 			logger.error("Incorrect user email!",e);

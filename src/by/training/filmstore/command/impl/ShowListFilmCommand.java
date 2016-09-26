@@ -82,6 +82,7 @@ public class ShowListFilmCommand implements Command {
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX).forward(request, response);
 
 		} catch (FilmStoreServiceException e) {
+			logger.error("Can't find films in database!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE);
 		} catch (FilmStoreServiceListFilmNotFoundException e) {
 			logger.error("None film wasn't found!", e);

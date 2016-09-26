@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import by.training.filmstore.command.Command;
 import by.training.filmstore.command.util.QueryUtil;
 import by.training.filmstore.entity.Actor;
@@ -18,11 +21,13 @@ import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
 
 public class AdminCreateFilmShowPageCommand implements Command {
+
+	private final static Logger logger = LogManager.getLogger(AdminCreateFilmShowPageCommand.class);
 	
 	private final static String FILM_CREATION_FAILED = "filmCreationFailed";
 	
 	private final static String FILM = "film";
-	//create and update page have similar content with session attribute "film"
+
 	private final static String LIST_ACTORS = "listActors";
 	private final static String LIST_FILM_DIR = "listFilmDir";
 	private final static String LIST_COUNTRIES = "listCountries";
@@ -60,6 +65,7 @@ public class AdminCreateFilmShowPageCommand implements Command {
 		    request.setAttribute(LIST_QUALITY, CommandParamName.listQuality);
 			request.getRequestDispatcher(CommandParamName.PATH_CREATE_FILM_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Can't find actors/film director in database!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} 
 		

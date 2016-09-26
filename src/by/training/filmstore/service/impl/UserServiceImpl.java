@@ -9,6 +9,7 @@ import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.UserDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.entity.Role;
 import by.training.filmstore.entity.User;
 import by.training.filmstore.service.UserService;
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
 		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
 		try {
 			userDAO.create(user);
-		} catch (FilmStoreDAOException e) {
+		} catch (FilmStoreDAOInvalidOperationException | FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
 		}
 		return user;
@@ -70,11 +71,11 @@ public class UserServiceImpl implements UserService {
 		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
 
 		try {
-			if(!userDAO.makeDiscount((byte)arrResults[0],arrResults[1],arrResults[2],(byte)arrResults[3])){
-				throw new FilmStoreServiceInvalidUserOperException("Operation failed!Can't make discount for users!");
-			}
+			userDAO.makeDiscount((byte)arrResults[0],arrResults[1],arrResults[2],(byte)arrResults[3]);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidUserOperException(e);
 		}
 	}
 	
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
 		
 		try {
 			userDAO.update(user);
-		} catch (FilmStoreDAOException e) {
+		} catch (FilmStoreDAOInvalidOperationException | FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
 		}
 		
@@ -112,11 +113,11 @@ public class UserServiceImpl implements UserService {
 		UserDAO userDAO = filmStoreDAOFactory.getUserDao();
 		
 		try {
-			if(!userDAO.changePassword(email, newPassword)){
-				throw new FilmStoreServiceInvalidUserOperException("Can't update user password!");
-			}
+			userDAO.changePassword(email, newPassword);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidUserOperException(e);
 		}
 		
 	}

@@ -109,7 +109,7 @@
 													value="${comment.date}" />
 											</time>
 											<div class="comment-body" id="comment-body-1">
-												${comment.content}<a class="comments-buttons" href="#">Answer</a>
+												${comment.content}
 											</div>
 										</div>
 									</article>

@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import by.training.filmstore.command.Command;
 import by.training.filmstore.command.util.CustomAttrTagUtil;
 import by.training.filmstore.command.util.QueryUtil;
@@ -18,6 +21,8 @@ import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
 
 public final class AdminShowListActorCommand implements Command {
+	
+	private final static Logger logger = LogManager.getLogger(AdminShowListActorCommand.class);
 	
 	private final static String LIST_ACTOR = "listActor"; 
 	
@@ -48,6 +53,7 @@ public final class AdminShowListActorCommand implements Command {
 			request.setAttribute(LIST_ACTOR, customAttrTagUtil);
 			request.getRequestDispatcher(CommandParamName.PATH_LIST_ACTOR).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Can't find actors in database!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
 

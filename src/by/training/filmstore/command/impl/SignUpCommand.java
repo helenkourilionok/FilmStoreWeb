@@ -61,6 +61,7 @@ public class SignUpCommand implements Command {
 			session.setAttribute(CommandParamName.USER_ROLE, user.getRole());
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
 		} catch (FilmStoreServiceException e) {
+			logger.error("Operation failed!Can't create user!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		} catch (FilmStoreServiceIncorrectUserParamException e) {
 			logger.error("Validation user attributes failed!", e);

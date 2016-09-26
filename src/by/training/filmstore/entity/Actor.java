@@ -1,17 +1,15 @@
 package by.training.filmstore.entity;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Actor implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6102227750875275056L;
+	private static final long serialVersionUID = 3080921680112226132L;
 	private short id;
 	private String fio;
-	private List<Film> films;
 	public short getId() {
 		return id;
 	}
@@ -24,13 +22,6 @@ public class Actor implements Serializable {
 	public void setFio(String fio) {
 		this.fio = fio;
 	}
-	public List<Film> getFilms() {
-		return films;
-	}
-	public void setFilms(List<Film> films) {
-		this.films = films;
-	}
-	
 	public Actor() {
 		super();
 	}
@@ -68,7 +59,7 @@ public class Actor implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "Actor [id=" + id + ", fio=" + fio + ", films=" + films + "]";
+		return "Actor [id=" + id + ", fio=" + fio + "]";
 	}
 	
 }

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.dao.FilmDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.dao.pool.PoolConnection;
 import by.training.filmstore.dao.pool.PoolConnectionException;
 import by.training.filmstore.entity.Actor;
@@ -72,22 +73,22 @@ public class FilmDAOImpl implements FilmDAO {
 			+ " FROM film WHERE film.fm_uid = ?);";
 
 	@Override
-	public boolean create(Film entity) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.INSERT, entity);
+	public void create(Film entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.INSERT, entity);
 	}
 
 	@Override
-	public boolean update(Film entity) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.UPDATE, entity);
+	public void update(Film entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.UPDATE, entity);
 	}
 
 	@Override
-	public boolean delete(Short id) throws FilmStoreDAOException {
-		return updateByCriteria(CommandDAO.DELETE, id);
+	public void delete(Short id) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		updateByCriteria(CommandDAO.DELETE, id);
 	}
 
 	@Override
-	public boolean createFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException {
+	public void createFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
@@ -102,23 +103,28 @@ public class FilmDAOImpl implements FilmDAO {
 			int[] results = prepStatement.executeBatch();
 
 			success = isBatchExecuteSuccessful(results);
+			if(!success){
+				 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't create record in film_actor table!");
+			}
 
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Can't write in film_actor table", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	@Override
-	public boolean updateFilmActor(short filmId, List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreDAOException {
+	public void updateFilmActor(short filmId, List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
@@ -127,29 +133,34 @@ public class FilmDAOImpl implements FilmDAO {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_UPDATE_FILM_ACTOR);
-
+			
 			fillBatchForExecute(filmId,idNewActors, idOldActors,prepStatement);
-
+			
 			int[] results = prepStatement.executeBatch();
 
 			success = isBatchExecuteSuccessful(results);
+			if(!success){
+				 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't update record in film_actor table!");
+			}
 
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Can't update film_actor table", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 	
 	@Override
-	public boolean deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException {
+	public void deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
@@ -164,30 +175,34 @@ public class FilmDAOImpl implements FilmDAO {
 			int[] results = prepStatement.executeBatch();
 
 			success = isBatchExecuteSuccessful(results);
+			if(!success){
+				 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't delete record from film_actor table!");
+			}
 
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Can't fill film_actor table", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 	
 	@Override
-	public boolean findActorFilmDirectorForFilm(Film film) throws FilmStoreDAOException {
+	public void findActorFilmDirectorForFilm(Film film) throws FilmStoreDAOException {
 		Connection connection = null;
 		PreparedStatement prepStatementForActor = null;
 		PreparedStatement prepStatementForFilmDirector = null;
 		ResultSet resultSetActor = null;
 		ResultSet resultSetFilmDir = null;
 		PoolConnection poolConnection = null;
-		boolean success = false;
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -204,20 +219,20 @@ public class FilmDAOImpl implements FilmDAO {
 			film.setActors(fillListActor(resultSetActor));
 			film.setFilmDirector(fillFilmDirector(resultSetFilmDir));
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Can't fill film_actor table", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
-				resultSetActor.close();
-				resultSetFilmDir.close();
 				prepStatementForActor.close();
 				prepStatementForFilmDirector.close();
 			} catch (SQLException e) {
 				logger.error("Error closing of PreparedStatement or Connection", e);
 			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
+			}
 		}
-		return success;
 	}
 
 	@Override
@@ -263,15 +278,17 @@ public class FilmDAOImpl implements FilmDAO {
 				countAllRecords.add(resultSet.getInt(1));
 			}
 		} catch (PoolConnectionException | SQLException e) {
-			logger.error("Error creating of PreparedStatement.Can't find list film(pagination)", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
-				resultSet.close();
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
 		return listFilm;
@@ -288,11 +305,11 @@ public class FilmDAOImpl implements FilmDAO {
 		return findFilmByCriteria(name, FindFilmCriteria.FIND_BY_NAME);
 	}
 
-	private <T> boolean updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException {
+	private <T> void updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
 		PoolConnection poolConnection = null;
-		boolean success = false;
+
 		try {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
@@ -300,25 +317,26 @@ public class FilmDAOImpl implements FilmDAO {
 			prepStatement = createPrepStatementByCommandCriteria(connection, parametr, commandDAO);
 
 			int affectedRows = prepStatement.executeUpdate();
-			if (affectedRows != 0) {
-				success = true;
+			if (affectedRows == 0) {
+				throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't " + commandDAO.name() + " film");
 			}
-
 			if (commandDAO == CommandDAO.INSERT) {
 				fillGeneratedIdIfInsert(prepStatement, (Film) parametr);
 			}
 		} catch (SQLException | PoolConnectionException e) {
-			logger.error("Error creating of PreparedStatement.Can't " + commandDAO.name() + " film", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
-		return success;
 	}
 
 	private <T> PreparedStatement createPrepStatementByCommandCriteria(Connection connection, T parametr,
@@ -366,15 +384,17 @@ public class FilmDAOImpl implements FilmDAO {
 				listFilm.add(film);
 			}
 		} catch (PoolConnectionException | SQLException e) {
-			logger.error("Error creating of PreparedStatement.Can't find film(" + criteria.name() + ")", e);
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
-				poolConnection.putbackConnection(connection);
-				resultSet.close();
 				prepStatement.close();
 			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement or Connection", e);
+				logger.error("Error closing of PreparedStatement", e);
+			}	
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection", e);
 			}
 		}
 		return listFilm;
@@ -420,6 +440,7 @@ public class FilmDAOImpl implements FilmDAO {
 		preparedStatement.setBigDecimal(8, entity.getPrice());
 		preparedStatement.setShort(9, entity.getCountFilms());
 		preparedStatement.setString(10, entity.getImage());
+
 		if (!insert) {
 			preparedStatement.setShort(11, entity.getId());
 		}
