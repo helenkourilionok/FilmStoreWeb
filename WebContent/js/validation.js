@@ -4,7 +4,7 @@ function formValidation(language) {
 	var passcopy = document.signup.copypassword.value;
 	var last_name = document.signup.last_name;
 	var first_name = document.signup.first_name;
-	var patronimic = document.signup.patronimic;
+	var patronymic = document.signup.patronymic;
 	var phone = document.signup.phone.value;
 	var balance = document.signup.balance.value;
 	if (!validateEmail(email, language)) {
@@ -24,8 +24,8 @@ function formValidation(language) {
 			"firstname_error", "First name", "Имя")) {
 		return false;
 	}
-	if (!validateTextField(patronimic, language, "#patronimic",
-			"patronimic_error", "Patronimic", "Отчество")) {
+	if (!validateTextField(patronymic, language, "#patronymic",
+			"patronymic_error", "Patronymic", "Отчество")) {
 		return false;
 	}
 	if (!validatePhone(phone, language, "phone_error")) {
@@ -81,11 +81,11 @@ function updateUserValidation(language){
 			"firstname_error", "First name", "Имя")) {
 		return false;
 	}
-	if (!validateTextField(patronimic, language, "#patronimic",
+	if (!validateTextField(patronymic, language, "#patronymic",
 			"patronimic_error", "Patronimic", "Отчество")) {
 		return false;
 	}
-	if (!validatePhone(phone, language, "phone_error")) {
+	if (!validatePhonePrs(phone, language, "phone_error")) {
 		return false;
 	}
 	if (!validateBalance(balance, language, "balance_error")) {
@@ -187,7 +187,7 @@ function validatePassCopyPass(password, passcopy, language) {
 	}
 	$("#password").css('border', '#ccc 1px solid');
 	$("#copypassword").css('border', '#ccc 1px solid');
-	document.getElementById("copypass_errors").hidden = true;
+	document.getElementById("copypass_error").hidden = true;
 	return true;
 }
 
@@ -224,6 +224,32 @@ function validateTextField(field, language, id_field, id_error_el,
 	return true;
 }
 
+function validatePhonePrs(phone, language, id_error_el){
+	var phoneRegex = /^\+375\d{2}\d{3}\d{2}\d{2}$/;
+	if (phone == "") {
+		$("#phone").css('border', '#eb6a5a 1px solid');
+		if (language == 'en') {
+			document.getElementById(id_error_el).innerHTML = "Enter the phone";
+		} else {
+			document.getElementById(id_error_el).innerHTML = "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043F\u043E\u043B\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D"
+		}
+		return false;
+	}
+	if (!phoneRegex.test(phone)) {
+		$("#phone").css('border', '#eb6a5a 1px solid');
+		if (language == 'en') {
+			document.getElementById(id_error_el).innerHTML = "Phone format is invalid";
+		} else {
+			document.getElementById(id_error_el).innerHTML = "\u041F\u043E\u043B\u0435 \u0422\u0435\u043B\u0435\u0444\u043E\u043D \u0438\u043C\u0435\u0435\u0442 \u043D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0444\u043E\u0440\u043C\u0430\u0442"
+		}
+		return false;
+	}
+	$("#phone").css('border', '#ccc 1px solid');
+	document.getElementById(id_error_el).innerHTML = "";
+	return true;	
+}
+
+
 function validatePhone(phone, language, id_error_el) {
 	var phoneRegex = /^\+375\-\d{2}\-\d{3}\-\d{2}\-\d{2}$/;
 	if (phone == "") {
@@ -250,7 +276,7 @@ function validatePhone(phone, language, id_error_el) {
 }
 
 function validateBalance(balance, language, id_error_el) {
-	var numbers = /^[0-9]+\.?[0-9]*$/;
+	var numbers = /^[0-9]+\.?[0-9]+$/;
 	if (balance == "") {
 		$("#balance").css('border', '#eb6a5a 1px solid');
 		if (language == 'en') {
@@ -263,9 +289,9 @@ function validateBalance(balance, language, id_error_el) {
 	if (!numbers.test(balance)) {
 		$("#balance").css('border', '#eb6a5a 1px solid');
 		if (language == 'en') {
-			document.getElementById(id_error_el).innerHTML = "Balance must have numeric characters only";
+			document.getElementById(id_error_el).innerHTML = "Balance must have numeric characters and/or just one point ";
 		} else {
-			document.getElementById(id_error_el).innerHTML = "\u0434\u043E\u043B\u0436\u043D\u043E \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u0442\u043E\u043B\u044C\u043A\u043E \u0441\u0438\u043C\u0432\u043E\u043B\u044B";
+			document.getElementById(id_error_el).innerHTML = "\u0411\u0430\u043B\u0430\u043D\u0441 \u0434\u043E\u043B\u0436\u0435\u043D \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u0446\u0438\u0444\u0440\u044B \u0438/\u0438\u043B\u0438 \u043E\u0434\u043D\u0443 \u0442\u043E\u0447\u043A\u0443";
 		}
 		return false;
 	}

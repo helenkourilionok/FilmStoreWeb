@@ -160,7 +160,7 @@
 								<div class="form-group">
 									<label for="commonPrice">${commonPrice}:</label> <input
 										type="text" class="form-control" id="commonPrice"
-										name="commonPrice" value="${requestScope.order.commonPrice}"
+										name="commonPrice" value="${requestScope.order.commonPrice+requestScope.order.commonPrice*sessionScope.discount}"
 										readonly />
 								</div>
 								<div class="form-group">

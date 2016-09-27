@@ -3,7 +3,6 @@ function validateAddress() {
 	var addrRegex_ru = /^[\u0410-\u042F\u0430-\u044F\.\,\-\s0-9]{7,40}$/;
 	var numericRegex = /[0-9]+/;
 	if (address == "") {
-		alert("dfdgg");
 		document.order.address.focus();
 		$("#address").css('border', 'red 1px solid');
 		document.getElementById("address_empty_error").hidden = false;

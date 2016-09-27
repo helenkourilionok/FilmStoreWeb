@@ -104,6 +104,10 @@
 <fmt:message bundle="${locale}" key="locale.order.pay" var="pay" />
 <fmt:message bundle="${locale}" key="locale.createActor.notEnoughMoney"
 	var="notEnoughMoney" />
+<fmt:message bundle="${locale}" key="locale.personalInfo.edit"
+	var="edit" />
+<fmt:message bundle="${locale}" key="locale.personalInfo.updateUser"
+	var="updateUser" />
 </head>
 <body>
 	<div class="wrapper container">
@@ -178,7 +182,7 @@
 									${listOrders}</button>
 							</form>
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-3">
 							<form method="get">
 								<input type="hidden" name="command"
 									value="change_password_show_page" />
@@ -186,21 +190,21 @@
 									${changePassword}</button>
 							</form>
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-5">
 							<div class="form-group">
 								<button type="submit" formaction="Controller" form="userForm"
-									class="btn btn-primary">Update profile</button>
+									class="btn btn-primary">${updateUser}</button>
 							</div>
 							<div class="form-group">
 								<label class="checkbox-inline"><input type="checkbox"
-									id="edit" value="">Edit</label>
+									id="edit" value="">${edit}</label>
 							</div>
 						</div>
 					</div>
 				</c:if>
 				<c:if test="${requestScope.listOrder != null}">
 					<div class="col-md-12" style="padding-left:0px">
-						<c:if test="${!(fn:length(requestScope.listOrder) > 0)}">
+						<c:if test="${!(fn:length(requestScope.listOrder) > 0) and !requestScope.notEnoughMoney.equals('true')}">
 							<span>${noneOrder}</span>
 						</c:if>
 						<c:if test="${requestScope.notEnoughMoney.equals('true')}">

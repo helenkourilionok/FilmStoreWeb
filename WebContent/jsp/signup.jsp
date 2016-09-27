@@ -54,13 +54,13 @@
 <fmt:message bundle="${locale}" key="locale.signup.copyPass" var="copyPass" />
 <fmt:message bundle="${locale}" key="locale.signup.lastName" var="lastName" />
 <fmt:message bundle="${locale}" key="locale.signup.firstName" var="firstName" />
-<fmt:message bundle="${locale}" key="locale.signup.patronimic" var="patronimic" />
+<fmt:message bundle="${locale}" key="locale.signup.patronymic" var="patronymic" />
 <fmt:message bundle="${locale}" key="locale.signup.phone" var="phone" />
 <fmt:message bundle="${locale}" key="locale.signup.balance" var="balance" />
 <fmt:message bundle="${locale}" key="locale.signup.enterCopyPass" var="enterCopyPass" />
 <fmt:message bundle="${locale}" key="locale.signup.enterLastName" var="enterLastName" />
 <fmt:message bundle="${locale}" key="locale.signup.enterFirstName" var="enterFirstName" />
-<fmt:message bundle="${locale}" key="locale.signup.enterPatronimic" var="enterPatronimic" />
+<fmt:message bundle="${locale}" key="locale.signup.enterPatronymic" var="enterPatronymic" />
 <fmt:message bundle="${locale}" key="locale.signup.enterBalance" var="enterBalance" />
 <fmt:message bundle="${locale}" key="locale.signup.createAccount" var="createAccount" />
 <fmt:message bundle="${locale}" key="locale.signup.signUpFailed" var="mesSignUpFailed"/>
@@ -125,10 +125,10 @@
 								<span id="firstname_error" class="error"></span>
 							</div>
 							<div class="form-group">
-								<label for="patronimic">${patronimic}:</label> <input type="text"
-									class="form-control" id="patronimic" name="patronimic"
-									placeholder="${enterPatronimic}" maxlength="15"/>
-								<span id="patronimic_error" class="error"></span>
+								<label for="patronymic">${patronymic}:</label> <input type="text"
+									class="form-control" id="patronymic" name="patronymic"
+									placeholder="${enterPatronymic}" maxlength="15"/>
+								<span id="patronymic_error" class="error"></span>
 							</div>
 							<div class="form-group">
 								<label for="phone">${phone}:</label> <input type="text"
@@ -139,7 +139,7 @@
 							<div class="form-group">
 								<label for="balance">${balance}:</label> <input type="text"
 									class="form-control" id="balance" name="balance"
-									placeholder="${enterBalance}:10 900.90"/>
+									placeholder="${enterBalance}:10900.90"/>
 									<span id="balance_error" class="error"></span>
 							</div>
 							<div class="row-offset">

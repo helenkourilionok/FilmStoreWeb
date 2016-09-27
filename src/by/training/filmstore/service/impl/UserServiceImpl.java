@@ -163,7 +163,7 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	private User validateUser(String email, String password, String copyPass, String lastName, String firstName,
-			String patronimic, String mobilePhone, String balance) throws FilmStoreServiceIncorrectUserParamException{ 
+			String patronymic, String mobilePhone, String balance) throws FilmStoreServiceIncorrectUserParamException{ 
 		int permissibleEmailLength = 40;
 		byte discount = 0;
 		if (!ValidationParamUtil.validateEmail(email, permissibleEmailLength)) {
@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
 		if (!Validation.validateCharacterField(firstName, true)) {
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect first name!");
 		}
-		if (!Validation.validateCharacterField(patronimic, false)) {
+		if (!Validation.validateCharacterField(patronymic, false)) {
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect patronimic!");
 		}
 		String phone = Validation.validatePhone(mobilePhone);
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService {
 		if (balanceBD == null) {
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect balance!");
 		}
-		return new User(email, password, Role.ROLE_USER, lastName, firstName, patronimic, phone, balanceBD,
+		return new User(email, password, Role.ROLE_USER, lastName, firstName, patronymic, phone, balanceBD,
 				discount);
 	}
 	
@@ -236,10 +236,13 @@ public class UserServiceImpl implements UserService {
 		}
 
 		static boolean validateCharacterField(String value, boolean name) {
+			if(!ValidationParamUtil.notEmpty(value)){
+				return false;
+			}
 			if (name) {
 				return ValidationParamUtil.checkField(LETTERS10_PATTERN_EN, value) || 
 						ValidationParamUtil.checkField(LETTERS10_PATTERN_RU, value);
-			}
+			}			
 			return ValidationParamUtil.checkField(LETTERS15_PATTERN_EN, value) || 
 					ValidationParamUtil.checkField(LETTERS15_PATTERN_RU, value);
 		}

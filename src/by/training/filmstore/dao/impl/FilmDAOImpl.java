@@ -98,16 +98,23 @@ public class FilmDAOImpl implements FilmDAO {
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_INSERT_FILM_ACTOR);
 
+			connection.setAutoCommit(false);
 			fillBatchForExecute(filmId,idActors, prepStatement);
 
 			int[] results = prepStatement.executeBatch();
-
+			connection.commit();
+			
 			success = isBatchExecuteSuccessful(results);
 			if(!success){
 				 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't create record in film_actor table!");
 			}
 
 		} catch (SQLException | PoolConnectionException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new FilmStoreDAOException(e1);
+			}
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
@@ -134,16 +141,23 @@ public class FilmDAOImpl implements FilmDAO {
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_UPDATE_FILM_ACTOR);
 			
+			connection.setAutoCommit(false);
 			fillBatchForExecute(filmId,idNewActors, idOldActors,prepStatement);
 			
 			int[] results = prepStatement.executeBatch();
-
+			connection.commit();
+			
 			success = isBatchExecuteSuccessful(results);
 			if(!success){
 				 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't update record in film_actor table!");
 			}
 
 		} catch (SQLException | PoolConnectionException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new FilmStoreDAOException(e1);
+			}
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {
@@ -170,16 +184,23 @@ public class FilmDAOImpl implements FilmDAO {
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_DELETE_FILM_ACTOR);
 
+			connection.setAutoCommit(false);
 			fillBatchForExecute(filmId,idActors, prepStatement);
 
 			int[] results = prepStatement.executeBatch();
-
+			connection.commit();
+			
 			success = isBatchExecuteSuccessful(results);
 			if(!success){
 				 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't delete record from film_actor table!");
 			}
 
 		} catch (SQLException | PoolConnectionException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new FilmStoreDAOException(e1);
+			}
 			throw new FilmStoreDAOException(e);
 		} finally {
 			try {

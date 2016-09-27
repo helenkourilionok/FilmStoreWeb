@@ -27,7 +27,7 @@ public class SignUpCommand implements Command {
 	private final static String COPY_PASSWORD = "copypassword";
 	private final static String LAST_NAME = "last_name";
 	private final static String FIRST_NAME = "first_name";
-	private final static String PATRONIMIC = "patronimic";
+	private final static String PATRONYMIC = "patronymic";
 	private final static String PHONE = "phone";
 	private final static String BALANCE = "balance";
 	private final static String DEFAULT_LANGUAGE = "ru";
@@ -45,7 +45,7 @@ public class SignUpCommand implements Command {
 		String copyPassword = request.getParameter(COPY_PASSWORD);
 		String lastName = request.getParameter(LAST_NAME);
 		String firstName = request.getParameter(FIRST_NAME);
-		String patronimic = request.getParameter(PATRONIMIC);
+		String patronimic = request.getParameter(PATRONYMIC);
 		String phone = request.getParameter(PHONE);
 		String balance = request.getParameter(BALANCE);
 		String language = (String)session.getAttribute(CommandParamName.LOCALE);

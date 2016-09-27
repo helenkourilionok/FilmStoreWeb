@@ -119,7 +119,7 @@ public class UserDAOImpl implements UserDAO {
 			emails = findEmailsOfUser(prepStatement, year, month);
             
 			if(emails.isEmpty()){
-				throw new FilmStoreDAOInvalidOperationException("Can't take away user discount!");
+				throw new FilmStoreDAOInvalidOperationException("Can't take away user's discount!");
 			}
 			
 			connection.setAutoCommit(false);
@@ -128,7 +128,7 @@ public class UserDAOImpl implements UserDAO {
 			connection.commit();
 			
 			if (affectedRows != emails.size()) {
-				throw new FilmStoreDAOInvalidOperationException("Can't take away user discount!");
+				throw new FilmStoreDAOInvalidOperationException("Can't take away user's discount!");
 			}
 		} catch (PoolConnectionException | SQLException e) {
 			try {
@@ -282,14 +282,22 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	private int updateDiscountByEmails(PreparedStatement prepStatement, List<String> emails) throws SQLException {
-		int affectedRows = 0;
 		for (int i = 0; i < emails.size(); i++) {
 			prepStatement.setString(1, emails.get(i));
-			affectedRows += prepStatement.executeUpdate();
+			prepStatement.addBatch();
 		}
-		return affectedRows;
+		int [] updatedRows = prepStatement.executeBatch();
+		return sumElementOfArray(updatedRows);
 	}
 
+	private int sumElementOfArray(int [] updatedRows){
+		int sum = 0;
+		for(int i = 0;i<updatedRows.length;i++){
+			sum += updatedRows[i];
+		}
+		return sum;
+	}
+	
 	private List<User> findUserByCriteria(FindUserCriteria criteria, String... parametr) throws FilmStoreDAOException {
 		PoolConnection poolConnection = null;
 		Connection connection = null;
