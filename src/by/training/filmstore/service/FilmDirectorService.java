@@ -4,7 +4,12 @@ import java.util.List;
 
 import by.training.filmstore.entity.FilmDirector;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
+import by.training.filmstore.service.exception.FilmStoreServiceIncorrectFilmDirParamException;
+import by.training.filmstore.service.exception.FilmStoreServiceInvalidFilmDirOperException;
 
 public interface FilmDirectorService {
+	void create(String fio) throws FilmStoreServiceException,
+	FilmStoreServiceIncorrectFilmDirParamException,
+	FilmStoreServiceInvalidFilmDirOperException;
 	List<FilmDirector> findAllFilmDirectors() throws FilmStoreServiceException;
 }

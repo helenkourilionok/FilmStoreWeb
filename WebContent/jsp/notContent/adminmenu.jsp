@@ -38,8 +38,13 @@
 			<ul class="dropdown-menu">
 				<li><a href="Controller?command=a_create_actor_show_page">${create}</a></li>
 				<li><a href="Controller?command=a_show_list_actor">${listActors}</a></li>
-			</ul></li>
-		<li class="dropdown"><a href="#">${filmDirector}</a></li>
+			</ul>
+		</li>
+		<li class="dropdown"><a href="#">${filmDirector}</a>
+			<ul class="dropdown-menu">
+				<li><a href="Controller?command=a_create_filmdir_show_page">${create}</a></li>
+			</ul>
+		</li>
 	</ul>
 </nav>
 </c:if>

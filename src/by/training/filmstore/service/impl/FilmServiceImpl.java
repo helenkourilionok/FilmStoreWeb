@@ -142,7 +142,7 @@ public class FilmServiceImpl implements FilmService {
 			throws FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException,
 			FilmStoreServiceException {
 		
-		short id = Validation.varalidateNumber(filmId);
+		short id = Validation.validateNumber(filmId);
 		
 		if(id==-1){
 			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect film id!");
@@ -273,7 +273,7 @@ public class FilmServiceImpl implements FilmService {
 		if (!Validation.validateCharacterField(country)) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Country must contains just characters!");
 		}
-		yearOfRel = Validation.varalidateNumber(yearOfRelease);
+		yearOfRel = Validation.validateNumber(yearOfRelease);
 		if (yearOfRel == -1) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect year of release!");
 		}
@@ -281,7 +281,7 @@ public class FilmServiceImpl implements FilmService {
 		if (filmQuality == null) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Invalid film quality!");
 		}
-		filmDir = Validation.varalidateNumber(filmDirId);
+		filmDir = Validation.validateNumber(filmDirId);
 		if (filmDir == -1) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect film director id!");
 		}
@@ -292,7 +292,7 @@ public class FilmServiceImpl implements FilmService {
 		if (filmPrice == null) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect price of film!");
 		}
-		countFilm = Validation.varalidateNumber(countFilms);
+		countFilm = Validation.validateNumber(countFilms);
 		if (countFilm == -1) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect count films!");
 		}
@@ -317,7 +317,7 @@ public class FilmServiceImpl implements FilmService {
 			return ValidationParamUtil.checkField(LETTERS_PATTERN_RU, value);
 		}
 
-		static short varalidateNumber(String number) {
+		static short validateNumber(String number) {
 			try {
 				return Short.parseShort(number);
 			} catch (NumberFormatException e) {

@@ -67,6 +67,19 @@ function createActorValidation() {
 	return true;
 }
 
+function createFilmDirectorValidation(){
+	var fio = document.getElementById("fio").value;
+	var textRegex = /^[a-zA-Z\u0410-\u044F\u0401\u0451\-\s]{4,70}$/;
+	if((fio == "")||(!textRegex.test(fio)) ){
+		$("#fio").css('border', '#eb6a5a 1px solid');
+		document.getElementById("fio_error").hidden = false;
+		return false;
+	}
+	$("#fio").css('border', '#ccc 1px solid');
+	document.getElementById("fio_error").hidden = true;
+	return true;
+}
+
 function updateUserValidation(language){
 	var last_Name = document.getElementById("last_name");
 	var first_Name = document.getElementById("first_name");

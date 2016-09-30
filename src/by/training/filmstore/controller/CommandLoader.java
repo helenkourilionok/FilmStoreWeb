@@ -32,10 +32,13 @@ public final class CommandLoader {
 			}
 		} catch (ClassNotFoundException e) {
 			logger.error("Can't find command class!",e);
+			throw new RuntimeException(e);
 		} catch (InstantiationException e) {
 			logger.error("Can't create command instance!",e);
+			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
 			logger.error("Can't create command instance!",e);
+			throw new RuntimeException(e);
 		}
 
 	}

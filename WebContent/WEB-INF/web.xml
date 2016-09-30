@@ -140,7 +140,15 @@
     <context-param>
         <param-name>A_CREATE_ACTOR</param-name>
         <param-value>by.training.filmstore.command.impl.AdminCreateActorCommand</param-value>
-    </context-param>                       
+    </context-param>    
+    <context-param>
+    	<param-name>A_CREATE_FILMDIR_SHOW_PAGE</param-name>
+    	<param-value>by.training.filmstore.command.impl.AdminCreateFilmDirectorShowPageCommand</param-value>
+    </context-param> 
+    <context-param>
+    	<param-name>A_CREATE_FILMDIR</param-name>
+    	<param-value>by.training.filmstore.command.impl.AdminCreateFilmDirectorCommand</param-value>
+    </context-param>                  
   <welcome-file-list>
     <welcome-file>index_redirect.jsp</welcome-file>
   </welcome-file-list>

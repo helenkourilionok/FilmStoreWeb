@@ -28,6 +28,7 @@ public final class CommandParamName {
 		final static String PATH_SUCCESS_PAGE = "jsp/successfulOp.jsp";
 		final static String PATH_ACESS_DENIED_PAGE = "jsp/accessDenied.jsp";
 		final static String  PATH_CREATE_ACTOR_PAGE = "jsp/createActor.jsp";
+		final static String PATH_CREATE_FILMDIR_PAGE = "jsp/createFilmDir.jsp";
 		/******Path to admin jsp pages*****/
 	/*****Path to jsp pages************/
 	final static String[] listCountries = {"США","Англия","Япония",
