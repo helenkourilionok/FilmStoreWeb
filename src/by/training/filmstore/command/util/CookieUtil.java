@@ -47,15 +47,6 @@ public final class CookieUtil {
         }
         return null;
     }
-	
-	public static void getArrayOrderCookies(HttpServletRequest httpServletRequest,String prefix){
-		Cookie[] listCookies = httpServletRequest.getCookies();
-		for (Cookie cookie : listCookies) {
-			if (cookie.getName().contains(prefix)) {
-			   System.out.println(cookie.getName()+"-"+cookie.getValue());;
-			}
-		}
-	}
 
 	public static void removeOrderCookies(HttpServletRequest request,
 			HttpServletResponse response,String prefix){
