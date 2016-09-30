@@ -30,7 +30,7 @@ public class SignUpCommand implements Command {
 	private final static String PATRONYMIC = "patronymic";
 	private final static String PHONE = "phone";
 	private final static String BALANCE = "balance";
-	private final static String DEFAULT_LANGUAGE = "ru";
+	private final static String DEFAULT_LANGUAGE = "en";
 	private final static String SIGN_UP_FAILED = "signUpFailed";
 	
 	@Override
@@ -59,6 +59,7 @@ public class SignUpCommand implements Command {
 			response.addCookie(localeCookie);
 			session.setAttribute(CommandParamName.USER_EMAIL, user.getEmail());
 			session.setAttribute(CommandParamName.USER_ROLE, user.getRole());
+			session.setAttribute(CommandParamName.DISCOUNT, user.getDiscount());
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			logger.error("Operation failed!Can't create user!",e);

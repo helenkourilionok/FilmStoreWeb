@@ -37,6 +37,7 @@ public class ShowListFilmCommand implements Command {
 	private final static String NOT_FOUND_ATTR = "notFoundFilmForRequest";
 	private final static String NUMBER_PAGE = "page";
 	private final static String START_INDEX = "start";
+	private final static String DEFAULT_LANGUAGE = "en";
 	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -45,6 +46,10 @@ public class ShowListFilmCommand implements Command {
 
 		String query = QueryUtil.createHttpQueryString(request);
 		session.setAttribute(CommandParamName.PREV_QUERY, query);
+		
+		String language = CookieUtil.getValueFromCookies(request, CommandParamName.LOCALE);
+		language = language == null ? DEFAULT_LANGUAGE : language;
+		
 		
 		FilmStoreServiceFactory filmStoreServiceFactoryImpl = FilmStoreServiceFactory.getServiceFactory();
 		FilmService filmService = filmStoreServiceFactoryImpl.getFilmService();
@@ -78,7 +83,7 @@ public class ShowListFilmCommand implements Command {
 			request.setAttribute(PAGE_INFO, pageInfo);
 			
 			session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodsInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
-			
+			session.setAttribute(CommandParamName.LOCALE,language);
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX).forward(request, response);
 
 		} catch (FilmStoreServiceException e) {

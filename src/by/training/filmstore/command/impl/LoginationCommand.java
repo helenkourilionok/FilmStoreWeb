@@ -25,7 +25,7 @@ public class LoginationCommand implements Command {
 	private final static String EMAIL = "email";
 	private final static String PASSWORD = "password";
 	private final static String ERROR_ATTRIBUTE = "incorrectEmailOrPassword";
-	private final static String DEFAULT_LANGUAGE = "ru";
+	private final static String DEFAULT_LANGUAGE = "en";
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -38,7 +38,7 @@ public class LoginationCommand implements Command {
 		try {
 
 			userAuth(email, password, session);
-			String language = CookieUtil.getValueFromCookies(request, CommandParamName.LANGUAGE);
+			String language = CookieUtil.getValueFromCookies(request, CommandParamName.LOCALE);
 			language = language == null ? DEFAULT_LANGUAGE : language;
 			session.setAttribute(CommandParamName.LOCALE, language);
 
