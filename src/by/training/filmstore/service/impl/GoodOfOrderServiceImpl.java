@@ -67,7 +67,7 @@ public class GoodOfOrderServiceImpl implements GoodOfOrderService {
 		}
 		byte _countFilms = (byte)ConvertStringToIntUtil.getIntFromString(countFilms);
 		if(_countFilms==-1){
-			throw new FilmStoreServiceIncorrectGoodParamException("");
+			throw new FilmStoreServiceIncorrectGoodParamException("Incorrect count of films!");
 		}
 		GoodOfOrderPK goodOfOrderPK = new GoodOfOrderPK();
 		goodOfOrderPK.setIdFilm(_idFilm);
