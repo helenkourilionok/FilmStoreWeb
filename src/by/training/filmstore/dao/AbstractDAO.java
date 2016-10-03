@@ -73,7 +73,7 @@ public interface AbstractDAO <T extends Serializable,K extends Serializable>{
 	  * error interaction with connection pool
 	  * 
 	  * @throws FilmStoreDAOInvalidOperationException if database error occurred while creating entity object
-	  * or if entity with this id doesn't exist in database
+	  * or if entity with specified id doesn't exist in database.
 	  * 
 	  * @see by.training.filmstore.dao.exception.FilmStoreDAOException
 	  * @see by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException

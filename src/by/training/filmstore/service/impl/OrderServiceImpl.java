@@ -7,10 +7,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.OrderDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
 import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
+import by.training.filmstore.entity.GoodOfOrder;
 import by.training.filmstore.entity.KindOfDelivery;
 import by.training.filmstore.entity.KindOfPayment;
 import by.training.filmstore.entity.Order;
@@ -24,14 +26,20 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public Order create(String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
-			String dateOfDelivery, String address) throws FilmStoreServiceIncorrectOrderParamException,
-			FilmStoreServiceInvalidOrderOperException, FilmStoreServiceException {
-
+			String dateOfDelivery, String address, List<GoodOfOrder> listGoods) throws FilmStoreServiceException,
+			FilmStoreServiceInvalidOrderOperException, FilmStoreServiceIncorrectOrderParamException {
+		if(listGoods==null ||listGoods.isEmpty()){
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect list of goods!");
+		}
+		
 		Order order = validateOrder(userEmail, commonPrice, status, kindOfDelivery, kindOfPayment,
-					  dateOfDelivery, address);
+				  dateOfDelivery, address);
+		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
+		
 		try {
+			order.setListGoodOfOrder(listGoods);
 			orderDAO.create(order);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
@@ -118,6 +126,35 @@ public class OrderServiceImpl implements OrderService {
 		return listOrder;
 	}
 	
+	@Override
+	public void payOrder(BigDecimal balance, String orderId, String userEmail)
+			throws FilmStoreServiceException, FilmStoreServiceInvalidOrderOperException,
+			FilmStoreServiceIncorrectOrderParamException {
+		int permissibleEmailLength = 40;
+		if(balance.compareTo(BigDecimal.ZERO)<0){
+			throw new FilmStoreServiceIncorrectOrderParamException("Common price isn't valid!");
+		}
+		int _orderId = ValidationParamUtil.validateNumber(orderId);
+		if(_orderId == -1){
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect order id!");
+		}
+		if (!ValidationParamUtil.validateEmail(userEmail, permissibleEmailLength)) {
+			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect email!");
+		}
+		
+		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
+		OrderDAO orderDAO = filmStoreDAOFactory.getOrderDAO();
+		
+		try {
+			orderDAO.payOrder(balance, _orderId, userEmail);
+		} catch (FilmStoreDAOException e) {
+			throw new FilmStoreServiceException(e);
+		} catch (FilmStoreDAOInvalidOperationException e) {
+			throw new FilmStoreServiceInvalidOrderOperException(e);
+		}
+		
+	}
+	
 	private Order validateOrder(String userEmail, String commonPrice, String status, String kindOfDelivery, String kindOfPayment,
 			String dateOfDelivery, String address) throws FilmStoreServiceIncorrectOrderParamException{
 		int length = 40;
@@ -153,6 +190,7 @@ public class OrderServiceImpl implements OrderService {
 				kindOfPay,dateOfOrder,dateOfDel2,address);
 		return order;
 	}
+
 	
 	static class Validation{
 		
@@ -214,4 +252,5 @@ public class OrderServiceImpl implements OrderService {
 					ValidationParamUtil.checkField(ADDRESS_PATTERN_EN,address);
 		}
 	}
+
 }

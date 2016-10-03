@@ -3,6 +3,7 @@ package by.training.filmstore.command.impl;
 public final class CommandParamName {
 	final static String COOKIE_PREFIX_FOR_ORDER = "orderFilm";
 	final static String COUNT_FILMS_IN_BASKET = "countFilmInBasket";
+	final static String BALANCE = "balance";
 	final static String DISCOUNT = "discount";
 	final static String LANGUAGE = "language";
 	final static String USER_EMAIL = "userEmail";
@@ -21,15 +22,15 @@ public final class CommandParamName {
 	final static String PATH_CHANGE_PASSWORD = "jsp/changePassword.jsp";
 	final static String PATH_PERSONAL_INFO = "jsp/personalInfo.jsp";
 	final static String PATH_LIST_ACTOR = "jsp/listActor.jsp";
-		/******Path to admin jsp pages*****/
-		final static String PATH_CREATE_FILM_PAGE = "jsp/filmCreate.jsp";
-		final static String PATH_UPDATE_FILM_PAGE = "jsp/filmUpdate.jsp";
-		final static String PATH_LIST_FILM_PAGE = "jsp/listFilm.jsp";
-		final static String PATH_SUCCESS_PAGE = "jsp/successfulOp.jsp";
-		final static String PATH_ACESS_DENIED_PAGE = "jsp/accessDenied.jsp";
-		final static String  PATH_CREATE_ACTOR_PAGE = "jsp/createActor.jsp";
-		final static String PATH_CREATE_FILMDIR_PAGE = "jsp/createFilmDir.jsp";
-		/******Path to admin jsp pages*****/
+	/******Path to admin jsp pages*****/
+	final static String PATH_CREATE_FILM_PAGE = "jsp/filmCreate.jsp";
+	final static String PATH_UPDATE_FILM_PAGE = "jsp/filmUpdate.jsp";
+	final static String PATH_LIST_FILM_PAGE = "jsp/listFilm.jsp";
+	final static String PATH_SUCCESS_PAGE = "jsp/successfulOp.jsp";
+	final static String PATH_ACESS_DENIED_PAGE = "jsp/accessDenied.jsp";
+	final static String  PATH_CREATE_ACTOR_PAGE = "jsp/createActor.jsp";
+	final static String PATH_CREATE_FILMDIR_PAGE = "jsp/createFilmDir.jsp";
+	/******Path to admin jsp pages*****/
 	/*****Path to jsp pages************/
 	final static String[] listCountries = {"США","Англия","Япония",
 									"Китай","Италия","Франция","Россия",

@@ -70,7 +70,7 @@
 					</div>
 					<div class="col-md-9 col-md-offset-3">
 						<h3>
-							${goTo} <a href="Controller?command=show_list_film">${home}</a>${page}
+							${goTo} <a href="Controller?command=show_list_film"> ${home}</a>${page}
 						</h3>
 					</div>
 				</div>

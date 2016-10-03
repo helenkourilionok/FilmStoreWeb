@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.QueryUtil;
 import by.training.filmstore.entity.Order;
 import by.training.filmstore.entity.Status;
@@ -26,13 +27,13 @@ public class OrderForUserShowCommand implements Command {
 	
 	private final static String LIST_ORDER = "listOrder";
 	private final static String STATUS = "status";
+	private final static String NOT_ENOUGH_MONEY = "notEnoughMoney";
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||
-		(sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))) {
+		if(CheckUserRoleUtil.isGuest(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 			return;
 		}
@@ -45,6 +46,7 @@ public class OrderForUserShowCommand implements Command {
 		
 		String userEmail = (String)sessionCheckRole.getAttribute(CommandParamName.USER_EMAIL);
 		String status = request.getParameter(STATUS);
+		String notEnoughMoney = request.getParameter(NOT_ENOUGH_MONEY);
 		List<Order> listUserOrder = null;
 		
 		try {
@@ -52,6 +54,7 @@ public class OrderForUserShowCommand implements Command {
 
 			request.setAttribute(LIST_ORDER, listUserOrder);
 			request.setAttribute(STATUS,Status.valueOf(status));
+			request.setAttribute(NOT_ENOUGH_MONEY, notEnoughMoney);
 			request.getRequestDispatcher(CommandParamName.PATH_PERSONAL_INFO).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			logger.error("Can't find orders for this user!",e);
@@ -60,7 +63,5 @@ public class OrderForUserShowCommand implements Command {
 			logger.error("Incorrect user email!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
-
 	}
-
 }

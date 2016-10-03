@@ -57,9 +57,12 @@ public class SignUpCommand implements Command {
 			Cookie localeCookie = new Cookie(CommandParamName.LOCALE,language);
 			localeCookie.setMaxAge(CommandParamName.MAX_AGE_COOKIE);
 			response.addCookie(localeCookie);
+			
 			session.setAttribute(CommandParamName.USER_EMAIL, user.getEmail());
 			session.setAttribute(CommandParamName.USER_ROLE, user.getRole());
 			session.setAttribute(CommandParamName.DISCOUNT, user.getDiscount());
+			session.setAttribute(CommandParamName.BALANCE, user.getBalance());
+			
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
 		} catch (FilmStoreServiceException e) {
 			logger.error("Operation failed!Can't create user!",e);

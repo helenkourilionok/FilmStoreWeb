@@ -15,12 +15,10 @@ public class LogoutCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession session = request.getSession(false);
-		if((session!=null)&&(!session.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))){
+		if(session!=null){
 			session.invalidate();
-			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
-		}else{
-			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 		}
+		request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX_REDIRECT).forward(request, response);
 	}
 
 }

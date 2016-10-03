@@ -8,6 +8,7 @@ import by.training.filmstore.dao.FilmDAO;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
 import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
+import by.training.filmstore.entity.Actor;
 import by.training.filmstore.entity.Film;
 import by.training.filmstore.entity.FilmDirector;
 import by.training.filmstore.entity.Quality;
@@ -92,13 +93,16 @@ public class FilmServiceImpl implements FilmService {
 
 	@Override
 	public Film create(String name, String genre, String country, String yearOfRelease, String quality,
-			String filmDirId, String description, String price, String countFilms, String image)
+			String filmDirId, String description, String price, String countFilms, String image, List<Actor> listActors)
 			throws FilmStoreServiceException, FilmStoreServiceIncorrectFilmParamException,
 			FilmStoreServiceInvalidFilmOperException {
-		
 		Film film = validateFilm(name, genre, country, yearOfRelease, quality, filmDirId, 
 				description, price, countFilms, image);
-
+		if(listActors==null || listActors.isEmpty()){
+			throw new FilmStoreServiceIncorrectFilmParamException("Film must have at least one actor!");
+		}
+		film.setActors(listActors);
+		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
 	
@@ -116,32 +120,10 @@ public class FilmServiceImpl implements FilmService {
 	}
 
 	@Override
-	public void createFilmActor(short filmId, List<Short> idActors) throws FilmStoreServiceException,
-			FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException {
-		if (filmId<=0) {
-			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect id film!");
-		}
-		if ((idActors == null) || (idActors.isEmpty())) {
-			throw new FilmStoreServiceIncorrectFilmParamException("Film hasn't any actors!");
-		}
-
-		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
-		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
-		try {
-			filmDAO.createFilmActor(filmId, idActors);
-		} catch (FilmStoreDAOException e) {
-			throw new FilmStoreServiceException(e);
-		} catch (FilmStoreDAOInvalidOperationException e) {
-			throw new FilmStoreServiceInvalidFilmOperException(e);
-		}
-	}
-
-	@Override
-	public void update(String filmId, String name, String genre, String country, String yearOfRelease,
-			String quality, String filmDirId, String description, String price, String countFilms, String image)
+	public void update(String filmId, String name, String genre, String country, String yearOfRelease, String quality,
+			String filmDirId, String description, String price, String countFilms, String image)
 			throws FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException,
 			FilmStoreServiceException {
-		
 		short id = Validation.validateNumber(filmId);
 		
 		if(id==-1){
@@ -162,25 +144,37 @@ public class FilmServiceImpl implements FilmService {
 		} catch (FilmStoreDAOInvalidOperationException e) {
 			throw new FilmStoreServiceInvalidFilmOperException(e);
 		}
+		
 	}
-
+	
 	@Override
-	public void updateFilmActor(short filmId, List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreServiceException,
-			FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException {
-		if (filmId<=0) {
-			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect id film!");
+	public void update(String filmId, String name, String genre, String country, String yearOfRelease,
+			String quality, String filmDirId, String description, String price,
+			String countFilms, String image,List<Actor> listOldActor,List<Actor> listNewActor)
+			throws FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException,
+			FilmStoreServiceException {
+		if(listOldActor==null || listOldActor.isEmpty()){
+			throw new FilmStoreServiceIncorrectFilmParamException("Film must have at least one actor!");
 		}
-		if ((idNewActors == null) || (idNewActors.isEmpty())) {
-			throw new FilmStoreServiceIncorrectFilmParamException("List new actors is null or empty!");
+		if(listNewActor==null || listNewActor.isEmpty()){
+			throw new FilmStoreServiceIncorrectFilmParamException("Film must have at least one actor!");
 		}
-		if((idOldActors==null)||(idOldActors.isEmpty())){
-			throw new FilmStoreServiceIncorrectFilmParamException("List old actors is null or empty!");
+		short id = Validation.validateNumber(filmId);
+		if(id==-1){
+			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect film id!");
 		}
+		
+		Film film = validateFilm(name, genre, country, yearOfRelease, quality, filmDirId, 
+				description, price, countFilms, image);
+		film.setId(id);
+		film.setActors(listOldActor);
+		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
-		try {
-			filmDAO.updateFilmActor(filmId, idNewActors,idOldActors);
-		} catch (FilmStoreDAOException e) {
+		
+		try{
+			filmDAO.update(film,listNewActor);
+		}catch(FilmStoreDAOException e){
 			throw new FilmStoreServiceException(e);
 		} catch (FilmStoreDAOInvalidOperationException e) {
 			throw new FilmStoreServiceInvalidFilmOperException(e);
@@ -204,27 +198,6 @@ public class FilmServiceImpl implements FilmService {
 			throw new FilmStoreServiceException(e);
 		} catch (FilmStoreDAOInvalidOperationException e) {
 			throw new FilmStoreServiceInvalidFilmOperException(e);
-		}
-	}
-
-	@Override
-	public void deleteFilmActor(short filmId,List<Short> idActors) throws FilmStoreServiceException,												FilmStoreServiceIncorrectFilmParamException,
-		FilmStoreServiceIncorrectFilmParamException,FilmStoreServiceInvalidFilmOperException {
-		if(filmId<=0){
-			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect film id!");
-		}
-		if((idActors==null)||(idActors.isEmpty())){
-			throw new FilmStoreServiceIncorrectFilmParamException("List actors is empty!");
-		}
-		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
-		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
-		
-		try {
-			filmDAO.deleteFilmActor(filmId,idActors);
-		} catch (FilmStoreDAOException e) {
-			throw new FilmStoreServiceException(e);
-		} catch (FilmStoreDAOInvalidOperationException e) {
-			throw new FilmStoreServiceException(e);
 		}
 	}
 	
@@ -274,7 +247,7 @@ public class FilmServiceImpl implements FilmService {
 			throw new FilmStoreServiceIncorrectFilmParamException("Country must contains just characters!");
 		}
 		yearOfRel = Validation.validateNumber(yearOfRelease);
-		if (yearOfRel == -1) {
+		if (yearOfRel<=1930) {
 			throw new FilmStoreServiceIncorrectFilmParamException("Incorrect year of release!");
 		}
 		filmQuality = Validation.validateQuality(quality);
@@ -341,7 +314,11 @@ public class FilmServiceImpl implements FilmService {
 				return null;
 			}
 			try {
-				return new BigDecimal(balance.replaceAll(" ", ""));
+				BigDecimal _price = new BigDecimal(balance.replaceAll(" ", ""));
+				if(_price.compareTo(BigDecimal.ZERO)<=0){
+					_price = null;
+				}
+				return _price;
 			} catch (NumberFormatException e) {
 				return null;
 			}

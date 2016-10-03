@@ -23,7 +23,7 @@ import by.training.filmstore.service.exception.FilmStoreServiceIncorrectCommentP
 import by.training.filmstore.service.exception.FilmStoreServiceIncorrectFilmParamException;
 import by.training.filmstore.service.exception.FilmStoreServiceListCommentNotFoundException;
 import by.training.filmstore.service.exception.FilmStoreServiceListFilmNotFoundException;
-//!!!!!
+
 public final class FindFilmByNameCommand implements Command {
 
 	private final static Logger logger = LogManager.getLogger(FindFilmByNameCommand.class);

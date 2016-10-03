@@ -13,8 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.EditFilmUtil;
-import by.training.filmstore.entity.Film;
+import by.training.filmstore.entity.Actor;
 import by.training.filmstore.service.FilmService;
 import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
@@ -43,8 +44,7 @@ public class AdminCreateFilmCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||
-		(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+		if(!CheckUserRoleUtil.isAdmin(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}
@@ -55,8 +55,7 @@ public class AdminCreateFilmCommand implements Command {
 		String prev_query = (String)sessionCheckRole.getAttribute(CommandParamName.PREV_QUERY);
 		
 		Map<String, String> listParamValue = null;
-		List<Short> idActors = null;
-		Film film = null;
+		List<Actor> _listActors = null;
 		try {
 			listParamValue = EditFilmUtil.parseMultipartRequest(request);
 			if(listParamValue != null){
@@ -71,10 +70,10 @@ public class AdminCreateFilmCommand implements Command {
 				String listActors = listParamValue.get(LIST_ACTORS);
 				String description = listParamValue.get(DESCRIPTION);
 				String image = listParamValue.get(IMAGE);
+				image = checkImage(image);
 				
-				idActors = EditFilmUtil.strToListShort(listActors);
-				film = filmService.create(name, genres, countries, yearOfRel, quality, filmDirId, description, price, countFilms, image);
-				filmService.createFilmActor(film.getId(), idActors);
+				_listActors = EditFilmUtil.strToListActor(listActors);
+				filmService.create(name, genres, countries, yearOfRel, quality, filmDirId, description, price, countFilms, image,_listActors);
 				request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 			}
 			else{
@@ -91,5 +90,14 @@ public class AdminCreateFilmCommand implements Command {
 			logger.error("Operation failed!Can't create film!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
+	}
+	
+	private String checkImage(String image){
+		String pathToImageFolder = "images/";
+		String result = image;
+		if(!image.contains(pathToImageFolder)){
+			result = pathToImageFolder+image;
+		}
+		return result;
 	}
 }

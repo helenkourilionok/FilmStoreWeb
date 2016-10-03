@@ -31,7 +31,7 @@ public final class CookieUtil {
 		}
 		for (Cookie cookie : listCookies) {
 			if (cookie.getName().contains(prefix)) {
-			    count = count + ConvertStringToIntUtil.getIntFromString(cookie.getValue());
+			    count = count + ConvertStringToIntUtil.convert(cookie.getValue());
 			}
 		}
 		return count;
@@ -47,6 +47,7 @@ public final class CookieUtil {
         }
         return null;
     }
+
 
 	public static void removeOrderCookies(HttpServletRequest request,
 			HttpServletResponse response,String prefix){
@@ -86,8 +87,8 @@ public final class CookieUtil {
 				String cookieName = cookie.getName();
 				String filmId = cookieName.replaceAll(prefix,replacement);
 				
-				short id = (short)ConvertStringToIntUtil.getIntFromString(filmId);
-				short countFilm = (short)ConvertStringToIntUtil.getIntFromString(cookie.getValue());
+				short id = (short)ConvertStringToIntUtil.convert(filmId);
+				short countFilm = (short)ConvertStringToIntUtil.convert(cookie.getValue());
 				
 				mapIdCountFilm.put(id,countFilm);
 			}

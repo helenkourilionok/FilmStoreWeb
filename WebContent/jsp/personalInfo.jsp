@@ -65,7 +65,7 @@
 	var="lastName" />
 <fmt:message bundle="${locale}" key="locale.signup.firstName"
 	var="firstName" />
-<fmt:message bundle="${locale}" key="locale.signup.patronimic"
+<fmt:message bundle="${locale}" key="locale.signup.patronymic"
 	var="patronymic" />
 <fmt:message bundle="${locale}" key="locale.signup.phone" var="phone" />
 <fmt:message bundle="${locale}" key="locale.signup.balance"
@@ -108,6 +108,8 @@
 	var="edit" />
 <fmt:message bundle="${locale}" key="locale.personalInfo.updateUser"
 	var="updateUser" />
+<fmt:message bundle="${locale}" key="locale.personalInfo.backToPersonalInfoPage"
+	var="backToPersonalInfoPage" />
 </head>
 <body>
 	<div class="wrapper container">
@@ -202,13 +204,26 @@
 						</div>
 					</div>
 				</c:if>
+				<div class="row">
+					<div class="col-md-12">
+						<c:if test="${requestScope.notEnoughMoney.equals('true')}">
+							<div class="alert alert-danger fade in">
+						        <a href="#" class="close" data-dismiss="alert">&times;</a>
+						        <strong>${notEnoughMoney}!</strong> 
+						    </div>
+						</c:if>
+					</div>
+				</div>
 				<c:if test="${requestScope.listOrder != null}">
+					<div class="col-md-12" style="margin:10px 0px">
+						<form action="Controller" method="get">
+							<input type="hidden" name="command" value="personal_info_show" />
+							<button type="submit" formaction="Controller" class="btn btn-primary">${backToPersonalInfoPage}</button>
+						</form>
+					</div>
 					<div class="col-md-12" style="padding-left:0px">
 						<c:if test="${!(fn:length(requestScope.listOrder) > 0) and !requestScope.notEnoughMoney.equals('true')}">
 							<span>${noneOrder}</span>
-						</c:if>
-						<c:if test="${requestScope.notEnoughMoney.equals('true')}">
-							<span style="color: #eb6a5a;">${notEnoughMoney}</span>
 						</c:if>
 						<table class="table table-bordered" style="width:700px">
 							<thead>
@@ -240,7 +255,7 @@
 											<th>
 											<form method="post">
 												<c:if	test="${order.kindOfPayment.getNameKindOfPayment().equals('банковская карта')}">
-														<button type="submit" formaction="Controller?command=pay_order&id=${order.id}" class="btn btn-primary">${pay}</button>
+														<button type="submit" formaction="Controller?command=pay_order&id=${order.id}&price=${order.commonPrice}" class="btn btn-primary">${pay}</button>
 												</c:if> 
 								        	 		<button type="submit" formaction="Controller?command=annul_order&id=${order.id}" class="btn btn-primary" style="margin-top:10px">${annul}</button>
 								        	 </form>

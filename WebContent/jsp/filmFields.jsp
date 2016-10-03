@@ -74,7 +74,7 @@
 <div class="row-offset">
 	<select name="list_countries" multiple class="selectpicker"
 		data-style="btn-primary" data-live-search="true"
-		title="${chooseCounties}">
+		title="${chooseCounties}" data-max-options="3">
 		<c:forEach var="country" items="${requestScope.listCountries}">
 			<c:choose>
 				<c:when test="${sessionScope.film.country.contains(country)}">
@@ -90,6 +90,7 @@
 <div class="row-offset">
 	<select name="genres" multiple class="selectpicker"
 		data-style="btn-primary" data-live-search="true"
+		data-max-options="3"
 		title="${chooseGenres}">
 		<c:forEach var="genre" items="${requestScope.listGenres}">
 			<c:choose>

@@ -39,12 +39,12 @@ public final class FilmDAOTest {
 			if (listFilm.isEmpty()) {
 				film = createTestFilm();
 				filmDAO.create(film);
-				createTestFilmActor(filmDAO, film.getId());
 			} else {
 				film = listFilm.get(index);
 				filmDAO.findActorFilmDirectorForFilm(film);
 			}
-		} catch (FilmStoreDAOInvalidOperationException | FilmStoreDAOException e) {
+		} catch (
+				FilmStoreDAOInvalidOperationException |	FilmStoreDAOException e) {
 			fail("Test fails because of error connection with database!");
 		}
 
@@ -73,16 +73,21 @@ public final class FilmDAOTest {
 	
 	@Test
 	public void createFilmActorTest() {
-		boolean create = true;
+		boolean create = false;
 
-		Map<Short, List<Short>> idFilmIdActor = getIdFilmIdActor();
+		short[] incorrectActorId = new short[]{-10,0,1000};
 
-		for (Short key : idFilmIdActor.keySet()) {
+		List<Actor> listActor = new ArrayList<>();
+		Actor actor = new Actor();
+		listActor.add(actor);
+		
+		film.setActors(listActor);
+		
+		for (int i = 0;i<incorrectActorId.length;i++) {
 			try {
-
-				List<Short> actorIdForTest = idFilmIdActor.get(key);
-				filmDAO.createFilmActor(key, actorIdForTest);
-
+				actor.setId(incorrectActorId[i]);
+				filmDAO.create(film);
+				create = true;
 			} catch (FilmStoreDAOException e) {
 				create = false;
 			} catch (FilmStoreDAOInvalidOperationException e) {
@@ -114,14 +119,23 @@ public final class FilmDAOTest {
 	}
 
 	@Test
-	public void updateFilmActorTest() {
-		boolean update = true;
-		List<Short> listIncorrectActorId = Arrays.asList((short) -90, (short) 0, (short) 1000);
-		List<Short> listActorIdForTest = getActorId(film);
-		for (int i = 0; i < listIncorrectActorId.size(); i++) {
+	public void updateFilmNewActorTest() {
+
+		boolean update = false;
+		short[] incorrectActorId = new short[]{-10,0,1000};
+		List<Actor> listOldActor = new ArrayList<>();
+		List<Actor> listNewActor = new ArrayList<>();
+		Actor actor = new Actor();
+		Actor correctActor = new Actor((short)1,"");
+		listNewActor.add(actor);
+		listOldActor.add(correctActor);
+		
+		film.setActors(listOldActor);
+		
+		for (int i = 0; i < incorrectActorId.length; i++) {
 			try {
-				List<Short> incorrectActorId = Arrays.asList((short) -90);
-				filmDAO.updateFilmActor((short) 11, incorrectActorId, listActorIdForTest);
+				actor.setId(incorrectActorId[i]);
+				filmDAO.update(film,listNewActor);
 				update = true;
 			} catch (FilmStoreDAOException e) {
 				update = false;
@@ -133,6 +147,35 @@ public final class FilmDAOTest {
 		}
 	}
 
+	@Test
+	public void updateFilmOldActorTest() {
+
+		boolean update = false;
+		short[] incorrectActorId = new short[]{-10,0,1000};
+		List<Actor> listOldActor = new ArrayList<>();
+		List<Actor> listNewActor = new ArrayList<>();
+		Actor actor = new Actor();
+		Actor correctActor = new Actor((short)1,"");
+		listNewActor.add(correctActor);
+		listOldActor.add(actor);
+		
+		film.setActors(listOldActor);
+		
+		for (int i = 0; i < incorrectActorId.length; i++) {
+			try {
+				actor.setId(incorrectActorId[i]);
+				filmDAO.update(film,listNewActor);
+				update = true;
+			} catch (FilmStoreDAOException e) {
+				update = false;
+			} catch (FilmStoreDAOInvalidOperationException e) {
+				fail("Test fails because of error connection with database!");
+			} finally {
+				assertFalse(update);
+			}
+		}
+	}
+	
 	@Test
 	public void deleteFilmTest() {
 		boolean delete = true;
@@ -151,22 +194,24 @@ public final class FilmDAOTest {
 
 	@Test
 	public void deleteFilmActorTest() {
-		boolean delete = true;
-
-		Map<Short, List<Short>> idFilmIdActor = getIdFilmIdActor();
-
-		for (Short key : idFilmIdActor.keySet()) {
+		boolean delete = false;
+		short filmId = 1;
+		short[] incorrectActorId = new short[]{-10,0,1000};
+		List<Actor> listActor = new ArrayList<>();
+		Actor actor = new Actor();
+		listActor.add(actor);
+		
+		for (int i = 0;i<incorrectActorId.length;i++) {
 			try {
-
-				List<Short> actorIdForTest = idFilmIdActor.get(key);
-				filmDAO.deleteFilmActor(key, actorIdForTest);
-
+				actor.setId(incorrectActorId[i]);
+				filmDAO.delete(filmId);
+				delete = true;
 			} catch (FilmStoreDAOException e) {
 				delete = false;
 			} catch (FilmStoreDAOInvalidOperationException e) {
 				fail("Test fails because of error connection with database!");
 			} finally {
-				assertTrue(delete);
+				assertFalse(delete);
 			}
 		}
 	}
@@ -227,11 +272,11 @@ public final class FilmDAOTest {
 
 	@Test
 	public void findFilmByNameTest() {
+		String existingFilm = "Репортёрша";
+		String nameNonexistingFilm = "nonexistingFilm";
 		try {
-			List<Film> listFilms = filmDAO.findFilmByName(film.getName());
+			List<Film> listFilms = filmDAO.findFilmByName(existingFilm);
 			assertFalse(listFilms.isEmpty());
-
-			String nameNonexistingFilm = "nonexistingFilm";
 
 			listFilms = filmDAO.findFilmByName(nameNonexistingFilm);
 			assertTrue(listFilms.isEmpty());
@@ -269,39 +314,8 @@ public final class FilmDAOTest {
 		FilmDirector filmDirector = new FilmDirector();
 		filmDirector.setId((short) (filmDirId));
 		film.setFilmDirector(filmDirector);
+		film.setActors(new ArrayList<Actor>());
 		return film;
-	}
-
-	private static void createTestFilmActor(FilmDAO filmDAO, short filmId)
-			throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
-		List<Short> idActors = Arrays.asList((short) 5, (short) 7, (short) 10);
-		filmDAO.createFilmActor(filmId, idActors);
-	}
-
-	private static Map<Short, List<Short>> getIdFilmIdActor() {
-		short incorrectFilmId = 1000;
-		short incorrectActorId = 1000;
-		short correctActorId = 1;
-
-		List<Short> incorActorId = new ArrayList<Short>();
-		incorActorId.add(incorrectActorId);
-		List<Short> corActorId = new ArrayList<>();
-		corActorId.add(correctActorId);
-
-		Map<Short, List<Short>> idFilmIdActor = new HashMap<>();
-
-		idFilmIdActor.put(incorrectFilmId, incorActorId);
-		idFilmIdActor.put(film.getId(), incorActorId);
-		idFilmIdActor.put(incorrectFilmId, corActorId);
-
-		return idFilmIdActor;
-	}
-
-	private List<Short> getActorId(Film film) {
-		int index = 0;
-		List<Actor> listActor = film.getActors();
-		Actor actor = listActor.get(index);
-		return Arrays.asList(actor.getId());
 	}
 
 	private Map<String,Boolean> getGenreExpectation(){

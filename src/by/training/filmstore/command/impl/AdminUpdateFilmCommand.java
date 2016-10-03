@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.EditFilmUtil;
 import by.training.filmstore.entity.Actor;
 import by.training.filmstore.entity.Film;
@@ -48,16 +49,19 @@ public class AdminUpdateFilmCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+		if(!CheckUserRoleUtil.isAdmin(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}
 		
+		String prev_query = (String)sessionCheckRole.getAttribute(CommandParamName.PREV_QUERY);
 		
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
 		FilmService filmService = filmStoreServiceFactory.getFilmService();
 		
 		Map<String, String> listParamValue = null;
+		List<Actor> listNewActors = null;
+		List<Actor> listOldActors = null;
 		List<Short> idNewActors = null;
 		List<Short> idOldActors = null;
 		
@@ -81,28 +85,30 @@ public class AdminUpdateFilmCommand implements Command {
 			String image = listParamValue.get(IMAGE);
 			image = checkImage(image);
 			
-			idNewActors = EditFilmUtil.strToListShort(listActors);
-			filmService.update(filmId,name, genres, countries, yearOfRel, quality,
-								filmDirId, description, price, countFilms, image);
 			Film film = (Film)sessionCheckRole.getAttribute(FILM);
 			idOldActors = getListIdActorsFromListActors(film.getActors());
+			idNewActors = EditFilmUtil.strToListId(listActors);
+			listNewActors = EditFilmUtil.createListActorFromList(idNewActors);
+			listOldActors = EditFilmUtil.createListActorFromList(idOldActors);
 			removeCommonId(idNewActors, idOldActors);
-
-			if(!idNewActors.isEmpty() || !idOldActors.isEmpty()){
-				FilmActorOperation operation = defineTypeOfOperation(idNewActors, idOldActors);
-				executeFilmActorOperation(operation, filmService, film.getId(), idNewActors, idOldActors);
+			
+			if(idNewActors.isEmpty()&&idOldActors.isEmpty()){
+				filmService.update(filmId, name, genres, countries, yearOfRel, quality, 
+						   filmDirId, description, price, countFilms, image);
 			}
-
+			else{
+				filmService.update(filmId,name, genres, countries, yearOfRel, quality,
+						filmDirId, description, price, countFilms, image,listOldActors,listNewActors);
+			}
 			sessionCheckRole.setAttribute(FILM,null);
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		}catch(FilmStoreServiceInvalidFilmOperException e){
 			logger.error("Film updating failed!",e);
-			request.setAttribute(UPDATING_FAILED, "true");
+			response.sendRedirect(prev_query+"&"+UPDATING_FAILED+"=true");
 			request.getRequestDispatcher(CommandParamName.PATH_UPDATE_FILM_PAGE).forward(request, response);
 		}catch(FilmStoreServiceIncorrectFilmParamException e){
 			logger.error("Can't updating film because of incorrect parametrs!",e);
-			request.setAttribute(INCORRECT_PARAMS, "true");
-			request.getRequestDispatcher(CommandParamName.PATH_UPDATE_FILM_PAGE).forward(request, response);
+			response.sendRedirect(prev_query+"&"+INCORRECT_PARAMS+"=true");
 		}
 		catch(FilmStoreServiceException e){
 			logger.error("Operation failed!Can't update film!",e);
@@ -128,47 +134,6 @@ public class AdminUpdateFilmCommand implements Command {
 		return result;
 	}
 
-	private FilmActorOperation defineTypeOfOperation(List<Short> idNewActors, List<Short> idOldActors) {
-		if (idOldActors.size() == idNewActors.size()) {
-			return FilmActorOperation.UPDATE;
-		}
-		if (idOldActors.size() > idNewActors.size()) {
-			return FilmActorOperation.DELETE_UPDATE;
-		}
-		if (idOldActors.size() < idNewActors.size()) {
-			return FilmActorOperation.CREATE_UPDATE;
-		}
-		return FilmActorOperation.UPDATE;
-	}
-
-	private void executeFilmActorOperation(FilmActorOperation operation,FilmService filmService,
-			short filmId,List<Short> idNewActors,List<Short> idOldActors) throws FilmStoreServiceException, FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException{
-		int newSize = idNewActors.size();
-		int oldSize = idOldActors.size();
-		switch(operation){
-			case UPDATE:
-			{
-				filmService.updateFilmActor(filmId,idNewActors,idOldActors);
-			}break;
-			case CREATE_UPDATE:{				
-				List<Short> actorsForCreate = new ArrayList<Short>(idNewActors.subList(oldSize, newSize));
-				idNewActors.removeAll(actorsForCreate);
-				if(!idNewActors.isEmpty()){
-					filmService.updateFilmActor(filmId, idNewActors, idOldActors);
-				}
-				filmService.createFilmActor(filmId, actorsForCreate);
-			}break;
-			case DELETE_UPDATE:{
-				List<Short> actorsForDelete = new ArrayList<Short>(idOldActors.subList(newSize,oldSize));
-				idOldActors.removeAll(actorsForDelete);
-				if(!idOldActors.isEmpty()){
-					filmService.updateFilmActor(filmId, idNewActors, idOldActors);
-				}
-				filmService.deleteFilmActor(filmId, actorsForDelete);
-			}break;
-		}
-	}
-	
 	private void removeCommonId(List<Short> idNewActors, List<Short> idOldActors){
 		List<Short> idForRemove = new ArrayList<>();
 		for(Short id:idOldActors){
@@ -179,9 +144,4 @@ public class AdminUpdateFilmCommand implements Command {
 		idNewActors.removeAll(idForRemove);
 		idOldActors.removeAll(idForRemove);
 	}
-	
-	enum FilmActorOperation {
-		CREATE_UPDATE, DELETE_UPDATE, UPDATE
-	}
-
 }

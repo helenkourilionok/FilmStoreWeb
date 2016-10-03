@@ -15,23 +15,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.command.util.CookieUtil;
 
 import by.training.filmstore.entity.Film;
 import by.training.filmstore.entity.GoodOfOrder;
 import by.training.filmstore.entity.GoodOfOrderPK;
-import by.training.filmstore.entity.Order;
 import by.training.filmstore.service.FilmService;
 import by.training.filmstore.service.FilmStoreServiceFactory;
-import by.training.filmstore.service.GoodOfOrderService;
 import by.training.filmstore.service.OrderService;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
 import by.training.filmstore.service.exception.FilmStoreServiceIncorrectFilmParamException;
-import by.training.filmstore.service.exception.FilmStoreServiceIncorrectGoodParamException;
 import by.training.filmstore.service.exception.FilmStoreServiceIncorrectOrderParamException;
 import by.training.filmstore.service.exception.FilmStoreServiceInvalidFilmOperException;
-import by.training.filmstore.service.exception.FilmStoreServiceInvalidGoodOperException;
 import by.training.filmstore.service.exception.FilmStoreServiceInvalidOrderOperException;
 
 public class MakeOrderCommand implements Command {
@@ -49,8 +46,7 @@ public class MakeOrderCommand implements Command {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)
-				|| (sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))) {
+		if(CheckUserRoleUtil.isGuest(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 			return;
 		}
@@ -60,15 +56,14 @@ public class MakeOrderCommand implements Command {
 
 		FilmStoreServiceFactory filmStoreServiceFactory = FilmStoreServiceFactory.getServiceFactory();
 		OrderService orderService = filmStoreServiceFactory.getOrderService();
-		GoodOfOrderService goodOfOrderService = filmStoreServiceFactory.getGoodOfOrderService();
 		FilmService filmService = filmStoreServiceFactory.getFilmService();
 		
 		try {
 
-			int orderId = createOrder(request, orderService, sessionCheckRole);
 			String prefix = CommandParamName.COOKIE_PREFIX_FOR_ORDER;
-			listGoods = makeListGoodsFromCookies(request, prefix,orderId);
-			createListGoods(listGoods, goodOfOrderService);
+			listGoods = makeListGoodsFromCookies(request, prefix);
+			createOrder(request,orderService,sessionCheckRole,listGoods);
+			
 			listFilms = extractFilmsFromObject(sessionCheckRole.getAttribute(LIST_FILMS));
 			updateFilmsCount(listFilms, filmService, request);
 
@@ -85,21 +80,14 @@ public class MakeOrderCommand implements Command {
 				|FilmStoreServiceInvalidFilmOperException e) {
 			logger.error("Entity creation failed!", e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
-		}catch (FilmStoreServiceIncorrectGoodParamException e) {
-			logger.error("Incorrect good's params!", e);
-			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
-		}catch (FilmStoreServiceInvalidGoodOperException e) {
-			logger.error("Invalid operation!Can't create good!", e);
-			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}catch (FilmStoreServiceException e) {
 			logger.error("Operation failed!Can't make order!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
 		}
 	}
 
-	private int createOrder(HttpServletRequest request,OrderService orderService,HttpSession session) 
-			throws FilmStoreServiceIncorrectOrderParamException, 
-			FilmStoreServiceInvalidOrderOperException, FilmStoreServiceException{
+	private void createOrder(HttpServletRequest request,OrderService orderService,HttpSession session,List<GoodOfOrder> listGoods) 
+			throws FilmStoreServiceException, FilmStoreServiceInvalidOrderOperException, FilmStoreServiceIncorrectOrderParamException {
 		String userEmail = (String)session.getAttribute(CommandParamName.USER_EMAIL);
 		String commonPrice = request.getParameter(COMMON_PRICE);
 		String status = request.getParameter(STATUS);
@@ -107,12 +95,11 @@ public class MakeOrderCommand implements Command {
 		String payment = request.getParameter(PAYMENT);
 		String address = request.getParameter(ADDRESS);
 		String dateOfDelivery = request.getParameter(DATE_OF_DELIVERY);
-		Order order = orderService.create(userEmail, commonPrice,status, kindOfDelivery,
-				payment,dateOfDelivery, address);
-		return order.getId();
+		orderService.create(userEmail, commonPrice, status, kindOfDelivery, payment, dateOfDelivery, address, listGoods);
+
 	}
 	
-	private List<GoodOfOrder> makeListGoodsFromCookies(HttpServletRequest request, String prefix, int idOrder) {
+	private List<GoodOfOrder> makeListGoodsFromCookies(HttpServletRequest request, String prefix) {
 		List<GoodOfOrder> listGoods = new ArrayList<>();
 		Cookie[] cookies = request.getCookies();
 		String replacement = "";
@@ -123,30 +110,15 @@ public class MakeOrderCommand implements Command {
 			if (cookies[i].getName().contains(prefix)) {
 
 				idFilmStr = cookies[i].getName().replace(prefix, replacement);
-				countFilms = (byte) ConvertStringToIntUtil.getIntFromString(cookies[i].getValue());
-				idFilm = (short) ConvertStringToIntUtil.getIntFromString(idFilmStr);
+				countFilms = (byte) ConvertStringToIntUtil.convert(cookies[i].getValue());
+				idFilm = (short) ConvertStringToIntUtil.convert(idFilmStr);
 
 				GoodOfOrderPK goodPK = new GoodOfOrderPK();
 				goodPK.setIdFilm(idFilm);
-				goodPK.setIdOrder(idOrder);
 				listGoods.add(new GoodOfOrder(goodPK, countFilms));
 			}
 		}
 		return listGoods;
-	}
-
-	private void createListGoods(List<GoodOfOrder> listGoods, GoodOfOrderService goodOfOrderService)
-			throws FilmStoreServiceIncorrectGoodParamException, FilmStoreServiceInvalidGoodOperException,
-			FilmStoreServiceException {
-		String idOrder = null;
-		String idFilm = null;
-		String countFilms = null;
-		for (GoodOfOrder good : listGoods) {
-			idOrder = Integer.toString(good.getId().getIdOrder());
-			idFilm = Short.toString(good.getId().getIdFilm());
-			countFilms = Byte.toString(good.getCountFilms());
-			goodOfOrderService.create(idOrder, idFilm, countFilms);
-		}
 	}
 
 	private List<Film> extractFilmsFromObject(Object object) {

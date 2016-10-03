@@ -25,6 +25,7 @@ public final class ValidationParamUtil {
 		int result = -1;
 		try{
 			result =  Integer.parseInt(number);
+			result = result<=0?-1:result;
 		}catch(NumberFormatException e){
 			return result;
 		}
@@ -53,12 +54,16 @@ public final class ValidationParamUtil {
 		return matcher.matches();
 	}
 
-	static BigDecimal validateBalance(String balance) {
+	public static BigDecimal validateBalance(String balance) {
 		if (!ValidationParamUtil.notEmpty(balance)) {
 			return null;
 		}
 		try {
-			return new BigDecimal(balance.replaceAll(" ", ""));
+			BigDecimal _balance = new BigDecimal(balance.replaceAll(" ", ""));
+			if(_balance.compareTo(BigDecimal.ZERO) <0){
+				_balance = null;
+			}
+			return _balance;
 		} catch (NumberFormatException e) {
 			return null;
 		}

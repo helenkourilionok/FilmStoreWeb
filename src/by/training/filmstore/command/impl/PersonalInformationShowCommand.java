@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.QueryUtil;
 import by.training.filmstore.entity.User;
 import by.training.filmstore.service.FilmStoreServiceFactory;
@@ -28,8 +29,7 @@ public final class PersonalInformationShowCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||
-		(sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))) {
+		if(CheckUserRoleUtil.isGuest(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 			return;
 		}

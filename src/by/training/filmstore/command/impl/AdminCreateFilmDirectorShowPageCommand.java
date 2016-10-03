@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.QueryUtil;
 
 public class AdminCreateFilmDirectorShowPageCommand implements Command {
@@ -16,8 +17,7 @@ public class AdminCreateFilmDirectorShowPageCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||
-		(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+		if(!CheckUserRoleUtil.isAdmin(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.CookieUtil;
 
 public final class RemoveFilmFromBasketCommand implements Command {
@@ -18,8 +19,7 @@ public final class RemoveFilmFromBasketCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)
-				|| (sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))) {
+		if(CheckUserRoleUtil.isGuest(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 			return;
 		}

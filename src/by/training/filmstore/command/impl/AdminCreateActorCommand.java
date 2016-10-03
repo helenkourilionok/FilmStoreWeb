@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.service.ActorService;
 import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.exception.FilmStoreServiceException;
@@ -27,7 +28,8 @@ public final class AdminCreateActorCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+		
+		if(!CheckUserRoleUtil.isAdmin(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}

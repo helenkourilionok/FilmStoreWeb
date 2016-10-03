@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.UserDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
@@ -194,19 +193,19 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	private int[] validateParamForMakeDiscount(String sizeOfDiscount, String year, String month, String countOrders) throws FilmStoreServiceIncorrectUserParamException{
-		byte _sizeOfDiscount = (byte)ConvertStringToIntUtil.getIntFromString(sizeOfDiscount);
+		byte _sizeOfDiscount = (byte)ValidationParamUtil.validateNumber(sizeOfDiscount);
 		if(_sizeOfDiscount == -1){
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect size of discount!");
 		}
-		int _year = ConvertStringToIntUtil.getIntFromString(year);
+		int _year =ValidationParamUtil.validateNumber(year);
 		if(_year == -1){
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect year!");
 		}
-		int _month = ConvertStringToIntUtil.getIntFromString(month);
+		int _month = ValidationParamUtil.validateNumber(month);
 		if(_month == -1){
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect month!");
 		}
-		byte _countOrders = (byte)ConvertStringToIntUtil.getIntFromString(countOrders);
+		byte _countOrders = (byte)ValidationParamUtil.validateNumber(countOrders);
 		if(_countOrders == -1){
 			throw new FilmStoreServiceIncorrectUserParamException("Incorrect count of orders!");
 		}

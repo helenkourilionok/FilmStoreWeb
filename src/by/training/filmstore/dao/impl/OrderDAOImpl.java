@@ -1,5 +1,6 @@
 package by.training.filmstore.dao.impl;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,7 @@ import by.training.filmstore.dao.exception.FilmStoreDAOException;
 import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.dao.pool.PoolConnection;
 import by.training.filmstore.dao.pool.PoolConnectionException;
+import by.training.filmstore.entity.GoodOfOrder;
 import by.training.filmstore.entity.KindOfDelivery;
 import by.training.filmstore.entity.KindOfPayment;
 import by.training.filmstore.entity.Order;
@@ -26,11 +28,18 @@ public class OrderDAOImpl implements OrderDAO {
 	private static final String SQL_INSERT = "insert into `order`(`order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
 			+ "`order`.ord_kind_of_delivery,`order`.ord_kind_of_payment,`order`.ord_date_of_order,"
 			+ "`order`.ord_date_of_delivery,`order`.ord_address) values(?,?,?,?,?,?,?,?)";
+	private static final String SQL_INSERT_GOOD = 
+			"insert into good_of_order(good_of_order.ord_id,good_of_order.fm_id,"
+			+ "good_of_order.gd_count_films) values(?,?,?)";
 	private static final String SQL_UPDATE = 
 			"update `order`  SET `order`.ord_email_user = ?,`order`.ord_common_price = ?,"
 			+ "`order`.ord_status = ?,`order`.ord_kind_of_delivery = ?,"
 			+ "`order`.ord_kind_of_payment = ?,`order`.ord_date_of_order = ?,"
 			+ "`order`.ord_date_of_delivery = ?,`order`.ord_address = ? where `order`.ord_uid = ?";
+	private static final String SQL_UPDATE_STATUS_AND_BALANCE = 
+			"update filmstore.`order` as orderTable,filmstore.user as userTable "+
+			"set orderTable.ord_status= ? ,userTable.us_balance = ? "+ 
+			"where orderTable.ord_uid = ? and userTable.us_email=? and orderTable.ord_status='не оплачено'";
 	private static final String SQL_DELETE = "DELETE FROM `order` WHERE `order`.ord_uid = ?";
 	private static final String SQL_FIND_BY_ID = "select `order`.ord_uid,`order`.ord_email_user,`order`.ord_common_price,`order`.ord_status,"
 			+ "`order`.ord_kind_of_delivery,`order`.ord_kind_of_payment,`order`.ord_date_of_order,"
@@ -46,10 +55,59 @@ public class OrderDAOImpl implements OrderDAO {
 			+ "`order`.ord_date_of_delivery,`order`.ord_address from `order` where `order`.ord_email_user = ? and `order`.ord_status = ?";
 
 	@Override
-	public void create(Order entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
-		updateByCriteria(CommandDAO.INSERT, entity);
-	}
+	public void create(Order entity)
+			throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		Connection connection = null;
+		PreparedStatement prepStatement = null;
+		PoolConnection poolConnection = null;
 
+		try {
+			poolConnection = PoolConnection.getInstance();
+			connection = poolConnection.takeConnection();
+			
+			connection.setAutoCommit(false);
+			
+			prepStatement = createPrepStatementByCommandCriteria(connection, (Order)entity, CommandDAO.INSERT);
+			int affectedRows = prepStatement.executeUpdate();
+			
+			if (affectedRows == 0) {
+                throw new FilmStoreDAOInvalidOperationException("Operation with order failed (create)");
+			}
+			
+			fillGeneratedIdIfInsert(prepStatement, (Order)entity);
+			prepStatement.close();	 
+	
+			prepStatement = connection.prepareStatement(SQL_INSERT_GOOD);
+			fillBatchForExecute(prepStatement,entity.getListGoodOfOrder(),entity.getId());
+			int[] results = prepStatement.executeBatch();	
+			
+			if(!isBatchExecuteSuccessful(results)){
+				 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't create list goods!");
+			}
+				
+			connection.commit();
+		} catch (SQLException | PoolConnectionException e) {
+			
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new FilmStoreDAOException(e1);
+			}
+			throw new FilmStoreDAOException(e);
+		} finally {
+			try {
+				prepStatement.close();
+			} catch (SQLException e) {
+				logger.error("Error closing of PreparedStatement or Connection", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of PreparedStatement or Connection", e);
+			}
+		}
+	}
+	
 	@Override
 	public void update(Order entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		updateByCriteria(CommandDAO.UPDATE, entity);
@@ -87,6 +145,45 @@ public class OrderDAOImpl implements OrderDAO {
 		return findOrderByCriteria(stub, FindOrderCriteria.FIND_BY_USER_EMAIL_AND_STATUS);
 	}
 
+	@Override
+	public void payOrder(BigDecimal balance, int orderId, String userEmail)
+			throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
+		Connection connection = null;
+		PreparedStatement prepStatement = null;
+		PoolConnection poolConnection = null;
+
+		try {
+			poolConnection = PoolConnection.getInstance();
+			connection = poolConnection.takeConnection();
+
+			prepStatement = connection.prepareStatement(SQL_UPDATE_STATUS_AND_BALANCE);
+			prepStatement.setString(1,Status.PAID.getNameStatus());
+			prepStatement.setBigDecimal(2,balance);
+			prepStatement.setInt(3, orderId);
+			prepStatement.setString(4, userEmail);
+
+			int affectedRows = prepStatement.executeUpdate();
+
+			if (affectedRows == 0) {
+                throw new FilmStoreDAOInvalidOperationException("Operation with order failed!Can't pay order!");
+            }
+			
+		} catch (SQLException | PoolConnectionException e) {
+			throw new FilmStoreDAOException(e);
+		} finally {
+			try {
+				prepStatement.close();
+			} catch (SQLException e) {
+				logger.error("Error closing of PreparedStatement or Connection", e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of PreparedStatement or Connection", e);
+			}
+		}		
+	}
+	
 	private <T> void updateByCriteria(CommandDAO commandDAO, T parametr) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
 		Connection connection = null;
 		PreparedStatement prepStatement = null;
@@ -167,6 +264,32 @@ public class OrderDAOImpl implements OrderDAO {
 			if (resultset != null && resultset.next()) {
 				order.setId(resultset.getInt(1));
 			}
+	}
+
+	private void fillBatchForExecute(PreparedStatement prepStatement,List<GoodOfOrder> listGoods,int orderId) throws SQLException{
+		for(GoodOfOrder entity:listGoods){
+			prepStatement.setInt(1,orderId);
+			prepStatement.setInt(2, entity.getId().getIdFilm());
+			prepStatement.setByte(3, entity.getCountFilms());
+			prepStatement.addBatch();
+		}
+	}
+	
+	private boolean isBatchExecuteSuccessful(int[] results) {
+		boolean success = false;
+		int countUpdatedRows = 0;
+
+		for (int i = 0; i < results.length; i++) {
+			if (results[i] >= 0) {
+				countUpdatedRows++;
+			}
+		}
+
+		if (countUpdatedRows == results.length) {
+			success = true;
+		}
+
+		return success;
 	}
 	
 	private <T> List<Order> findOrderByCriteria(T parametr, FindOrderCriteria criteria) throws FilmStoreDAOException {

@@ -2,7 +2,6 @@ package by.training.filmstore.service.impl;
 
 import java.util.List;
 
-import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.dao.FilmStoreDAOFactory;
 import by.training.filmstore.dao.GoodOfOrderDAO;
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
@@ -57,15 +56,15 @@ public class GoodOfOrderServiceImpl implements GoodOfOrderService {
 	
 	private GoodOfOrder createGoodOfOrder(String idOrder, String idFilm, String countFilms) 
 			throws FilmStoreServiceIncorrectGoodParamException{
-		int _idOrder = ConvertStringToIntUtil.getIntFromString(idOrder);
+		int _idOrder = ValidationParamUtil.validateNumber(idOrder);
 		if(_idOrder == -1){
 			throw new FilmStoreServiceIncorrectGoodParamException("Invalid order id!");
 		}
-		short _idFilm = (short)ConvertStringToIntUtil.getIntFromString(idFilm);
+		short _idFilm = (short)ValidationParamUtil.validateNumber(idFilm);
 		if(_idFilm == -1){
 			throw new FilmStoreServiceIncorrectGoodParamException("Invalid film id!");
 		}
-		byte _countFilms = (byte)ConvertStringToIntUtil.getIntFromString(countFilms);
+		byte _countFilms = (byte)ValidationParamUtil.validateNumber(countFilms);
 		if(_countFilms==-1){
 			throw new FilmStoreServiceIncorrectGoodParamException("Incorrect count of films!");
 		}

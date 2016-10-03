@@ -1,8 +1,10 @@
 package by.training.filmstore.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import by.training.filmstore.dao.exception.FilmStoreDAOException;
+import by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException;
 import by.training.filmstore.entity.Order;
 import by.training.filmstore.entity.Status;
 /**
@@ -16,6 +18,25 @@ import by.training.filmstore.entity.Status;
  * @see by.training.filmstore.entity.Order
  */
 public interface OrderDAO extends AbstractDAO<Order, Integer>{
+	/**
+	 * Method permits user that has specified email to pay order 
+	 * with specified id.
+	 * 
+	 * @param balance the value of user balance after payment of order
+	 * @param orderId order number that will be paid
+	 * @param userEmail email of user that pay order
+	 * 
+	 * @throws FilmStoreDAOException if a database access error occurs,
+	 * error interaction with connection pool
+	 * @throws FilmStoreDAOInvalidOperationException if in database doesn't exist user with 
+	 * specified email or if order with specified id wasn't found
+	 * 
+	 * 
+	 * @see by.training.filmstore.dao.exception.FilmStoreDAOException
+	 * @see by.training.filmstore.dao.exception.FilmStoreDAOInvalidOperationException
+	 */
+	void payOrder(BigDecimal balance,int orderId,String userEmail) throws FilmStoreDAOException,
+												FilmStoreDAOInvalidOperationException;
 	/**
 	 * The method permits find order by status.
 	 * 

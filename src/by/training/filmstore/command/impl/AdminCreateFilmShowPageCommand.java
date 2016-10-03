@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.QueryUtil;
 import by.training.filmstore.entity.Actor;
 import by.training.filmstore.entity.FilmDirector;
@@ -37,11 +38,11 @@ public class AdminCreateFilmShowPageCommand implements Command {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+
+		if(!CheckUserRoleUtil.isAdmin(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}
-		
 		
 		String query = QueryUtil.createHttpQueryString(request);
 		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);

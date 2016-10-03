@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.ConvertStringToIntUtil;
 import by.training.filmstore.command.util.PageUtil;
 import by.training.filmstore.command.util.PaginationUtil;
@@ -41,7 +42,7 @@ public class AdminShowListFilmCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+		if(!CheckUserRoleUtil.isAdmin(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}
@@ -61,8 +62,8 @@ public class AdminShowListFilmCommand implements Command {
 		PageUtil pageInfo = null;
 
 		try {
-			int page = ConvertStringToIntUtil.getIntFromString(request, NUMBER_PAGE);
-			int startIndex = ConvertStringToIntUtil.getIntFromString(request, START_INDEX);
+			int page = ConvertStringToIntUtil.convert(request, NUMBER_PAGE);
+			int startIndex = ConvertStringToIntUtil.convert(request, START_INDEX);
 			page = page==-1?1:page;
 			startIndex = startIndex==-1?1:startIndex;
 			

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.entity.User;
 import by.training.filmstore.service.FilmStoreServiceFactory;
 import by.training.filmstore.service.UserService;
@@ -29,19 +30,17 @@ public final class UpdateUserCommand implements Command {
 	private final static String PATRONYMIC = "patronymic";
 	private final static String PHONE = "phone";
 	private final static String BALANCE = "balance";
-	
-	private static final String PHONE_PATTERN = "^\\+([0-9]{3})([0-9]{2})([0-9]{3})([0-9]{2})([0-9]{2})$";
+	private final static String USER = "user";
 	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession session = request.getSession(false);
-		if((session == null)||(session.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_GUEST"))){
+		if(CheckUserRoleUtil.isGuest(session)){
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_LOGIN).forward(request, response);
 			return;
 		}
 		
-
 		String userEmail = (String)session.getAttribute(CommandParamName.USER_EMAIL);
 		String lastName = request.getParameter(LAST_NAME);
 		String firstName = request.getParameter(FIRST_NAME);
@@ -56,9 +55,12 @@ public final class UpdateUserCommand implements Command {
 		try {
 			user = userService.find(userEmail);
 			phone = formatPhone(phone);
-			userService.update(user.getEmail(),user.getPassword(),user.getPassword(), 
+			user = userService.update(user.getEmail(),user.getPassword(),user.getPassword(), 
 					lastName, firstName, patronymic,phone, balance);
-			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
+			
+			session.setAttribute(CommandParamName.BALANCE,user.getBalance());
+			request.setAttribute(USER, user);
+			request.getRequestDispatcher(CommandParamName.PATH_PERSONAL_INFO).forward(request, response);;
 		} catch (FilmStoreServiceException e) {
 			logger.error("Operation failed!Can't update user!",e);
 			request.getRequestDispatcher(CommandParamName.PATH_ERROR_PAGE).forward(request, response);
@@ -73,7 +75,8 @@ public final class UpdateUserCommand implements Command {
 	}
 
 	private String formatPhone(String phone){
-		Pattern patternPhone = Pattern.compile(PHONE_PATTERN);
+		String phonePattern = "^\\+([0-9]{3})([0-9]{2})([0-9]{3})([0-9]{2})([0-9]{2})$";
+		Pattern patternPhone = Pattern.compile(phonePattern);
 		Matcher matcherPhone = patternPhone.matcher(phone);
 		String delimiter = "-";
 		String formatPhone = "+";

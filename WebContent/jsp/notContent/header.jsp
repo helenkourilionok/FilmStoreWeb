@@ -60,8 +60,8 @@
 <nav class="navbar navbar-default navbar-inverse">
 	<ul class="nav navbar-nav">
 		<li><a href="Controller?command=show_list_film">${home}</a></li>
-		<li><a href="/about/">${aboutUs}</a></li>
-		<li><a href="/services/">${services}</a></li>
+		<li><a href="#">${aboutUs}</a></li>
+		<li><a href="#">${services}</a></li>
 		<li class="dropdown"><a href="#">${films}<span></span></a>
 			<ul class="dropdown-menu">
 				<li><a href="#">${triller}</a></li>
@@ -70,9 +70,9 @@
 				<li><a href="#">${adventures}</a></li>
 				<li><a href="#">${fantastic}</a></li>
 			</ul></li>
-		<li><a href="/payment/">${payment}</a></li>
-		<li><a href="/delivery/">${delivery}</a></li>
-		<li><a href="/help/">${help}</a></li>
+		<li><a href="#">${payment}</a></li>
+		<li><a href="#">${delivery}</a></li>
+		<li><a href="#">${help}</a></li>
 	</ul>
 	<c:if test="${sessionScope.userRole == 'ROLE_GUEST'}">
 		<ul class="nav navbar-nav" style="float: right">

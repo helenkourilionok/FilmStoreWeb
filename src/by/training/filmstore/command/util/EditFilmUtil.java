@@ -15,17 +15,30 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import by.training.filmstore.entity.Actor;
+
 public final class EditFilmUtil {
 	
 	private final static String IMAGE_FOLDER = "/images/";
 	private final static String ENCODING = "UTF-8";
 	private final static String IMAGE = "image";
 	
-	public static List<Short> strToListShort(String listActors){
-		if(listActors==null){
-			return null;
+	public static List<Actor> createListActorFromList(List<Short> listActorId){
+		List<Actor> listActor = new ArrayList<>();
+		Actor actor = null;
+		String actorFioStub = "stubName";
+		for(Short id:listActorId){
+			actor = new Actor(id,actorFioStub);
+			listActor.add(actor);
 		}
+		return listActor;
+	}
+	
+	public static List<Short> strToListId(String listActors){
 		List<Short> idActors = new ArrayList<>();
+		if(listActors==null){
+			return idActors;
+		}
 		String[] listId = listActors.split(",");
 		short idDefault = 0;
 		for(String strId : listId){
@@ -36,6 +49,26 @@ public final class EditFilmUtil {
 			}
 		}
 		return idActors;
+	}
+	
+	public static List<Actor> strToListActor(String listActors){
+		List<Actor> _listActors = new ArrayList<>();
+		if(listActors==null){
+			return null;
+		}
+		Actor actor = null;
+		String actorFioStub = "stubName";
+		String[] listId = listActors.split(",");
+		short idDefault = 0;
+		for(String strId : listId){
+			try{
+				actor = new Actor(Short.parseShort(strId),actorFioStub);
+			}catch(NumberFormatException e){
+				actor = new Actor(idDefault,actorFioStub);
+			}
+			_listActors.add(actor);
+		}
+		return _listActors;
 	}
 	
 	public static Map<String,String> parseMultipartRequest(HttpServletRequest request){

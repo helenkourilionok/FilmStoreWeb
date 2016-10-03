@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.training.filmstore.command.Command;
+import by.training.filmstore.command.util.CheckUserRoleUtil;
 import by.training.filmstore.command.util.QueryUtil;
 import by.training.filmstore.entity.Actor;
 import by.training.filmstore.entity.Film;
@@ -35,12 +36,14 @@ public class AdminUpdateFilmShowPageCommand implements Command {
 	private final static String LIST_COUNTRIES = "listCountries";
 	private final static String LIST_GENRES = "listGenres";
 	private final static String LIST_QUALITY = "listQuality";
+	private final static String UPDATING_FAILED = "updatingFilmFailed";
+	private final static String INCORRECT_PARAMS = "incorrectParams";
 	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		
 		HttpSession sessionCheckRole = request.getSession(false);
-		if ((sessionCheckRole == null)||(!sessionCheckRole.getAttribute(CommandParamName.USER_ROLE).toString().equals("ROLE_ADMIN"))) {
+		if(!CheckUserRoleUtil.isAdmin(sessionCheckRole)){
 			request.getRequestDispatcher(CommandParamName.PATH_ACESS_DENIED_PAGE).forward(request, response);
 			return;
 		}
@@ -68,6 +71,8 @@ public class AdminUpdateFilmShowPageCommand implements Command {
 		    request.setAttribute(LIST_COUNTRIES, CommandParamName.listCountries);
 		    request.setAttribute(LIST_GENRES,CommandParamName.listGenres);
 		    request.setAttribute(LIST_QUALITY, CommandParamName.listQuality);
+		    request.setAttribute(INCORRECT_PARAMS,request.getParameter(INCORRECT_PARAMS));
+		    request.setAttribute(UPDATING_FAILED, request.getParameter(UPDATING_FAILED));
 		    sessionCheckRole.setAttribute(FILM, film);
 			request.getRequestDispatcher(CommandParamName.PATH_UPDATE_FILM_PAGE).forward(request, response);
 		} catch (FilmStoreServiceException e) {

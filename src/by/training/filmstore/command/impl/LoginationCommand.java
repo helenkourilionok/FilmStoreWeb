@@ -73,6 +73,7 @@ public class LoginationCommand implements Command {
 
 		User user = userService.authorisation(email, password);
 		
+		httpSession.setAttribute(CommandParamName.BALANCE, user.getBalance());
 		httpSession.setAttribute(CommandParamName.DISCOUNT, user.getDiscount());
 		httpSession.setAttribute(CommandParamName.USER_EMAIL, user.getEmail());
 		httpSession.setAttribute(CommandParamName.USER_ROLE, user.getRole().name());

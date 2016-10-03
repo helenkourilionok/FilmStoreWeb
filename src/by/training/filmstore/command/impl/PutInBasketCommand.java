@@ -25,7 +25,7 @@ public class PutInBasketCommand implements Command {
 		
 		String filmId = request.getParameter(FILM_ID);
 		String value = CookieUtil.getValueFromCookies(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER+filmId);
-		int countFilms = ConvertStringToIntUtil.getIntFromString(value);
+		int countFilms = ConvertStringToIntUtil.convert(value);
 		countFilms = countFilms == -1?1:++countFilms;
 
 		Cookie cookie = CookieUtil.getCookie(request, CommandParamName.COOKIE_PREFIX_FOR_ORDER+filmId);
