@@ -61,13 +61,13 @@ public class MakeOrderCommand implements Command {
 		try {
 
 			String prefix = CommandParamName.COOKIE_PREFIX_FOR_ORDER;
-			listGoods = makeListGoodsFromCookies(request, prefix);
+			listGoods = makeListGoodFromCookie(request, prefix);
 			createOrder(request,orderService,sessionCheckRole,listGoods);
 			
-			listFilms = extractFilmsFromObject(sessionCheckRole.getAttribute(LIST_FILMS));
-			updateFilmsCount(listFilms, filmService, request);
+			listFilms = extractFilmFromObject(sessionCheckRole.getAttribute(LIST_FILMS));
+			updateFilmCount(listFilms, filmService, request);
 
-			CookieUtil.removeOrderCookies(request, response, prefix);
+			CookieUtil.removeOrderCookie(request, response, prefix);
 			sessionCheckRole.setAttribute(LIST_FILMS, null);
 			sessionCheckRole.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET,0);
 			
@@ -99,7 +99,7 @@ public class MakeOrderCommand implements Command {
 
 	}
 	
-	private List<GoodOfOrder> makeListGoodsFromCookies(HttpServletRequest request, String prefix) {
+	private List<GoodOfOrder> makeListGoodFromCookie(HttpServletRequest request, String prefix) {
 		List<GoodOfOrder> listGoods = new ArrayList<>();
 		Cookie[] cookies = request.getCookies();
 		String replacement = "";
@@ -121,7 +121,7 @@ public class MakeOrderCommand implements Command {
 		return listGoods;
 	}
 
-	private List<Film> extractFilmsFromObject(Object object) {
+	private List<Film> extractFilmFromObject(Object object) {
 		List<Film> films = new ArrayList<Film>();
 
 		if (object instanceof Iterable<?>) {
@@ -135,19 +135,19 @@ public class MakeOrderCommand implements Command {
 		return films;
 	}
 	
-	private void updateFilmsCount(List<Film> listFilms, FilmService filmService, HttpServletRequest request)
+	private void updateFilmCount(List<Film> listFilms, FilmService filmService, HttpServletRequest request)
 			throws FilmStoreServiceIncorrectFilmParamException, FilmStoreServiceInvalidFilmOperException,
 			FilmStoreServiceException {
-		Map<Short, Short> mapIdFilmCountFilm = CookieUtil.getMapIdCountFromCookies(request,
+		Map<Short, Short> mapIdFilmCountFilm = CookieUtil.getMapIdCountFromCookie(request,
 				CommandParamName.COOKIE_PREFIX_FOR_ORDER);
 		for (Film film : listFilms) {
 			short countOrderedFilm = mapIdFilmCountFilm.get(film.getId());
-			short countCurrentFilm = film.getCountFilms();
-			film.setCountFilms((short) (countCurrentFilm - countOrderedFilm));
+			short countCurrentFilm = film.getCountFilm();
+			film.setCountFilm((short) (countCurrentFilm - countOrderedFilm));
 			filmService.update(Short.toString(film.getId()), film.getName(), film.getGenre(), film.getCountry(),
 					Short.toString(film.getYearOfRelease()), film.getQuality().getNameQuality(),
 					Short.toString(film.getFilmDirector().getId()), film.getDescription(), film.getPrice().toString(),
-					Short.toString(film.getCountFilms()), film.getImage());
+					Short.toString(film.getCountFilm()), film.getImage());
 		}
 	}
 }

@@ -8,10 +8,11 @@ import java.math.BigDecimal;
 public class Film  implements Serializable{
 	
 
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -6510412577922889767L;
+	private static final long serialVersionUID = -7897225574119150872L;
 	private short id;
 	private String name;
 	private String genre;
@@ -21,9 +22,9 @@ public class Film  implements Serializable{
 	private FilmDirector filmDirector;
 	private String description;
 	private BigDecimal price;
-	private short countFilms;
+	private short countFilm;
 	private String image;
-	private List<Actor> actors;
+	private List<Actor> listActor;
 	public short getId() {
 		return id;
 	}
@@ -78,11 +79,11 @@ public class Film  implements Serializable{
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
-	public short getCountFilms() {
-		return countFilms;
+	public short getCountFilm() {
+		return countFilm;
 	}
-	public void setCountFilms(short countFilms) {
-		this.countFilms = countFilms;
+	public void setCountFilm(short countFilm) {
+		this.countFilm = countFilm;
 	}
 	public String getImage() {
 		return image;
@@ -90,23 +91,20 @@ public class Film  implements Serializable{
 	public void setImage(String image) {
 		this.image = image;
 	}
-	public Actor getActors(int index){
-		return actors.get(index);
+	public List<Actor> getListActor() {
+		return listActor;
 	}
-	public void setActors(int index,Actor actor){
-		actors.add(index, actor);
+	public void setListActor(List<Actor> listActor) {
+		this.listActor = listActor;
 	}
-	public List<Actor> getActors() {
-		return actors;
-	}
-	public void setActors(List<Actor> actors) {
-		this.actors = actors;
-	}
+	
 	public Film() {
 		super();
 	}
+	
+
 	public Film(String name, String genre, String country, short yearOfRelease, Quality quality, String description,
-			BigDecimal price, short countFilms, String image) {
+			BigDecimal price, short countFilm, String image) {
 		super();
 		this.name = name;
 		this.genre = genre;
@@ -115,16 +113,17 @@ public class Film  implements Serializable{
 		this.quality = quality;
 		this.description = description;
 		this.price = price;
-		this.countFilms = countFilms;
+		this.countFilm = countFilm;
 		this.image = image;
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + countFilms;
+		result = prime * result + countFilm;
 		result = prime * result + ((country == null) ? 0 : country.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((filmDirector == null) ? 0 : filmDirector.hashCode());
 		result = prime * result + ((genre == null) ? 0 : genre.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((image == null) ? 0 : image.hashCode());
@@ -143,7 +142,7 @@ public class Film  implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Film other = (Film) obj;
-		if (countFilms != other.countFilms)
+		if (countFilm != other.countFilm)
 			return false;
 		if (country == null) {
 			if (other.country != null)
@@ -154,6 +153,11 @@ public class Film  implements Serializable{
 			if (other.description != null)
 				return false;
 		} else if (!description.equals(other.description))
+			return false;
+		if (filmDirector == null) {
+			if (other.filmDirector != null)
+				return false;
+		} else if (!filmDirector.equals(other.filmDirector))
 			return false;
 		if (genre == null) {
 			if (other.genre != null)
@@ -186,8 +190,8 @@ public class Film  implements Serializable{
 	@Override
 	public String toString() {
 		return "Film [id=" + id + ", name=" + name + ", genre=" + genre + ", country=" + country + ", yearOfRelease="
-				+ yearOfRelease + ", quality=" + quality + ", description=" + description + ", price=" + price
-				+ ", countFilms=" + countFilms + ", image=" + image + "]";
+				+ yearOfRelease + ", quality=" + quality + ", filmDirector=" + filmDirector + ", description="
+				+ description + ", price=" + price + ", countFilms=" + countFilm + ", image=" + image + "]";
 	}
 	
 }

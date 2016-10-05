@@ -67,7 +67,7 @@ public class AdminShowListFilmCommand implements Command {
 			page = page==-1?1:page;
 			startIndex = startIndex==-1?1:startIndex;
 			
-			listFilm = filmService.findAllFilms(lazyInit, 
+			listFilm = filmService.findAllFilm(lazyInit, 
 					(page - 1) *FILM_RECORDS_PER_PAGE,
 					FILM_RECORDS_PER_PAGE, countAllRec);
 			

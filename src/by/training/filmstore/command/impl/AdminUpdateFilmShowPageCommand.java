@@ -63,8 +63,8 @@ public class AdminUpdateFilmShowPageCommand implements Command {
 		String filmId = request.getParameter(FILM_ID);
 		
 		try {
-		    listActors = actorService.findAllActors();
-		    listFilmDir = filmDirService.findAllFilmDirectors();
+		    listActors = actorService.findAllActor();
+		    listFilmDir = filmDirService.findAllFilmDirector();
 		    film = filmService.find(filmId, lazyInit);
 		    request.setAttribute(LIST_ACTORS, listActors);
 		    request.setAttribute(LIST_FILM_DIR, listFilmDir);

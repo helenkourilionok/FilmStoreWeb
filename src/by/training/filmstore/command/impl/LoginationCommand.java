@@ -38,7 +38,7 @@ public class LoginationCommand implements Command {
 		try {
 
 			userAuth(email, password, session);
-			String language = CookieUtil.getValueFromCookies(request, CommandParamName.LOCALE);
+			String language = CookieUtil.getValueFromCookie(request, CommandParamName.LOCALE);
 			language = language == null ? DEFAULT_LANGUAGE : language;
 			session.setAttribute(CommandParamName.LOCALE, language);
 

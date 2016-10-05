@@ -50,7 +50,7 @@ public class FilmStoreServiceFactoryImpl extends FilmStoreServiceFactory{
 	}
 
 	@Override
-	public by.training.filmstore.service.GoodOfOrderService getGoodOfOrderService() {
+	public GoodOfOrderService getGoodOfOrderService() {
 		return goodOfOrderService;
 	}
 

@@ -11,5 +11,5 @@ public interface ActorService {
 	void create(String fio) throws FilmStoreServiceException,
 	FilmStoreServiceInvalidActorOperException,
 	FilmStoreServiceIncorrectActorParamException;
-	List<Actor> findAllActors() throws FilmStoreServiceException;
+	List<Actor> findAllActor() throws FilmStoreServiceException;
 } 

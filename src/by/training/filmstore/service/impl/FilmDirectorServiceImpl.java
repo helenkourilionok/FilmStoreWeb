@@ -15,7 +15,7 @@ import by.training.filmstore.service.exception.FilmStoreServiceInvalidFilmDirOpe
 public class FilmDirectorServiceImpl implements FilmDirectorService {
 
 	@Override
-	public List<FilmDirector> findAllFilmDirectors() throws FilmStoreServiceException {
+	public List<FilmDirector> findAllFilmDirector() throws FilmStoreServiceException {
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDirectorDAO filmDirectorDAO = filmStoreDAOFactory.getFilmDirectorDAO();

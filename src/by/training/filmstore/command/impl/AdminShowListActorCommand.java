@@ -47,8 +47,8 @@ public final class AdminShowListActorCommand implements Command {
 		List<String> listFio = null;
 		
 		try {
-			listActor = actorService.findAllActors();
-			listFio = getFIOActorsFromList(listActor);
+			listActor = actorService.findAllActor();
+			listFio = getFIOActorFromList(listActor);
 			customAttrTagUtil.setListStr(listFio);
 			request.setAttribute(LIST_ACTOR, customAttrTagUtil);
 			request.getRequestDispatcher(CommandParamName.PATH_LIST_ACTOR).forward(request, response);
@@ -60,7 +60,7 @@ public final class AdminShowListActorCommand implements Command {
 	}
 
 	
-	private List<String> getFIOActorsFromList(List<Actor> listActor){
+	private List<String> getFIOActorFromList(List<Actor> listActor){
 		List<String> fioActor = new ArrayList<>();
 		for(Actor actor:listActor){
 			fioActor.add(actor.getFio());

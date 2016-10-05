@@ -86,10 +86,10 @@ public class FilmDAOImpl implements FilmDAO {
 			prepStatement.close();
 
 			prepStatement = connection.prepareStatement(SQL_INSERT_FILM_ACTOR);
-			listIdActors = getActorIdFromListActor(entity.getActors());
+			listIdActors = getActorIdFromListActor(entity.getListActor());
 			fillBatchForExecute(entity.getId(), listIdActors, prepStatement);
 			int[] results = prepStatement.executeBatch();
-			countInsertedRows = calculateCountUpdatedRows(results);
+			countInsertedRows = calculateCountUpdatedRow(results);
 			if (countInsertedRows != listIdActors.size()) {
 				throw new FilmStoreDAOInvalidOperationException(
 						"Operation failed!Can't create record in film_actor table!");
@@ -139,7 +139,7 @@ public class FilmDAOImpl implements FilmDAO {
 			prepStatement.executeUpdate();
 			prepStatement.close();
 
-			success = executeFilmActorOperation(connection,prepStatement,entity.getId(), listNewActors,entity.getActors());
+			success = executeFilmActorOperation(connection,prepStatement,entity.getId(), listNewActors,entity.getListActor());
 			if(!success){
 				throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't update film!");
 			}
@@ -239,7 +239,7 @@ public class FilmDAOImpl implements FilmDAO {
 			resultSetActor = prepStatementForActor.executeQuery();
 			resultSetFilmDir = prepStatementForFilmDirector.executeQuery();
 
-			film.setActors(fillListActor(resultSetActor));
+			film.setListActor(fillListActor(resultSetActor));
 			film.setFilmDirector(fillFilmDirector(resultSetFilmDir));
 		} catch (SQLException | PoolConnectionException e) {
 			throw new FilmStoreDAOException(e);
@@ -406,7 +406,7 @@ public class FilmDAOImpl implements FilmDAO {
 		prepStatement = connection.prepareStatement(SQL_DELETE_FILM_ACTOR);
 		fillBatchForExecute(filmId, idOldActors, prepStatement);
 		int[] results = prepStatement.executeBatch();
-		int countDeletedRows = calculateCountUpdatedRows(results);
+		int countDeletedRows = calculateCountUpdatedRow(results);
 		if (countDeletedRows != idOldActors.size()) {
 			return false;
 		}
@@ -415,7 +415,7 @@ public class FilmDAOImpl implements FilmDAO {
 		prepStatement = connection.prepareStatement(SQL_INSERT_FILM_ACTOR);
 		fillBatchForExecute(filmId, idNewActors,prepStatement);
 		results = prepStatement.executeBatch();
-		int countInsertedRows = calculateCountUpdatedRows(results);
+		int countInsertedRows = calculateCountUpdatedRow(results);
 		if (countInsertedRows != idNewActors.size()) {
 			return false;
 		}	
@@ -496,7 +496,7 @@ public class FilmDAOImpl implements FilmDAO {
 		preparedStatement.setShort(6, entity.getFilmDirector().getId());
 		preparedStatement.setString(7, entity.getDescription());
 		preparedStatement.setBigDecimal(8, entity.getPrice());
-		preparedStatement.setShort(9, entity.getCountFilms());
+		preparedStatement.setShort(9, entity.getCountFilm());
 		preparedStatement.setString(10, entity.getImage());
 
 		if (!insert) {
@@ -513,7 +513,7 @@ public class FilmDAOImpl implements FilmDAO {
 		}
 	}
 
-	private int calculateCountUpdatedRows(int[] results) {
+	private int calculateCountUpdatedRow(int[] results) {
 		
 		int countUpdatedRows = 0;
 
@@ -562,7 +562,7 @@ public class FilmDAOImpl implements FilmDAO {
 		film.setQuality(quality);
 		film.setDescription(resultSet.getString(ColumnName.TABLE_FILM_DESCRIPTION));
 		film.setPrice(resultSet.getBigDecimal(ColumnName.TABLE_FILM_PRICE));
-		film.setCountFilms(resultSet.getShort(ColumnName.TABLE_FILM_COUNT_FILM));
+		film.setCountFilm(resultSet.getShort(ColumnName.TABLE_FILM_COUNT_FILM));
 		film.setImage(resultSet.getString(ColumnName.TABLE_FILM_IMAGE));
 	}
 

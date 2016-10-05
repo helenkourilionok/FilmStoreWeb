@@ -270,7 +270,7 @@ public class OrderDAOImpl implements OrderDAO {
 		for(GoodOfOrder entity:listGoods){
 			prepStatement.setInt(1,orderId);
 			prepStatement.setInt(2, entity.getId().getIdFilm());
-			prepStatement.setByte(3, entity.getCountFilms());
+			prepStatement.setByte(3, entity.getCountFilm());
 			prepStatement.addBatch();
 		}
 	}

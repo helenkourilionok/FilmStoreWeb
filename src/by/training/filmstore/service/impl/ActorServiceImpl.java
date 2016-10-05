@@ -15,7 +15,7 @@ import by.training.filmstore.service.exception.FilmStoreServiceInvalidActorOperE
 public class ActorServiceImpl implements ActorService {
 
 	@Override
-	public List<Actor> findAllActors() throws FilmStoreServiceException{
+	public List<Actor> findAllActor() throws FilmStoreServiceException{
 		List<Actor> listActor = null;
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		ActorDAO actorDAO = filmStoreDAOFactory.getActorDAO();

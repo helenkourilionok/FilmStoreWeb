@@ -24,7 +24,7 @@ public class PutInBasketCommand implements Command {
 		HttpSession session = request.getSession(true);
 		
 		String filmId = request.getParameter(FILM_ID);
-		String value = CookieUtil.getValueFromCookies(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER+filmId);
+		String value = CookieUtil.getValueFromCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER+filmId);
 		int countFilms = ConvertStringToIntUtil.convert(value);
 		countFilms = countFilms == -1?1:++countFilms;
 
@@ -40,7 +40,7 @@ public class PutInBasketCommand implements Command {
 			response.addCookie(cookie);
 		}
 				
-		session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodsInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
+		session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
 		response.sendRedirect(prev_query);
 	}
 

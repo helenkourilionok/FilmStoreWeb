@@ -115,7 +115,7 @@
 						<div class="col-md-8 row-offset">
 							<div class="pull-right text-right">
 								<ul class="list-unstyled text-right">
-									<li><b>${countFilms}:</b><span>${film.countFilms}</span></li>
+									<li><b>${countFilms}:</b><span>${film.countFilm}</span></li>
 									<li><b>${quality}:</b> ${film.quality.getNameQuality()}</li>
 									<li><b>${price}:</b> <span>${film.price}</span></li>
 								</ul>
@@ -132,9 +132,9 @@
 									<p>${film.description}</p>
 								</li>
 								<li><b>${actors}:</b>&nbsp; <span> <c:forEach
-											var="actor" items="${film.actors}" varStatus="loop">
+											var="actor" items="${film.listActor}" varStatus="loop">
 											<c:choose>
-												<c:when test="${loop.index != film.actors.size()-1}">
+												<c:when test="${loop.index != film.listActor.size()-1}">
 									        		${actor.fio},
 									    		</c:when>
 												<c:otherwise>

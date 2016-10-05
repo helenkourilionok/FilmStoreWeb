@@ -41,7 +41,7 @@ public interface FilmService {
 	List<Film> findFilmByName(String name) throws FilmStoreServiceException,
 											FilmStoreServiceIncorrectFilmParamException,
 											FilmStoreServiceListFilmNotFoundException;
-	List<Film> findAllFilms(boolean lazyInit,int offset,int recordsPerPage,List<Integer> countAllRecords) 
+	List<Film> findAllFilm(boolean lazyInit,int offset,int recordsPerPage,List<Integer> countAllRecords) 
 											throws FilmStoreServiceException,
 											FilmStoreServiceIncorrectFilmParamException,
 											FilmStoreServiceListFilmNotFoundException;

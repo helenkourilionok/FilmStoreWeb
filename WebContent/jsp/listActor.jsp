@@ -55,7 +55,7 @@
 				<section class="col-md-9">
 					<div class="col-md-6 col-md-offset-3">				
 						<h2>${listActors}</h2>
-						<customTag:custom-table head="${actor}" rows="${listActor.size}">
+						<customTag:custom-table head="${actor}" row="${listActor.size}">
 						${listActor.value}
 						</customTag:custom-table>
 					</div>

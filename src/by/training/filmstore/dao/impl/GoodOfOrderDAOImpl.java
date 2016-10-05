@@ -42,47 +42,6 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 			"select good_of_order.ord_id,good_of_order.fm_id,good_of_order.gd_count_films "+
 			"from good_of_order where good_of_order.fm_id = ?";
 	
-	
-	@Override
-	public GoodOfOrder find(GoodOfOrderPK id) throws FilmStoreDAOException {
-		PoolConnection poolConnection = null;
-		Connection connection = null;
-		PreparedStatement prepStatement = null;
-		ResultSet resultSet = null;
-		GoodOfOrder goodOfOrder = null;
-		try
-		{
-			poolConnection = PoolConnection.getInstance();
-			connection = poolConnection.takeConnection();
-			prepStatement =  connection.prepareStatement(SQL_FIND_BY_ID);
-			prepStatement.setInt(1, id.getIdOrder());
-			prepStatement.setShort(2, id.getIdFilm());
-			resultSet = prepStatement.executeQuery();
-			
-			if(resultSet.next())
-			{
-				goodOfOrder = new GoodOfOrder();
-				fillGoodOfOrder(goodOfOrder, resultSet);
-			}
-		}
-		catch(PoolConnectionException|SQLException e)
-		{
-			throw new FilmStoreDAOException(e);
-		}
-		finally {
-			try {
-				prepStatement.close();
-			} catch (SQLException e) {
-				logger.error("Error closing of PreparedStatement",e);
-			}
-			try{
-				poolConnection.putbackConnection(connection);
-			}catch(SQLException e){
-				logger.error("Error closing of Connection",e);
-			}
-		}
-		return goodOfOrder;
-	}
 
 	@Override
 	public void create(GoodOfOrder entity) throws FilmStoreDAOException, FilmStoreDAOInvalidOperationException {
@@ -96,7 +55,7 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 			prepStatement = connection.prepareStatement(SQL_INSERT);
 			prepStatement.setInt(1, entity.getId().getIdOrder());
 			prepStatement.setInt(2, entity.getId().getIdFilm());
-			prepStatement.setByte(3, entity.getCountFilms());
+			prepStatement.setByte(3, entity.getCountFilm());
 			int affectedRows = prepStatement.executeUpdate();
 			if (affectedRows == 0) {
                 throw new FilmStoreDAOInvalidOperationException("Operation failed!Can't create good of order!");
@@ -130,7 +89,7 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_UPDATE);
 			
-			prepStatement.setByte(1, entity.getCountFilms());
+			prepStatement.setByte(1, entity.getCountFilm());
 			prepStatement.setInt(2, entity.getId().getIdOrder());
 			prepStatement.setShort(3, entity.getId().getIdFilm());
 			
@@ -190,6 +149,48 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 		}
 	}
 
+	@Override
+	public GoodOfOrder find(GoodOfOrderPK id) throws FilmStoreDAOException {
+		PoolConnection poolConnection = null;
+		Connection connection = null;
+		PreparedStatement prepStatement = null;
+		ResultSet resultSet = null;
+		GoodOfOrder goodOfOrder = null;
+		try
+		{
+			poolConnection = PoolConnection.getInstance();
+			connection = poolConnection.takeConnection();
+			prepStatement =  connection.prepareStatement(SQL_FIND_BY_ID);
+			prepStatement.setInt(1, id.getIdOrder());
+			prepStatement.setShort(2, id.getIdFilm());
+			resultSet = prepStatement.executeQuery();
+			
+			if(resultSet.next())
+			{
+				goodOfOrder = new GoodOfOrder();
+				fillGoodOfOrder(goodOfOrder, resultSet);
+			}
+		}
+		catch(PoolConnectionException|SQLException e)
+		{
+			throw new FilmStoreDAOException(e);
+		}
+		finally {
+			try {
+				prepStatement.close();
+			} catch (SQLException e) {
+				logger.error("Error closing of PreparedStatement",e);
+			}
+			try{
+				poolConnection.putbackConnection(connection);
+			}catch(SQLException e){
+				logger.error("Error closing of Connection",e);
+			}
+		}
+		return goodOfOrder;
+	}
+
+	
 	@Override
 	public List<GoodOfOrder> findAll() throws FilmStoreDAOException {
 		return findGoodOfOrderByCriteria(0, FindGoodOfOrderCriteria.FIND_ALL);
@@ -259,7 +260,7 @@ public class GoodOfOrderDAOImpl implements GoodOfOrderDAO{
 		goodOfOrderPK.setIdFilm(resultSet.getShort(ColumnName.TABLE_GOOD_OF_ORDER_FILM_ID));
 		goodOfOrderPK.setIdOrder(resultSet.getInt(ColumnName.TABLE_GOOD_OF_ORDER_ORDER_ID));
 		goodOfOrder.setId(goodOfOrderPK);
-		goodOfOrder.setCountFilms(resultSet.getByte(ColumnName.TABLE_GOOD_OF_ORDER_COUNT_FILMS));
+		goodOfOrder.setCountFilm(resultSet.getByte(ColumnName.TABLE_GOOD_OF_ORDER_COUNT_FILMS));
 	}
 	
 	private enum FindGoodOfOrderCriteria {

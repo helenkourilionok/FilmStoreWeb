@@ -123,7 +123,7 @@
 												<td style="width: 45%">${film.name}(${film. yearOfRelease})</td>
 												<td style="width: 15%">
 												<select class="form-control" id="${loopIndex.index+1}" onchange="calcPrice(this,${film.id},'orderFilm')">
-														<c:forEach var="count" begin="1" end="${film.countFilms}">
+														<c:forEach var="count" begin="1" end="${film.countFilm}">
 															<c:choose>
 																<c:when
 																	test="${count == countOrderedFilm[loopIndex.index]}">

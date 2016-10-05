@@ -45,7 +45,7 @@
 							<div class="col-md-8 row-offset">
 								<div class="pull-right text-right">
 									<ul class="list-unstyled text-right">
-										<li><b>${countFilms}:</b><span>${sessionScope.filmInfo.countFilms}</span></li>
+										<li><b>${countFilms}:</b><span>${sessionScope.filmInfo.countFilm}</span></li>
 										<li><b>${quality}:</b>
 											${sessionScope.filmInfo.quality.getNameQuality()}</li>
 										<li><b>${price}:</b> <span>${sessionScope.filmInfo.price}</span></li>
@@ -61,10 +61,10 @@
 										<p>${sessionScope.filmInfo.description}</p>
 									</li>
 									<li><b>${actors}:</b>&nbsp; <span> <c:forEach
-												var="actor" items="${sessionScope.filmInfo.actors}"
+												var="actor" items="${sessionScope.filmInfo.listActor}"
 												varStatus="loop">
 												<c:choose>
-													<c:when test="${loop.index != filmInfo.actors.size()-1}">
+													<c:when test="${loop.index != filmInfo.listActor.size()-1}">
 									        ${actor.fio},
 									    </c:when>
 													<c:otherwise>

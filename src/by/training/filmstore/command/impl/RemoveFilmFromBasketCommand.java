@@ -26,7 +26,7 @@ public final class RemoveFilmFromBasketCommand implements Command {
 		
 		String filmId = request.getParameter(FILM_ID);
 
-		CookieUtil.removeOrderCookies(request, response, CommandParamName.COOKIE_PREFIX_FOR_ORDER, filmId);
+		CookieUtil.removeOrderCookie(request, response, CommandParamName.COOKIE_PREFIX_FOR_ORDER, filmId);
 		
 		String prev_query = (String) request.getSession(false).getAttribute(CommandParamName.PREV_QUERY);
 		

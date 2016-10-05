@@ -116,7 +116,7 @@ public class UserDAOImpl implements UserDAO {
 			poolConnection = PoolConnection.getInstance();
 			connection = poolConnection.takeConnection();
 			prepStatement = connection.prepareStatement(SQL_FIND_USER_FOR_DISCOUNT);
-			emails = findEmailsOfUser(prepStatement, year, month);
+			emails = findEmailOfUser(prepStatement, year, month);
             
 			if(emails.isEmpty()){
 				throw new FilmStoreDAOInvalidOperationException("Can't take away user's discount!");
@@ -124,7 +124,7 @@ public class UserDAOImpl implements UserDAO {
 			
 			connection.setAutoCommit(false);
 			prepStatement = connection.prepareStatement(SQL_TAKE_AWAY_DISCOUNT);
-			int affectedRows = updateDiscountByEmails(prepStatement, emails);
+			int affectedRows = updateDiscountByEmail(prepStatement, emails);
 			connection.commit();
 			
 			if (affectedRows != emails.size()) {
@@ -269,7 +269,7 @@ public class UserDAOImpl implements UserDAO {
 		return prepStatement;
 	}
 	
-	private List<String> findEmailsOfUser(PreparedStatement prepStatement, int year, int month) throws SQLException {
+	private List<String> findEmailOfUser(PreparedStatement prepStatement, int year, int month) throws SQLException {
 		prepStatement.setInt(1, year);
 		prepStatement.setInt(2, month);
 		ResultSet resultSet = prepStatement.executeQuery();
@@ -281,7 +281,7 @@ public class UserDAOImpl implements UserDAO {
 		return emails;
 	}
 
-	private int updateDiscountByEmails(PreparedStatement prepStatement, List<String> emails) throws SQLException {
+	private int updateDiscountByEmail(PreparedStatement prepStatement, List<String> emails) throws SQLException {
 		for (int i = 0; i < emails.size(); i++) {
 			prepStatement.setString(1, emails.get(i));
 			prepStatement.addBatch();

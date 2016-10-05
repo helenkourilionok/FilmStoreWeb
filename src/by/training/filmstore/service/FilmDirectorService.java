@@ -11,5 +11,5 @@ public interface FilmDirectorService {
 	void create(String fio) throws FilmStoreServiceException,
 	FilmStoreServiceIncorrectFilmDirParamException,
 	FilmStoreServiceInvalidFilmDirOperException;
-	List<FilmDirector> findAllFilmDirectors() throws FilmStoreServiceException;
+	List<FilmDirector> findAllFilmDirector() throws FilmStoreServiceException;
 }

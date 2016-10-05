@@ -11,14 +11,14 @@ public class CustomAttrTag extends TagSupport {
 	private static final long serialVersionUID = 1L;
 
 	private String head;
-	private int rows;
+	private int row;
 
 	public void setHead(String head){
 		this.head = head;
 	}
 	
-	public void setRows(Integer rows) {
-		this.rows = rows;
+	public void setRow(Integer row) {
+		this.row = row;
 	}
 	
 	public int doStartTag() throws JspTagException {
@@ -36,7 +36,7 @@ public class CustomAttrTag extends TagSupport {
 	}
 
 	public int doAfterBody() throws JspTagException {
-		if (rows-- > 1) {
+		if (row-- > 1) {
 			try {
 			pageContext.getOut().write("</td></tr><tr><td>");
 			} catch (IOException e) {

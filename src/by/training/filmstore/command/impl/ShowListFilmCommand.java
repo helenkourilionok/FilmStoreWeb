@@ -47,7 +47,7 @@ public class ShowListFilmCommand implements Command {
 		String query = QueryUtil.createHttpQueryString(request);
 		session.setAttribute(CommandParamName.PREV_QUERY, query);
 		
-		String language = CookieUtil.getValueFromCookies(request, CommandParamName.LOCALE);
+		String language = CookieUtil.getValueFromCookie(request, CommandParamName.LOCALE);
 		language = language == null ? DEFAULT_LANGUAGE : language;
 		
 		
@@ -68,7 +68,7 @@ public class ShowListFilmCommand implements Command {
 			page = page==-1?1:page;
 			startIndex = startIndex==-1?1:startIndex;
 			
-			listFilm = filmService.findAllFilms(lazyInit, 
+			listFilm = filmService.findAllFilm(lazyInit, 
 					(page - 1) *FILM_RECORDS_PER_PAGE,
 					FILM_RECORDS_PER_PAGE, countAllRec);
 			
@@ -82,7 +82,7 @@ public class ShowListFilmCommand implements Command {
 			request.setAttribute(LIST_FILM_ATTR, listFilm);
 			request.setAttribute(PAGE_INFO, pageInfo);
 			
-			session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodsInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
+			session.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
 			session.setAttribute(CommandParamName.LOCALE,language);
 			request.getRequestDispatcher(CommandParamName.PATH_PAGE_INDEX).forward(request, response);
 

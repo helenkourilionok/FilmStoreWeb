@@ -1,7 +1,6 @@
 package by.training.filmstore.command.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,9 +60,7 @@ public class AdminUpdateFilmCommand implements Command {
 		
 		Map<String, String> listParamValue = null;
 		List<Actor> listNewActors = null;
-		List<Actor> listOldActors = null;
 		List<Short> idNewActors = null;
-		List<Short> idOldActors = null;
 		
 		try {
 			listParamValue = EditFilmUtil.parseMultipartRequest(request);
@@ -86,20 +83,12 @@ public class AdminUpdateFilmCommand implements Command {
 			image = checkImage(image);
 			
 			Film film = (Film)sessionCheckRole.getAttribute(FILM);
-			idOldActors = getListIdActorsFromListActors(film.getActors());
 			idNewActors = EditFilmUtil.strToListId(listActors);
 			listNewActors = EditFilmUtil.createListActorFromList(idNewActors);
-			listOldActors = EditFilmUtil.createListActorFromList(idOldActors);
-			removeCommonId(idNewActors, idOldActors);
 			
-			if(idNewActors.isEmpty()&&idOldActors.isEmpty()){
-				filmService.update(filmId, name, genres, countries, yearOfRel, quality, 
-						   filmDirId, description, price, countFilms, image);
-			}
-			else{
-				filmService.update(filmId,name, genres, countries, yearOfRel, quality,
-						filmDirId, description, price, countFilms, image,listOldActors,listNewActors);
-			}
+			filmService.update(filmId,name, genres, countries, yearOfRel, quality,
+					filmDirId, description, price, countFilms, image,film.getListActor(),listNewActors);
+			
 			sessionCheckRole.setAttribute(FILM,null);
 			request.getRequestDispatcher(CommandParamName.PATH_SUCCESS_PAGE).forward(request, response);
 		}catch(FilmStoreServiceInvalidFilmOperException e){
@@ -124,24 +113,5 @@ public class AdminUpdateFilmCommand implements Command {
 			result = pathToImageFolder+image;
 		}
 		return result;
-	}
-	
-	private List<Short> getListIdActorsFromListActors(List<Actor> listActor) {
-		List<Short> result = new ArrayList<>();
-		for (Actor actor : listActor) {
-			result.add(actor.getId());
-		}
-		return result;
-	}
-
-	private void removeCommonId(List<Short> idNewActors, List<Short> idOldActors){
-		List<Short> idForRemove = new ArrayList<>();
-		for(Short id:idOldActors){
-			if(idNewActors.contains(id)){
-				idForRemove.add(id);
-			}
-		}
-		idNewActors.removeAll(idForRemove);
-		idOldActors.removeAll(idForRemove);
 	}
 }

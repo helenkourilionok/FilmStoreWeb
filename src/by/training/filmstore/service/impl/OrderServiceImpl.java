@@ -162,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
 			throw new FilmStoreServiceIncorrectOrderParamException("Incorrect user email!");
 		}
 		BigDecimal comPrice = ValidationParamUtil.validateBalance(commonPrice); 
-		if(comPrice == null){
+		if((comPrice == null)||(comPrice.compareTo(BigDecimal.ZERO)==0)){
 			throw new FilmStoreServiceIncorrectOrderParamException("Common price isn't valid!");
 		}
 		Status statusForOrder = Validation.validateStatus(status);

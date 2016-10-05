@@ -56,8 +56,8 @@ public class AdminCreateFilmShowPageCommand implements Command {
 		
 		try {
 			checkRequest(request);
-		    listActors = actorService.findAllActors();
-		    listFilmDir = filmDirService.findAllFilmDirectors();
+		    listActors = actorService.findAllActor();
+		    listFilmDir = filmDirService.findAllFilmDirector();
 		    sessionCheckRole.setAttribute(FILM, null);
 		    request.setAttribute(LIST_ACTORS, listActors);
 		    request.setAttribute(LIST_FILM_DIR, listFilmDir);

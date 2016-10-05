@@ -22,7 +22,7 @@ import by.training.filmstore.service.exception.FilmStoreServiceListFilmNotFoundE
 public class FilmServiceImpl implements FilmService {
 
 	@Override
-	public List<Film> findAllFilms(boolean lazyInit, int offset, int recordsPerPage, List<Integer> countAllRecords)
+	public List<Film> findAllFilm(boolean lazyInit, int offset, int recordsPerPage, List<Integer> countAllRecords)
 			throws FilmStoreServiceException, FilmStoreServiceIncorrectFilmParamException,
 			FilmStoreServiceListFilmNotFoundException {
 
@@ -101,7 +101,7 @@ public class FilmServiceImpl implements FilmService {
 		if(listActors==null || listActors.isEmpty()){
 			throw new FilmStoreServiceIncorrectFilmParamException("Film must have at least one actor!");
 		}
-		film.setActors(listActors);
+		film.setListActor(listActors);
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
@@ -167,7 +167,7 @@ public class FilmServiceImpl implements FilmService {
 		Film film = validateFilm(name, genre, country, yearOfRelease, quality, filmDirId, 
 				description, price, countFilms, image);
 		film.setId(id);
-		film.setActors(listOldActor);
+		film.setListActor(listOldActor);
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
@@ -292,7 +292,9 @@ public class FilmServiceImpl implements FilmService {
 
 		static short validateNumber(String number) {
 			try {
-				return Short.parseShort(number);
+				Short _number = Short.parseShort(number);
+				_number = _number<=0?-1:_number;
+				return _number;
 			} catch (NumberFormatException e) {
 				return -1;
 			}

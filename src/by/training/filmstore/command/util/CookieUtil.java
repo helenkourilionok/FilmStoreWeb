@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public final class CookieUtil {
 	
-	public static String getValueFromCookies(HttpServletRequest httpServletRequest, String cookieName) {
+	public static String getValueFromCookie(HttpServletRequest httpServletRequest, String cookieName) {
 		Cookie[] listCookies = httpServletRequest.getCookies();
 		String value = null;
 		if (listCookies == null) {
@@ -23,7 +23,7 @@ public final class CookieUtil {
 		return value;
 	}
 
-	public static int getCountGoodsInCookie(HttpServletRequest httpServletRequest,String prefix){
+	public static int getCountGoodInCookie(HttpServletRequest httpServletRequest,String prefix){
 		Cookie[] listCookies = httpServletRequest.getCookies();
 		int count = 0;
 		if(prefix == null){
@@ -49,7 +49,7 @@ public final class CookieUtil {
     }
 
 
-	public static void removeOrderCookies(HttpServletRequest request,
+	public static void removeOrderCookie(HttpServletRequest request,
 			HttpServletResponse response,String prefix){
 		Cookie[] cookies = request.getCookies();
 		Cookie tempCookie = null;
@@ -64,7 +64,7 @@ public final class CookieUtil {
 		}
 	}
 	
-	public static void removeOrderCookies(HttpServletRequest request,
+	public static void removeOrderCookie(HttpServletRequest request,
 			HttpServletResponse response,String prefix,String filmId){
 		Cookie[] cookies = request.getCookies();
 		Cookie tempCookie = null;
@@ -78,7 +78,7 @@ public final class CookieUtil {
 		}
 	}
 	
-	public static Map<Short,Short> getMapIdCountFromCookies(HttpServletRequest request,String prefix){
+	public static Map<Short,Short> getMapIdCountFromCookie(HttpServletRequest request,String prefix){
 		Map<Short,Short> mapIdCountFilm = new HashMap<>();
 		Cookie[] cookies = request.getCookies();
 		String replacement = "";

@@ -50,7 +50,7 @@ public class MakeOrderShowPageCommand implements Command {
 		String query = QueryUtil.createHttpQueryString(request);
 		sessionCheckRole.setAttribute(CommandParamName.PREV_QUERY, query);
 	
-		Map<Short,Short> mapIdFilmCountFilm = CookieUtil.getMapIdCountFromCookies(request, CommandParamName.COOKIE_PREFIX_FOR_ORDER);
+		Map<Short,Short> mapIdFilmCountFilm = CookieUtil.getMapIdCountFromCookie(request, CommandParamName.COOKIE_PREFIX_FOR_ORDER);
 		List<Film> listFilm = new ArrayList<>();
 		boolean lazyInit = false;
 		String userEmail = (String)sessionCheckRole.getAttribute(CommandParamName.USER_EMAIL);
@@ -71,7 +71,7 @@ public class MakeOrderShowPageCommand implements Command {
 			request.setAttribute(COUNT_ORDERED_FILM, countOrderedFilm);
 			request.setAttribute(ORDER, order);
 			
-			sessionCheckRole.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodsInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
+			sessionCheckRole.setAttribute(CommandParamName.COUNT_FILMS_IN_BASKET, CookieUtil.getCountGoodInCookie(request,CommandParamName.COOKIE_PREFIX_FOR_ORDER));
 			sessionCheckRole.setAttribute(LIST_FILMS, listFilm);
 			
 			request.getRequestDispatcher(CommandParamName.PATH_MAKE_ORDER_PAGE).forward(request, response);
@@ -108,8 +108,8 @@ public class MakeOrderShowPageCommand implements Command {
 		BigDecimal hundred = new BigDecimal(100);
 		for(Film film:listFilm){
 			short countFilm = mapIdFilmCountFilm.get(film.getId());
-			if(countFilm>film.getCountFilms()){
-				countFilm = film.getCountFilms();
+			if(countFilm>film.getCountFilm()){
+				countFilm = film.getCountFilm();
 				mapIdFilmCountFilm.put(film.getId(), countFilm);
 			}			
 			BigDecimal buf = BigDecimal.valueOf(countFilm);

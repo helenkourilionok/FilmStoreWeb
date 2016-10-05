@@ -11,7 +11,7 @@
         <body-content>scriptless</body-content>
         <info>CustomAttrTag displayes value specified in value attribute</info>
 		<attribute>
-			<name>rows</name>
+			<name>row</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

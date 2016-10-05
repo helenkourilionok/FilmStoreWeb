@@ -81,7 +81,7 @@ public final class FilmDAOTest {
 		Actor actor = new Actor();
 		listActor.add(actor);
 		
-		film.setActors(listActor);
+		film.setListActor(listActor);
 		
 		for (int i = 0;i<incorrectActorId.length;i++) {
 			try {
@@ -130,7 +130,7 @@ public final class FilmDAOTest {
 		listNewActor.add(actor);
 		listOldActor.add(correctActor);
 		
-		film.setActors(listOldActor);
+		film.setListActor(listOldActor);
 		
 		for (int i = 0; i < incorrectActorId.length; i++) {
 			try {
@@ -159,7 +159,7 @@ public final class FilmDAOTest {
 		listNewActor.add(correctActor);
 		listOldActor.add(actor);
 		
-		film.setActors(listOldActor);
+		film.setListActor(listOldActor);
 		
 		for (int i = 0; i < incorrectActorId.length; i++) {
 			try {
@@ -314,7 +314,7 @@ public final class FilmDAOTest {
 		FilmDirector filmDirector = new FilmDirector();
 		filmDirector.setId((short) (filmDirId));
 		film.setFilmDirector(filmDirector);
-		film.setActors(new ArrayList<Actor>());
+		film.setListActor(new ArrayList<Actor>());
 		return film;
 	}
 

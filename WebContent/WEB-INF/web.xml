@@ -152,18 +152,6 @@
   <welcome-file-list>
     <welcome-file>index_redirect.jsp</welcome-file>
   </welcome-file-list>
-  <error-page>
-    <error-code>401</error-code>
-    <location>/error-page.jsp</location>
-  </error-page>
-  <error-page>
-    <error-code>403</error-code>
-    <location>/error-page.jsp</location>
-  </error-page>
-  <error-page>
-    <error-code>404</error-code>
-    <location>/error-page.jsp</location>
-  </error-page>
   <listener>
     <listener-class>by.training.filmstore.controller.listener.FilmStoreContextListener</listener-class>
   </listener>
@@ -192,4 +180,16 @@
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  <error-page>
+    <error-code>401</error-code>
+    <location>/error-page.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/error-page.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error-page.jsp</location>
+  </error-page>
 </web-app>
