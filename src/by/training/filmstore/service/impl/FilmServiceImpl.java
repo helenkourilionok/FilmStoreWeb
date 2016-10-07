@@ -211,6 +211,7 @@ public class FilmServiceImpl implements FilmService {
 		}
 		
 		List<Film> listFilm = null;
+		int index = 0;
 		
 		FilmStoreDAOFactory filmStoreDAOFactory = FilmStoreDAOFactory.getDAOFactory();
 		FilmDAO filmDAO = filmStoreDAOFactory.getFilmDAO();
@@ -220,6 +221,8 @@ public class FilmServiceImpl implements FilmService {
 			if(listFilm.isEmpty()){
 				throw new FilmStoreServiceListFilmNotFoundException("Can't find films by this name!");
 			}
+			Film film = listFilm.get(index);
+			filmDAO.findActorFilmDirectorForFilm(film);
 		} catch (FilmStoreDAOException e) {
 			throw new FilmStoreServiceException(e);
 		}

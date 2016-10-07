@@ -38,6 +38,7 @@ public final class FindFilmByNameCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 		String prev_query = QueryUtil.createHttpQueryString(request);
+
 		HttpSession session = request.getSession(true);
 		session.setAttribute(CommandParamName.PREV_QUERY, prev_query);
 		

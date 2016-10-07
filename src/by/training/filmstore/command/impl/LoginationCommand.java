@@ -44,7 +44,6 @@ public class LoginationCommand implements Command {
 
 			String prev_query = (String) request.getSession(false).getAttribute(CommandParamName.PREV_QUERY);
 			if (prev_query != null) {
-
 				response.sendRedirect(prev_query);
 
 			} else {

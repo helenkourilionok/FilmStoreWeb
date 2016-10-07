@@ -60,7 +60,9 @@
 <fmt:message bundle="${locale}" key="locale.makeDiscount.errorCountOrders" var="errorCountOrders" />
 <fmt:message bundle="${locale}" key="locale.makeDiscount.sizeOfDiscount" var="sizeOfDiscount" />
 <fmt:message bundle="${locale}" key="locale.makeDiscount.monthYear" var="monthYear" />
-<fmt:message bundle="${locale}" key="locale.makeDiscount.noneFilm" var="noneFilm" />
+<fmt:message bundle="${locale}" key="locale.makeDiscount.noneUser" var="noneUser" />
+<fmt:message bundle="${locale}" key="locale.makeDiscount.showUserForDiscount" var="showUserForDiscount" />
+<fmt:message bundle="${locale}" key="locale.makeDiscount.makeDiscountForUser" var="makeDiscountForUser" />
 </head>
 <body>
 	<div class="wrapper container">
@@ -109,10 +111,10 @@
 								<div class="col-md-4 col-md-offset-4">
 									<c:choose>
 									    <c:when test="${fn:length(requestScope.listUserForDiscount) > 0}">
-											<button type="submit" class="btn btn-primary btn-sm" formaction="Controller?command=a_make_discount" style="margin-bottom:10px">Make discount for user</button>
+											<button type="submit" class="btn btn-primary btn-sm" formaction="Controller?command=a_make_discount" style="margin-bottom:10px">${makeDiscountForUser}</button>
 										</c:when>
 									    <c:otherwise>
-											<button type="submit" class="btn btn-primary btn-sm" formaction="Controller?command=a_make_discount_show_user" style="margin-bottom:10px">Show user for discount</button>
+											<button type="submit" class="btn btn-primary btn-sm" formaction="Controller?command=a_make_discount_show_user" style="margin-bottom:10px">${showUserForDiscount}</button>
 									    </c:otherwise>
 									</c:choose>
 								</div>
@@ -120,7 +122,7 @@
 						</form>
 					<div class="col-md-12">
 						<c:if test="${ (requestScope.listUserForDiscount!=null) && !(fn:length(requestScope.listUserForDiscount) > 0)}">
-							<span>${noneFilm}</span>
+							<span>${noneUser}</span>
 						</c:if>
 						<table class="table table-bordered">
 							<tbody>

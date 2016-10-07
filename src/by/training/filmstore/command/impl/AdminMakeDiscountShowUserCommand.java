@@ -55,9 +55,9 @@ public final class AdminMakeDiscountShowUserCommand implements Command {
 		List<User> listUserForDiscount = null;
 
 		try {
-		
+
 			listUserForDiscount = findUserForDiscount(discountDate, countOrders, userService);
-			
+
 			request.setAttribute(LIST_USER_FOR_DISCOUNT, listUserForDiscount);
 			request.setAttribute(COUNT_ORDERS, countOrders);
 			request.setAttribute(CURRENT_DATE,Date.valueOf(discountDate));

@@ -54,7 +54,7 @@
 <div class="row-offset">
 	<label for="countFilms">${countFilms}:</label> <input type="text"
 		class="form-control" id="countFilms" name="countFilms"
-		placeholder="${enterCountFilms}" value="${sessionScope.film.countFilms}"/>
+		placeholder="${enterCountFilms}" value="${sessionScope.film.countFilm}"/>
 </div>
 <div class="row-offset">
 	<select name="quality" class="selectpicker" data-style="btn-primary"
@@ -126,7 +126,7 @@
 		title="${chooseActors}">
 		<c:forEach var="actor" items="${requestScope.listActors}">
 			<c:choose>
-				<c:when test="${sessionScope.film.actors.contains(actor)}">
+				<c:when test="${sessionScope.film.listActor.contains(actor)}">
 						<option value="${actor.id}" selected>${actor.fio}</option>
 				</c:when>
 				<c:otherwise>

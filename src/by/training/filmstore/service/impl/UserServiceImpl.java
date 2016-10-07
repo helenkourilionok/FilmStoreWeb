@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> findUserForMakeDiscount(String year, String month, String countOrders) throws FilmStoreServiceException,
 			FilmStoreServiceIncorrectUserParamException, FilmStoreServiceInvalidUserOperException {
-		String stub = "0";
+		String stub = "1";
 		int[] arrResults = validateParamForMakeDiscount(stub, year, month, countOrders);
 		List<User> listUser = null;
 		
